@@ -1,1 +1,20 @@
+<<<<<<< HEAD
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+=======
 client/simulator/android/awstraining-debug.apk
+>>>>>>> origin/master
