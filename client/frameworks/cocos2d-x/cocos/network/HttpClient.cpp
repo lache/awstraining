@@ -284,7 +284,7 @@ public:
             return false;
         CURLcode code = curl_easy_getinfo(_curl, CURLINFO_RESPONSE_CODE, responseCode);
         if (code != CURLE_OK || !(*responseCode >= 200 && *responseCode < 300)) {
-            CCLOGERROR("Curl curl_easy_getinfo failed: %s", curl_easy_strerror(code));
+            CCLOGERROR("Curl curl_easy_getinfo failed: %s, responseCode %d", curl_easy_strerror(code), *responseCode);
             return false;
         }
         // Get some mor data.

@@ -50,11 +50,27 @@ import android.widget.Toast;
 
 
 public class AppActivity extends Cocos2dxActivity{
-
+    static AppActivity thisActivity;
     static String hostIPAdress = "0.0.0.0";
+    static AwsHelper awsHelper = new AwsHelper();
+
+    public static int connectToSqs(final String accessKey, final String secretKey) {
+        return awsHelper.connectToSqs(accessKey, secretKey);
+    }
+
+    public static int sendToSqs(final String queueUrl, final String message) {
+        return awsHelper.sendToSqs(queueUrl, message);
+    }
+
+    public static int receiveFromSqs(final String queueUrl, final int waitTimeSeconds, final int luaFunc) {
+        return awsHelper.receiveFromSqs(queueUrl, waitTimeSeconds, luaFunc);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        thisActivity = this;
         
         if(nativeIsLandScape()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);

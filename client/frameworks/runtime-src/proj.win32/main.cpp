@@ -2,13 +2,8 @@
 #include "SimulatorWin.h"
 #include <shellapi.h>
 
-int APIENTRY _tWinMain(HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPTSTR    lpCmdLine,
-	int       nCmdShow)
+int wmain(int argc, wchar_t** argv)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
     auto simulator = SimulatorWin::getInstance();
     return simulator->run();
 }
