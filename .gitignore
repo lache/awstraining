@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Eclipse
 .classpath
 .project
@@ -15,6 +14,6 @@
 # Maven
 log/
 target/
-=======
+
 client/simulator/android/awstraining-debug.apk
->>>>>>> origin/master
+
