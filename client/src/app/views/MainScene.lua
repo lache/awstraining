@@ -8,8 +8,6 @@ function MainScene:onCreate()
     printf("resource node = %s", tostring(self:getResourceNode()))
 
     self.queueUrl = 'https://sqs.us-east-1.amazonaws.com/280548294548/testq'
-    self.accessKey = 'AKIAINDOUJOVHO5CHIRA'
-    self.secretKey = '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'
 
     self.hud = self:getResourceNode()
     self.hud:getChildByTag(5):addTouchEventListener(function(sender, eventType)
@@ -27,12 +25,23 @@ function MainScene:onCreate()
             self:receive()
         end
     end)
+    self.hud:getChildByTag(9):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            self:signIn()
+        end
+    end)
 
     self:sendEnterRequest()
 end
 
+function MainScene:signIn()
+    Android:signIn(function (result)
+        print('Signin result = ', result)
+    end)
+end
+
 function MainScene:connect()
-    Android:connectToSqs(self.accessKey, self.secretKey)
+    Android:connectToSqs()
 end
 
 function MainScene:send()

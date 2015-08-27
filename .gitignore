@@ -17,3 +17,4 @@ target/
 
 client/simulator/android/awstraining-debug.apk
 
+client/frameworks/runtime-src/proj.android-studio/app/awstraining-release.apk

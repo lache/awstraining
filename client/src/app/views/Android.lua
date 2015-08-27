@@ -2,17 +2,38 @@ local Android = class('Android')
 
 local className = "org/cocos2dx/lua/AppActivity"
 
-function Android:connectToSqs(accessKey, secretKey)
+function Android:signIn(callbackLua)
     local targetPlatform = cc.Application:getInstance():getTargetPlatform()
     if cc.PLATFORM_OS_ANDROID ~= targetPlatform then
-        printf('[SIMULATED] Android:connectToSqs("%s", "%s") called.',
-            accessKey, secretKey)
+        printf('[SIMULATED] Android:signIn([%s]) called.',
+            tostring(callbackLua))
+        callbackLua('This is simulated sign in message...')
         return
     end
 
     local luaj = require "cocos.cocos2d.luaj"
-    local args = { accessKey , secretKey }
-    local sigs = "(Ljava/lang/String;Ljava/lang/String;)I"
+    local args = { callbackLua }
+    local sigs = "(I)I"
+    local ok, ret = luaj.callStaticMethod(className, "signIn",
+        args, sigs)
+    if ok then
+        print("Android:signIn The ret is:", ret)
+    else
+        print("Android:signIn luaj error:", ret)
+    end
+    return ret
+end
+
+function Android:connectToSqs()
+    local targetPlatform = cc.Application:getInstance():getTargetPlatform()
+    if cc.PLATFORM_OS_ANDROID ~= targetPlatform then
+        printf('[SIMULATED] Android:connectToSqs() called.')
+        return
+    end
+
+    local luaj = require "cocos.cocos2d.luaj"
+    local args = { }
+    local sigs = "()I"
     local ok, ret  = luaj.callStaticMethod(className, "connectToSqs",
         args, sigs)
     if ok then
