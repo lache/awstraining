@@ -34,7 +34,9 @@ function MainScene:onCreate()
 
     self.hud:getChildByTag(2001):addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
-            Android:createBoard(7, 7, 'user1', 'user2')
+            self.user1Name = 'user1'
+            self.user2Name = 'user2'
+            Android:createBoard(7, 7, self.user1Name, self.user2Name)
         end
     end)
     self.hud:getChildByTag(2002):addTouchEventListener(function(sender, eventType)
@@ -45,22 +47,80 @@ function MainScene:onCreate()
     self.hud:getChildByTag(2003):addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
             Android:nextTurn(function (delta)
-                print('BOARD DELTA:', delta)
+                self:processDelta(delta)
             end)
         end
     end)
 
     self:sendEnterRequest()
 
-    self:drawGrid()
+    --self:drawGrid()
+end
+
+function MainScene:processDelta(delta)
+    local function mysplit(inputstr, sep)
+        if sep == nil then
+            sep = "%s"
+        end
+        local t={}
+        local i=1
+        for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+            t[i] = str
+            i = i + 1
+        end
+        return t
+    end
+
+    local tokens = mysplit(delta, ' ')
+    if tokens[1] == 'size' then
+    elseif tokens[1] == 'place' then
+        -- 로직 코어의 인덱스는 0-based, 여기는 1-based
+        if tokens[2] == self.user1Name then
+            self:createUser1(tokens[3] + 1, tokens[4] + 1)
+        else
+            self:createUser2(tokens[3] + 1, tokens[4] + 1)
+        end
+    elseif tokens[1] == 'turn' then
+    elseif tokens[1] == 'move' then
+    else
+        print('UNKNOWN DELTA COMMAND', tokens[1])
+    end
+end
+
+function MainScene:createCell(texture1, texture2, texture3, x, y)
+
+    local sx = display.cx - 3 * 80 + (x - 1) * 80
+    local sy = display.cy + 3 * 80 - (y - 1) * 80 + 2 * 80
+
+    local textButton = ccui.Button:create()
+    textButton:setTouchEnabled(true)
+    textButton:setScale9Enabled(false)
+    textButton:loadTextures(texture1, texture2, texture3)
+    textButton:setContentSize(cc.size(80, 80))
+    textButton:setTitleText('')
+    textButton:setPosition(sx, sy)
+    textButton:addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            printf('Board cell (%d, %d) touched.', x, y)
+        end
+    end)
+    textButton:addTo(self)
+end
+
+function MainScene:createUser1(x, y)
+    self:createCell('red.png', 'blue.png', 'red.png', x, y)
+end
+
+function MainScene:createUser2(x, y)
+    self:createCell('blue.png', 'red.png', 'blue.png', x, y)
 end
 
 function MainScene:drawGrid()
     for dx = -3, 3 do
         for dy = -3, 3 do
-            display.newSprite('red.png')
-                :move(cc.p(display.cx + dx * 80, display.cy + (dy + 2) * 80))
-                :addTo(self)
+            local x = dx + 4 -- 1, 2, ... 7 (왼쪽에서 오른쪽으로)
+            local y = 8 - (dy + 4) -- 1, 2, ... 7 (상단에서 하단으로)
+            self:createCell('red.png', 'blue.png', 'red.png', x, y)
         end
     end
 end

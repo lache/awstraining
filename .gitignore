@@ -21,3 +21,6 @@ client/frameworks/runtime-src/proj.android-studio/app/awstraining-release.apk
 .metadata/
 .recommenders/
 ataxx-core/bin/
+client/runtime/mac/awstraining-desktop.app
+client/frameworks/runtime-src/proj.ios_mac/awstraining.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+client/frameworks/runtime-src/proj.ios_mac/awstraining.xcodeproj/project.xcworkspace/xcshareddata/awstraining.xccheckout
