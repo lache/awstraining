@@ -5,6 +5,95 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class AtaxxTest {
+	
+	/**
+	 * 델타 로거 기본 기능 테스트 (비기는 시나리오)
+	 */
+	@Test
+	public void testBasicDeltaLogger_Draw() {
+		Board board = new Board();
+		DeltaLogger dl = new DeltaLogger();
+		board.setDeltaLogger(dl);
+		board.setSize(4, 1);
+		assertEquals("size 4 1", dl.pop().toString());
+		
+		User user1 = new User("user1");
+		User user2 = new User("user2");
+		board.place(user1, 1, 0);
+		assertEquals("place user1 1 0", dl.pop().toString());
+		
+		board.place(user2, 2, 0);
+		assertEquals("place user2 2 0", dl.pop().toString());
+		
+		board.nextTurn();
+		assertEquals("turn 1", dl.pop().toString());
+		
+		board.move(user1, 1, 0, 0, 0);
+		board.nextTurn();
+		
+		assertEquals("move user1 1 0 0 0 clone", dl.pop().toString());
+		assertEquals("turn 2", dl.pop().toString());
+		
+		board.move(user2, 2, 0, 3, 0);
+		board.nextTurn();
+		
+		assertEquals("move user2 2 0 3 0 clone", dl.pop().toString());
+		assertEquals("draw", dl.pop().toString());
+		assertNull(dl.pop());
+	}
+	
+	/**
+	 * 델타 로거 기본 기능 테스트 (user1 승리 시나리오)
+	 */
+	@Test
+	public void testBasicDeltaLogger_Winner1() {
+		Board board = new Board();
+		DeltaLogger dl = new DeltaLogger();
+		board.setDeltaLogger(dl);
+		board.setSize(4, 1);
+		assertEquals("size 4 1", dl.pop().toString());
+		
+		User user1 = new User("user1");
+		User user2 = new User("user2");
+		board.place(user1, 0, 0);
+		assertEquals("place user1 0 0", dl.pop().toString());
+		
+		board.place(user2, 3, 0);
+		assertEquals("place user2 3 0", dl.pop().toString());
+		
+		board.nextTurn();
+		assertEquals("turn 1", dl.pop().toString());
+		
+		board.move(user1, 0, 0, 2, 0);
+		assertNull(dl.pop());
+		
+		board.nextTurn();
+		assertEquals("move user1 0 0 2 0 move", dl.pop().toString());
+		assertEquals("convert user2 user1 3 0", dl.pop().toString());
+		assertEquals("winner user1", dl.pop().toString());
+		assertNull(dl.pop());
+	}
+	
+	/**
+	 * 유저가 한명만 남은 경우 빈 칸이 남아 있더라도 바로 승패처리한다.
+	 */
+	@Test
+	public void testOnlyOneUserAlwaysWins() {
+		Board board = new Board();
+		board.setSize(4, 1);
+		User user1 = new User("user1");
+		User user2 = new User("user2");
+		board.place(user1, 0, 0);
+		board.place(user2, 3, 0);
+		board.nextTurn();
+		board.move(user1, 0, 0, 2, 0);
+		// 한 칸이 비어 있지만 user2가 전멸했으므로 바로 user1 승리로 끝나야 한다.
+		assertEquals(Board.NextTurnResult.FINISHED_WINNER, board.nextTurn());
+		assertEquals(user1, board.getWinner());
+		assertEquals(2, board.getCellCount(user1));
+		assertEquals(0, board.getCellCount(user2));
+	}
+	
 	/**
 	 * 움직일 수 있는 것이 없는 경우 턴을 넘기는 행위밖에 할 수 없다.
 	 */

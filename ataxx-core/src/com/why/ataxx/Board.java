@@ -28,6 +28,7 @@ public class Board {
 	private int moveToY;
 	private boolean moveSet;
 	private boolean finished;
+	private DeltaLogger dl;
 	
 	public boolean isValidSize() {
 		return (width < 0 || height < 0 || width * height < 2 || width * height > 100) == false;
@@ -40,6 +41,8 @@ public class Board {
 		this.width = width;
 		this.height = height;
 		this.cells = new User[width][height];
+		
+		enqueueDelta(new SizeDelta(width, height));
 		return true;
 	}
 
@@ -53,7 +56,15 @@ public class Board {
 		if (userList.contains(user) == false) {
 			userList.add(user);
 		}
+		
+		enqueueDelta(new PlaceDelta(user.toString(), x, y));
 		return true;
+	}
+
+	private void enqueueDelta(Delta delta) {
+		if (dl != null) {
+			dl.enqueue(delta);
+		}
 	}
 
 	public int getTurnCount() {
@@ -113,15 +124,17 @@ public class Board {
 		
 		turnCount++;
 		
-		if (isAllCellsFilled()) {
-			
-			Map<User, Integer> userCount = new HashMap<User, Integer>();
-			calculateUserCount(userCount);
+		Map<User, Integer> userCount = new HashMap<User, Integer>();
+		calculateUserCount(userCount);
+		
+		if (userCount.entrySet().size() == 1 || isAllCellsFilled()) {
 			
 			finished = true;
 			
+			NextTurnResult ntr = NextTurnResult.FINISHED_WINNER;
+			
 			if (userCount.entrySet().size() == 1) {
-				return NextTurnResult.FINISHED_WINNER;
+				ntr = NextTurnResult.FINISHED_WINNER;
 			} else {
 				Map.Entry<User, Integer> maxEntry = null;
 				maxEntry = getCellCountMaxUser(userCount, maxEntry);
@@ -129,9 +142,19 @@ public class Board {
 				Map.Entry<User, Integer> minEntry = null;
 				minEntry = getCellCountMinUser(userCount, minEntry);
 				
-				return maxEntry.getValue() != minEntry.getValue() ? NextTurnResult.FINISHED_WINNER : NextTurnResult.FINISHED_DRAW;	
+				ntr = maxEntry.getValue() != minEntry.getValue() ? NextTurnResult.FINISHED_WINNER : NextTurnResult.FINISHED_DRAW;	
 			}
+			
+			if (ntr == NextTurnResult.FINISHED_WINNER) {
+				enqueueDelta(new WinnerDelta(getWinner().toString()));
+			} else {
+				enqueueDelta(new DrawDelta());
+			}
+			
+			return ntr;
 		}
+		
+		enqueueDelta(new TurnDelta(turnCount));
 		
 		boolean canMove = isCurrentUserCanMove();
 		
@@ -187,10 +210,17 @@ public class Board {
 		// 타겟 위치를 user로 설정한다.
 		cells[moveToX][moveToY] = user;
 		
+		MoveDelta moveDelta = new MoveDelta(user.toString(), moveFromX, moveFromY, moveToX, moveToY);
+		
 		// 점프 이동이라면 원래 위치에서 유저를 삭제한다.
 		if (Math.abs(moveFromX - moveToX) > 1 || Math.abs(moveFromY - moveToY) > 1) {
 			cells[moveFromX][moveFromY] = null;
+			moveDelta.setClone(false);
+		} else {
+			moveDelta.setClone(true);
 		}
+		
+		enqueueDelta(moveDelta);
 		
 		// 주변 8-neighbor의 기존 유저를 모두 user로 전환한다.
 		for (int dx = -1; dx <= 1; ++dx) {
@@ -213,8 +243,11 @@ public class Board {
 			return;
 		}
 		
-		if (cells[x][y] != null) {
-			cells[x][y] = user;	
+		if (cells[x][y] != null && cells[x][y] != user) {
+			User prevUser = cells[x][y];
+			cells[x][y] = user;
+			
+			enqueueDelta(new ConvertDelta(prevUser.toString(), user.toString(), x, y));
 		}
 	}
 
@@ -279,10 +312,14 @@ public class Board {
 	}
 
 	public User getWinner() {
-		if (isAllCellsFilled()) {
+		Map<User, Integer> userCount = new HashMap<User, Integer>();
+		calculateUserCount(userCount);
+		
+		if (userCount.size() == 1) {
 			
-			Map<User, Integer> userCount = new HashMap<User, Integer>();
-			calculateUserCount(userCount);
+			return userCount.keySet().iterator().next();
+			
+		} else if (isAllCellsFilled()) {
 			
 			Map.Entry<User, Integer> maxEntry = null;
 			maxEntry = getCellCountMaxUser(userCount, maxEntry);
@@ -336,5 +373,9 @@ public class Board {
 		}
 		
 		return false;
+	}
+
+	public void setDeltaLogger(DeltaLogger dl) {
+		this.dl = dl;
 	}
 }
