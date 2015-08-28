@@ -7,6 +7,24 @@ import org.junit.Test;
 public class AtaxxTest {
 	
 	/**
+	 * 4x4 테스트 (대리님 제보 사항)
+	 */
+	@Test
+	public void test4x4() {
+		Board board = new Board();
+		assertTrue(board.setSize(4, 4));
+		User user1 = new User();
+		User user2 = new User();
+		assertTrue(board.place(user1, 0, 0));
+		assertTrue(board.place(user2, 3, 3));
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
+		assertTrue(board.move(user1, 0, 0, 0, 1));
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
+		assertTrue(board.move(user2, 3, 3, 3, 2));
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
+	}
+	
+	/**
 	 * 델타 로거 기본 기능 테스트 (비기는 시나리오)
 	 */
 	@Test
