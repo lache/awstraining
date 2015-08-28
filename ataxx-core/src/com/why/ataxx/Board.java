@@ -6,7 +6,16 @@ import java.util.Map;
 
 public class Board {
 	
-	enum Result { OK, FINISHED_WINNER, FINISHED_DRAW, USER_ERROR, SIZE_ERROR, MOVE_ERROR, OK_SHOULD_SKIP, STATE_ERROR }
+	enum NextTurnResult {
+		OK,					// 턴이 정상적으로 넘어갔다. 다음 액션을 하면 된다.
+		OK_SHOULD_SKIP,		// 턴이 정상적으로 넘어갔다. 그렇지만 이번엔 아무 액션도 하지 못하고 바로 턴만 넘겨야 할 것이다.
+		FINISHED_WINNER,	// 턴이 정상적으로 넘어갔다. 승자가 나왔다. 더이상 턴을 진행시킬 수 없다.
+		FINISHED_DRAW,		// 턴이 정상적으로 넘어갔다. 무승부로 끝났다. 더이상 턴을 진행시킬 수 없다.
+		USER_ERROR,			// 유저 정보에 오류가 있다.
+		SIZE_ERROR,			// 보드 크기에 오류가 있다.
+		MOVE_ERROR,			// 움직임이 없거나 오류가 있다.
+		ALREADY_FINISHED	// 끝난 판이므로 더이상 턴을 진행시킬 수 없다.
+	}
 
 	private int width;
 	private int height;
@@ -79,22 +88,22 @@ public class Board {
 		return cells[x][y];
 	}
 
-	public Result nextTurn() {
+	public NextTurnResult nextTurn() {
 		if (isValidSize() == false) {
-			return Result.SIZE_ERROR;
+			return NextTurnResult.SIZE_ERROR;
 		}
 		if (isValidUser() == false) {
-			return Result.USER_ERROR;
+			return NextTurnResult.USER_ERROR;
 		}
 		if (finished == true) {
-			return Result.STATE_ERROR;
+			return NextTurnResult.ALREADY_FINISHED;
 		}
 		
 		if (turnCount != 0) {
 
 			if (isCurrentUserCanMove()) {
 				if (processMove() == false) {
-					return Result.MOVE_ERROR;
+					return NextTurnResult.MOVE_ERROR;
 				}
 			}
 			
@@ -112,7 +121,7 @@ public class Board {
 			finished = true;
 			
 			if (userCount.entrySet().size() == 1) {
-				return Result.FINISHED_WINNER;
+				return NextTurnResult.FINISHED_WINNER;
 			} else {
 				Map.Entry<User, Integer> maxEntry = null;
 				maxEntry = getCellCountMaxUser(userCount, maxEntry);
@@ -120,13 +129,13 @@ public class Board {
 				Map.Entry<User, Integer> minEntry = null;
 				minEntry = getCellCountMinUser(userCount, minEntry);
 				
-				return maxEntry.getValue() != minEntry.getValue() ? Result.FINISHED_WINNER : Result.FINISHED_DRAW;	
+				return maxEntry.getValue() != minEntry.getValue() ? NextTurnResult.FINISHED_WINNER : NextTurnResult.FINISHED_DRAW;	
 			}
 		}
 		
 		boolean canMove = isCurrentUserCanMove();
 		
-		return canMove ? Result.OK : Result.OK_SHOULD_SKIP;
+		return canMove ? NextTurnResult.OK : NextTurnResult.OK_SHOULD_SKIP;
 	}
 
 	private Map.Entry<User, Integer> getCellCountMinUser(Map<User, Integer> userCount,

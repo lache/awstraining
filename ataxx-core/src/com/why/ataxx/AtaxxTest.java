@@ -19,10 +19,10 @@ public class AtaxxTest {
 		assertTrue(board.place(user2, 2, 0));
 		assertEquals(0, board.getTurnCount());
 		assertNull(board.getCurrentUser());
-		assertEquals(Board.Result.OK_SHOULD_SKIP, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK_SHOULD_SKIP, board.nextTurn());
 		assertEquals(1, board.getTurnCount());
 		assertEquals(user1, board.getCurrentUser());
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals(2, board.getTurnCount());
 		assertEquals(user2, board.getCurrentUser());
 	}
@@ -40,7 +40,7 @@ public class AtaxxTest {
 		assertTrue(board.place(user2, 1, 0));
 		assertTrue(board.place(user2, 2, 0));
 		assertTrue(board.isAllCellsFilled());
-		assertEquals(Board.Result.FINISHED_WINNER, board.nextTurn());
+		assertEquals(Board.NextTurnResult.FINISHED_WINNER, board.nextTurn());
 		assertEquals(user2, board.getWinner());
 	}
 	
@@ -57,7 +57,7 @@ public class AtaxxTest {
 		assertTrue(board.place(user1, 1, 0));
 		assertTrue(board.place(user2, 2, 0));
 		assertTrue(board.isAllCellsFilled());
-		assertEquals(Board.Result.FINISHED_WINNER, board.nextTurn());
+		assertEquals(Board.NextTurnResult.FINISHED_WINNER, board.nextTurn());
 		assertEquals(user1, board.getWinner());
 	}
 	
@@ -73,7 +73,7 @@ public class AtaxxTest {
 		assertTrue(board.place(user1, 0, 0));
 		assertTrue(board.place(user2, 1, 0));
 		assertTrue(board.isAllCellsFilled());
-		assertEquals(Board.Result.FINISHED_DRAW, board.nextTurn());
+		assertEquals(Board.NextTurnResult.FINISHED_DRAW, board.nextTurn());
 	}
 	
 	/**
@@ -87,13 +87,13 @@ public class AtaxxTest {
 		User user2 = new User();
 		assertTrue(board.place(user1, 0, 0));
 		assertTrue(board.place(user2, 3, 0));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("유저1의 소지 칸 수는 1이다.", 1, board.getCellCount(user1));
 		assertEquals("유저2의 소지 칸 수는 1이다.", 1, board.getCellCount(user2));
 		assertTrue(board.move(user1, 0, 0, 1, 0));
 		assertEquals("유저1의 소지 칸 수는 1이다.", 1, board.getCellCount(user1));
 		assertEquals("유저2의 소지 칸 수는 1이다.", 1, board.getCellCount(user2));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("유저1의 소지 칸 수는 2이다.", 2, board.getCellCount(user1));
 		assertEquals("유저2의 소지 칸 수는 1이다.", 1, board.getCellCount(user2));
 		assertEquals(user1, board.get(0, 0));
@@ -114,9 +114,9 @@ public class AtaxxTest {
 		assertTrue(board.place(user1, 0, 0));
 		assertTrue(board.place(user2, 3, 0));
 		assertEquals(0, board.getTurnCount());
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals(1, board.getTurnCount());
-		assertEquals(Board.Result.MOVE_ERROR, board.nextTurn());
+		assertEquals(Board.NextTurnResult.MOVE_ERROR, board.nextTurn());
 		assertEquals(1, board.getTurnCount());
 	}
 	
@@ -133,7 +133,7 @@ public class AtaxxTest {
 		assertTrue(board.place(user2, 2, 0));
 		assertEquals(0, board.getTurnCount());
 		assertNull(board.getCurrentUser());
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals(1, board.getTurnCount());
 		assertEquals(user1, board.getCurrentUser());
 		assertNull(board.getWinner());
@@ -180,11 +180,11 @@ public class AtaxxTest {
 		User user2 = new User();
 		assertTrue(board.place(user1, 0, 0));
 		assertTrue(board.place(user2, 3, 0));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertTrue(board.move(user1, 0, 0, 1, 0));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertTrue(board.move(user2, 3, 0, 2, 0));
-		assertEquals(Board.Result.FINISHED_WINNER, board.nextTurn());
+		assertEquals(Board.NextTurnResult.FINISHED_WINNER, board.nextTurn());
 		assertEquals(user2, board.getWinner());
 	}
 	
@@ -288,7 +288,7 @@ public class AtaxxTest {
 		assertEquals("유저2의 소지 칸 수는 1이다.", 1, board.getCellCount(user2));
 		assertTrue(board.move(user1, 0, 0, 2, 0));
 		assertEquals("유저1의 소지 칸 수는 1이다.", 1, board.getCellCount(user1));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("유저1의 소지 칸 수는 1이다.", 1, board.getCellCount(user1));
 		assertEquals("유저2의 소지 칸 수는 1이다.", 1, board.getCellCount(user2));
 		assertEquals(null, board.get(0, 0));
@@ -311,12 +311,12 @@ public class AtaxxTest {
 		User user2 = new User();
 		assertTrue(board.place(user1, 0, 0));
 		assertTrue(board.place(user2, 9, 9));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("2칸을 초과해서 이동시킬 수는 없다.", false, board.move(user1, 0, 0, 3, 0));
 		assertEquals("2칸을 초과하지 않으면 이동되어야 한다.", true, board.move(user1, 0, 0, 2, 0));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("2칸을 초과하지 않으면 이동되어야 한다.", true, board.move(user2, 9, 9, 7, 7));
-		assertEquals(Board.Result.OK, board.nextTurn());
+		assertEquals(Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("없는 칸에서 이동할 수는 없다.", false, board.move(user1, 5, 5, 5, 6));
 		assertEquals("이미 소유된 곳으로 이동할 수는 없다.", false, board.move(user1, 0, 0, 2, 0));
 		assertEquals("자기 자리로 이동할 수는 없다.", false, board.move(user1, 0, 0, 0, 0));
@@ -353,17 +353,17 @@ public class AtaxxTest {
 	@Test
 	public void testNextTurnChecks() {
 		Board board = new Board();
-		assertEquals("보드 크기 오류 시 턴이 진행될 수 없다.", Board.Result.SIZE_ERROR, board.nextTurn());
+		assertEquals("보드 크기 오류 시 턴이 진행될 수 없다.", Board.NextTurnResult.SIZE_ERROR, board.nextTurn());
 		assertEquals("보드 크기는 최소 2칸 이상이어야 한다.", false, board.setSize(1, 1));
-		assertEquals("보드 크기가 2칸보다 작을 시 턴이 진행될 수 없다.", Board.Result.SIZE_ERROR, board.nextTurn());
+		assertEquals("보드 크기가 2칸보다 작을 시 턴이 진행될 수 없다.", Board.NextTurnResult.SIZE_ERROR, board.nextTurn());
 		assertEquals("보드 크기는 최소 2칸 이상이어야 한다.", true, board.setSize(2, 1));
-		assertEquals("유저가 둘 이상 없으면 턴이 진행될 수 없다.", Board.Result.USER_ERROR, board.nextTurn());
+		assertEquals("유저가 둘 이상 없으면 턴이 진행될 수 없다.", Board.NextTurnResult.USER_ERROR, board.nextTurn());
 		User user1 = new User();
 		User user2 = new User();
 		assertEquals(true, board.place(user1, 0, 0));
-		assertEquals("유저가 둘 이상 없으면 턴이 진행될 수 없다.", Board.Result.USER_ERROR, board.nextTurn());
+		assertEquals("유저가 둘 이상 없으면 턴이 진행될 수 없다.", Board.NextTurnResult.USER_ERROR, board.nextTurn());
 		assertEquals(true, board.place(user2, 1, 0));
-		assertEquals("턴이 진행되어야 한다.", Board.Result.FINISHED_DRAW, board.nextTurn());
+		assertEquals("턴이 진행되어야 한다.", Board.NextTurnResult.FINISHED_DRAW, board.nextTurn());
 	}
 	
 	/**
@@ -391,18 +391,18 @@ public class AtaxxTest {
 		assertEquals("(1,0) 위치를 소지한 유저는 없어야 한다.", null, board.get(1, 0));
 		assertEquals("현재 턴은 0이어야 한다.", 0, board.getTurnCount());
 		assertEquals("현재 플레이어는 없어야 한다.", null, board.getCurrentUser());
-		assertEquals("초기 설정이 되었으면 턴이 진행되어야 한다.", Board.Result.OK, board.nextTurn());
+		assertEquals("초기 설정이 되었으면 턴이 진행되어야 한다.", Board.NextTurnResult.OK, board.nextTurn());
 		assertEquals("현재 턴은 1이어야 한다.", 1, board.getTurnCount());
 		assertEquals("유저1 차례여야 한다.", user1, board.getCurrentUser());
 		assertEquals("유저1이 (0,0)->(1,0)으로 복제될 수 있어야 한다.", true, board.move(user1, 0, 0, 1, 0));
 		assertEquals("유저1이 복제 액션을 했더라도 턴 진행 전까지는 복제가 진행되지 않아야 한다.", 1, board.getCellCount(user1));
-		assertEquals("턴이 진행되어야 한다.", Board.Result.FINISHED_WINNER, board.nextTurn());
+		assertEquals("턴이 진행되어야 한다.", Board.NextTurnResult.FINISHED_WINNER, board.nextTurn());
 		assertEquals("현재 턴은 2이어야 한다.", 2, board.getTurnCount());
 		assertEquals("유저2 차례여야 한다.", user2, board.getCurrentUser());
 		assertEquals("복제가 되었으므로 유저1이 소지한 칸 수는 3이어야 한다.", 3, board.getCellCount(user1));
 		assertEquals("복제를 당했으므로 유저2가 소지한 칸 수는 0이어야 한다.", 0, board.getCellCount(user2));
 		assertEquals("승자가 유저1이어야 한다.", user1, board.getWinner());
-		assertEquals("게임이 종료됐으므로 턴은 더 진행되지 않아야 한다.", Board.Result.STATE_ERROR, board.nextTurn());
+		assertEquals("게임이 종료됐으므로 턴은 더 진행되지 않아야 한다.", Board.NextTurnResult.ALREADY_FINISHED, board.nextTurn());
 		assertEquals("현재 턴은 여전히 2이어야 한다.", 2, board.getTurnCount());
 	}
 }
