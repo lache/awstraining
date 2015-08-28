@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Board {
 	
-	enum NextTurnResult {
+	public enum NextTurnResult {
 		OK,					// 턴이 정상적으로 넘어갔다. 다음 액션을 하면 된다.
 		OK_SHOULD_SKIP,		// 턴이 정상적으로 넘어갔다. 그렇지만 이번엔 아무 액션도 하지 못하고 바로 턴만 넘겨야 할 것이다.
 		FINISHED_WINNER,	// 턴이 정상적으로 넘어갔다. 승자가 나왔다. 더이상 턴을 진행시킬 수 없다.

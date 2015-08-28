@@ -10,28 +10,59 @@ function MainScene:onCreate()
     self.queueUrl = 'https://sqs.us-east-1.amazonaws.com/280548294548/testq'
 
     self.hud = self:getResourceNode()
-    self.hud:getChildByTag(5):addTouchEventListener(function(sender, eventType)
-        if eventType == ccui.TouchEventType.ended then
-            self:connect()
-        end
-    end)
-    self.hud:getChildByTag(6):addTouchEventListener(function(sender, eventType)
-        if eventType == ccui.TouchEventType.ended then
-            self:send()
-        end
-    end)
-    self.hud:getChildByTag(7):addTouchEventListener(function(sender, eventType)
-        if eventType == ccui.TouchEventType.ended then
-            self:receive()
-        end
-    end)
-    self.hud:getChildByTag(9):addTouchEventListener(function(sender, eventType)
+
+    self.hud:getChildByTag(1001):addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
             self:signIn()
         end
     end)
+    self.hud:getChildByTag(1002):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            self:connect()
+        end
+    end)
+    self.hud:getChildByTag(1003):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            self:send()
+        end
+    end)
+    self.hud:getChildByTag(1004):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            self:receive()
+        end
+    end)
+
+    self.hud:getChildByTag(2001):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            Android:createBoard(7, 7, 'user1', 'user2')
+        end
+    end)
+    self.hud:getChildByTag(2002):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            Android:move('user1', 0, 0, 1, 0)
+        end
+    end)
+    self.hud:getChildByTag(2003):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            Android:nextTurn(function (delta)
+                print('BOARD DELTA:', delta)
+            end)
+        end
+    end)
 
     self:sendEnterRequest()
+
+    self:drawGrid()
+end
+
+function MainScene:drawGrid()
+    for dx = -3, 3 do
+        for dy = -3, 3 do
+            display.newSprite('red.png')
+                :move(cc.p(display.cx + dx * 80, display.cy + (dy + 2) * 80))
+                :addTo(self)
+        end
+    end
 end
 
 function MainScene:signIn()
