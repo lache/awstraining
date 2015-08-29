@@ -6,16 +6,29 @@
       <ObjectData Name="Scene" ctype="GameNodeObjectData">
         <Size X="640.0000" Y="960.0000" />
         <Children>
-          <AbstractNodeData Name="Text_2" ActionTag="813638612" Tag="4" IconVisible="False" PercentWidthEnable="True" PercentHeightEnable="True" PercentWidthEnabled="True" PercentHeightEnabled="True" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" BottomMargin="480.0000" IsCustomSize="True" FontSize="20" LabelText="Text Label Line 1&#xA;Line 2&#xA;Line 3" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="TextObjectData">
-            <Size X="640.0000" Y="480.0000" />
-            <AnchorPoint ScaleX="0.5000" ScaleY="1.0000" />
-            <Position X="320.0000" Y="960.0000" />
+          <AbstractNodeData Name="Text_2" ActionTag="813638612" Tag="4" IconVisible="False" PercentWidthEnable="True" PercentHeightEnable="True" PercentWidthEnabled="True" PercentHeightEnabled="True" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" LeftMargin="384.0000" BottomMargin="480.0000" IsCustomSize="True" FontSize="16" LabelText="Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1&#xA;Line 2&#xA;Line 3" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="TextObjectData">
+            <Size X="256.0000" Y="480.0000" />
+            <AnchorPoint ScaleX="1.0000" ScaleY="1.0000" />
+            <Position X="640.0000" Y="960.0000" />
             <Scale ScaleX="1.0000" ScaleY="1.0000" />
             <CColor A="255" R="255" G="247" B="0" />
-            <PrePosition X="0.5000" Y="1.0000" />
-            <PreSize X="1.0000" Y="0.5000" />
+            <PrePosition X="1.0000" Y="1.0000" />
+            <PreSize X="0.4000" Y="0.5000" />
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
+          </AbstractNodeData>
+          <AbstractNodeData Name="Panel_1" ActionTag="-1018452118" Tag="15" IconVisible="False" PositionPercentXEnabled="True" PositionPercentYEnabled="True" TopMargin="498.0000" BottomMargin="402.0000" TouchEnable="True" BackColorAlpha="102" ComboBoxIndex="1" ColorAngle="90.0000" ctype="PanelObjectData">
+            <Size X="640.0000" Y="60.0000" />
+            <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
+            <Position X="320.0000" Y="432.0000" />
+            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <CColor A="255" R="255" G="255" B="255" />
+            <PrePosition X="0.5000" Y="0.4500" />
+            <PreSize X="1.0000" Y="0.0625" />
+            <SingleColor A="255" R="150" G="200" B="255" />
+            <FirstColor A="255" R="150" G="200" B="255" />
+            <EndColor A="255" R="255" G="255" B="255" />
+            <ColorVector ScaleY="1.0000" />
           </AbstractNodeData>
           <AbstractNodeData Name="Button_1" ActionTag="-1429315535" Tag="1002" IconVisible="False" LeftMargin="33.0612" RightMargin="406.9388" TopMargin="689.1128" BottomMargin="200.8872" TouchEnable="True" FontSize="48" ButtonText="Connect" Scale9Enable="True" LeftEage="15" RightEage="15" TopEage="11" BottomEage="11" Scale9OriginX="15" Scale9OriginY="11" Scale9Width="16" Scale9Height="14" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
             <Size X="200.0000" Y="70.0000" />
@@ -47,7 +60,7 @@
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
           </AbstractNodeData>
-          <AbstractNodeData Name="Button_1_0_0" ActionTag="1263323552" Tag="1004" IconVisible="False" LeftMargin="33.0612" RightMargin="406.9388" TopMargin="862.7654" BottomMargin="27.2345" TouchEnable="True" FontSize="48" ButtonText="Receive" Scale9Enable="True" LeftEage="15" RightEage="15" TopEage="11" BottomEage="11" Scale9OriginX="15" Scale9OriginY="11" Scale9Width="16" Scale9Height="14" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
+          <AbstractNodeData Name="Button_1_0_0" ActionTag="1263323552" Tag="1004" IconVisible="False" LeftMargin="33.0612" RightMargin="406.9388" TopMargin="862.7655" BottomMargin="27.2345" TouchEnable="True" FontSize="48" ButtonText="Receive" Scale9Enable="True" LeftEage="15" RightEage="15" TopEage="11" BottomEage="11" Scale9OriginX="15" Scale9OriginY="11" Scale9Width="16" Scale9Height="14" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
             <Size X="200.0000" Y="70.0000" />
             <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
             <Position X="133.0612" Y="62.2345" />
@@ -62,14 +75,14 @@
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
           </AbstractNodeData>
-          <AbstractNodeData Name="TextField_1" ActionTag="-803000362" Tag="8" IconVisible="False" PositionPercentXEnabled="True" PercentWidthEnable="True" PercentWidthEnabled="True" TopMargin="514.1201" BottomMargin="385.8799" TouchEnable="True" FontSize="36" IsCustomSize="True" LabelText="AAAAAAAAAAAAAAAAAAAAAA" PlaceHolderText="터치하여 채팅을 하세요~~" MaxLengthText="10" ctype="TextFieldObjectData">
-            <Size X="640.0000" Y="60.0000" />
-            <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
-            <Position X="320.0000" Y="415.8799" />
+          <AbstractNodeData Name="TextField_1" ActionTag="-803000362" Tag="8" IconVisible="False" PositionPercentXEnabled="True" PositionPercentYEnabled="True" PercentWidthEnable="True" PercentWidthEnabled="True" LeftMargin="-1.6096" RightMargin="1.6096" TopMargin="509.2471" BottomMargin="400.7529" TouchEnable="True" FontSize="36" IsCustomSize="True" LabelText="" PlaceHolderText="터치하여 채팅을 하세요~~" MaxLengthText="10" ctype="TextFieldObjectData">
+            <Size X="640.0000" Y="50.0000" />
+            <AnchorPoint ScaleX="0.5025" ScaleY="0.6249" />
+            <Position X="320.0000" Y="432.0000" />
             <Scale ScaleX="1.0000" ScaleY="1.0000" />
             <CColor A="255" R="255" G="255" B="255" />
-            <PrePosition X="0.5000" Y="0.4332" />
-            <PreSize X="1.0000" Y="0.0625" />
+            <PrePosition X="0.5000" Y="0.4500" />
+            <PreSize X="1.0000" Y="0.0521" />
           </AbstractNodeData>
           <AbstractNodeData Name="Button_1_1" ActionTag="-843009252" Tag="1001" IconVisible="False" LeftMargin="33.0612" RightMargin="406.9388" TopMargin="602.2869" BottomMargin="287.7131" TouchEnable="True" FontSize="48" ButtonText="Sign In" Scale9Enable="True" LeftEage="15" RightEage="15" TopEage="11" BottomEage="11" Scale9OriginX="15" Scale9OriginY="11" Scale9Width="16" Scale9Height="14" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
             <Size X="200.0000" Y="70.0000" />
@@ -116,7 +129,7 @@
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
           </AbstractNodeData>
-          <AbstractNodeData Name="Button_1_0_0_0" ActionTag="95050418" Tag="2004" IconVisible="False" LeftMargin="359.0447" RightMargin="80.9553" TopMargin="859.6689" BottomMargin="30.3310" TouchEnable="True" FontSize="48" ButtonText="---" Scale9Enable="True" LeftEage="15" RightEage="15" TopEage="11" BottomEage="11" Scale9OriginX="15" Scale9OriginY="11" Scale9Width="16" Scale9Height="14" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
+          <AbstractNodeData Name="Button_1_0_0_0" ActionTag="95050418" Tag="2004" IconVisible="False" LeftMargin="359.0447" RightMargin="80.9553" TopMargin="859.6690" BottomMargin="30.3310" TouchEnable="True" FontSize="48" ButtonText="---" Scale9Enable="True" LeftEage="15" RightEage="15" TopEage="11" BottomEage="11" Scale9OriginX="15" Scale9OriginY="11" Scale9Width="16" Scale9Height="14" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
             <Size X="200.0000" Y="70.0000" />
             <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
             <Position X="459.0447" Y="65.3310" />

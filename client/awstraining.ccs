@@ -7,6 +7,7 @@
         <Image Name="blue.png" />
         <Image Name="red.png" />
         <Project Name="RedBlue.csd" Type="Node" />
+        <Project Name="Turn.csd" Type="Node" />
       </RootFolder>
     </Group>
   </SolutionFolder>
