@@ -8,6 +8,8 @@ function MainScene:onCreate()
     printf("resource node = %s", tostring(self:getResourceNode()))
 
     self.queueUrl = 'https://sqs.us-east-1.amazonaws.com/280548294548/testq'
+    self.cells = {}
+    self.logLineList = {}
 
     self.hud = self:getResourceNode()
 
@@ -36,12 +38,20 @@ function MainScene:onCreate()
         if eventType == ccui.TouchEventType.ended then
             self.user1Name = 'user1'
             self.user2Name = 'user2'
+            for k, v in ipairs(self.cells) do
+                v:removeSelf()
+                print('Cell removed.')
+            end
+            self.cells = {}
             Android:createBoard(7, 7, self.user1Name, self.user2Name)
+            self:clearLog()
+            self:log('New board created.')
         end
     end)
     self.hud:getChildByTag(2002):addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
             Android:move('user1', 0, 0, 1, 0)
+            self:log('Test move...')
         end
     end)
     self.hud:getChildByTag(2003):addTouchEventListener(function(sender, eventType)
@@ -49,12 +59,38 @@ function MainScene:onCreate()
             Android:nextTurn(function (delta)
                 self:processDelta(delta)
             end)
+            self:log('Test nextTurn...')
         end
     end)
+
+    self.logText = self.hud:getChildByTag(4)
+    assert(self.logText)
 
     self:sendEnterRequest()
 
     --self:drawGrid()
+
+    self:createUser1(4, 4)
+    self:createUser2(5, 4)
+
+    self:log('Ataxx 준비 완료')
+end
+
+function MainScene:clearLog()
+    self.logText:setString('')
+    self.logLineList = {}
+end
+
+function MainScene:log(s)
+    while #self.logLineList >= 20 do
+        table.remove(self.logLineList, 1)
+    end
+    table.insert(self.logLineList, s)
+    local t = ''
+    for k, v in ipairs(self.logLineList) do
+        t = t .. '\n' .. v
+    end
+    self.logText:setString(t)
 end
 
 function MainScene:processDelta(delta)
@@ -71,9 +107,13 @@ function MainScene:processDelta(delta)
         return t
     end
 
+    self:log('DELTA RECV:' .. delta)
+
     local tokens = mysplit(delta, ' ')
     if tokens[1] == 'size' then
+        self:log('Command: size')
     elseif tokens[1] == 'place' then
+        self:log('Command: place')
         -- 로직 코어의 인덱스는 0-based, 여기는 1-based
         if tokens[2] == self.user1Name then
             self:createUser1(tokens[3] + 1, tokens[4] + 1)
@@ -81,7 +121,9 @@ function MainScene:processDelta(delta)
             self:createUser2(tokens[3] + 1, tokens[4] + 1)
         end
     elseif tokens[1] == 'turn' then
+        self:log('Command: turn')
     elseif tokens[1] == 'move' then
+        self:log('Command: move')
     else
         print('UNKNOWN DELTA COMMAND', tokens[1])
     end
@@ -92,19 +134,21 @@ function MainScene:createCell(texture1, texture2, texture3, x, y)
     local sx = display.cx - 3 * 80 + (x - 1) * 80
     local sy = display.cy + 3 * 80 - (y - 1) * 80 + 2 * 80
 
-    local textButton = ccui.Button:create()
-    textButton:setTouchEnabled(true)
-    textButton:setScale9Enabled(false)
-    textButton:loadTextures(texture1, texture2, texture3)
-    textButton:setContentSize(cc.size(80, 80))
-    textButton:setTitleText('')
-    textButton:setPosition(sx, sy)
-    textButton:addTouchEventListener(function(sender, eventType)
+    local cell = ccui.Button:create()
+    cell:setTouchEnabled(true)
+    cell:setScale9Enabled(false)
+    cell:loadTextures(texture1, texture2, texture3)
+    cell:setContentSize(cc.size(80, 80))
+    cell:setTitleText('')
+    cell:setPosition(sx, sy)
+    cell:addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
             printf('Board cell (%d, %d) touched.', x, y)
         end
     end)
-    textButton:addTo(self)
+    cell:addTo(self)
+
+    table.insert(self.cells, cell)
 end
 
 function MainScene:createUser1(x, y)

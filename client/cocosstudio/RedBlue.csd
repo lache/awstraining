@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Node" Name="RedBlue" ID="65f78a1d-c5f4-4d68-b985-e29a63a5afcf" Version="2.3.1.2" />
+  <PropertyGroup Type="Node" Name="RedBlue" ID="65f78a1d-c5f4-4d68-b985-e29a63a5afcf" Version="2.3.2.0" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />
