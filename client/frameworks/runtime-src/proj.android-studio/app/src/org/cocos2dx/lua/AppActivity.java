@@ -101,6 +101,7 @@ public class AppActivity extends Cocos2dxActivity implements GoogleApiClient.Con
         thisActivity = this;
 
         awsHelper.initCognitoCredentials(getApplicationContext());
+        awsHelper.getCognitoIdentityId();
 
         if (nativeIsLandScape()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);

@@ -30,7 +30,6 @@ public class BoardContext {
         board.place(user1, width - 1, height - 1);
         board.place(user2, width - 1, 0);
         board.place(user2, 0, height - 1);
-        board.nextTurn();
         user1Name = name1;
         return 0;
     }

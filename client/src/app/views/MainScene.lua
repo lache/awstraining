@@ -4,6 +4,55 @@ local Android = import('.Android')
 
 MainScene.RESOURCE_FILENAME = "MainScene.csb"
 
+local scheduler = cc.Director:getInstance():getScheduler()
+
+function MainScene:start()
+    self:scheduleUpdate(handler(self, self.step))
+    return self
+end
+
+function MainScene:step(dt)
+    return self
+end
+
+function MainScene:stop()
+    self:unscheduleUpdate()
+    return self
+end
+
+function MainScene:unscheduleHourglassJob()
+    if self.hourglassJob then
+        scheduler:unscheduleScriptEntry(self.hourglassJob)
+        self.hourglassJob = nil
+    end
+end
+
+function MainScene:restartHourglassJob()
+    self:unscheduleHourglassJob()
+
+    local intervalSeconds = 1
+    self.hourglassRemainSeconds = 10
+    self.hourglassText:setString(self.hourglassRemainSeconds)
+    local hourglassJob = scheduler:scheduleScriptFunc(function (dt)
+        self:decreaseHourglassSeconds()
+    end, intervalSeconds, false)
+    self.hourglassJob = hourglassJob
+end
+
+function MainScene:decreaseHourglassSeconds()
+    self.hourglassRemainSeconds = self.hourglassRemainSeconds - 1
+    if self.hourglassRemainSeconds == 5 then
+        self:log('[안내] ' .. self.currentUserName .. '님의 턴이 5초 남았습니다.')
+    end
+    if self.hourglassRemainSeconds == 0 then
+        self:log('[안내] ' .. self.currentUserName .. '님의 시간이 초과됐습니다.')
+    end
+
+    if self.hourglassRemainSeconds >= 0 then
+        self.hourglassText:setString(self.hourglassRemainSeconds)
+    end
+end
+
 function MainScene:onCreate()
     printf("resource node = %s", tostring(self:getResourceNode()))
 
@@ -18,6 +67,13 @@ function MainScene:onCreate()
     self.currentUserName = nil
 
     self.hud = self:getResourceNode()
+
+    self.user1ScoreText = self.hud:getChildByTag(19)
+    assert(self.user1ScoreText)
+    self.user2ScoreText = self.hud:getChildByTag(20)
+    assert(self.user2ScoreText)
+    self.hourglassText = self.hud:getChildByTag(2022)
+    assert(self.hourglassText)
 
     self.hud:getChildByTag(1001):addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
@@ -74,7 +130,7 @@ function MainScene:onCreate()
 
     --self:drawGrid()
 
-    --self:createUser1(4, 4)
+    self:createUser1(1, 1)
     --self:createUser2(5, 4)
     --self:createUser1(6, 4)
     --self:createNearSelect(4, 3)
@@ -88,6 +144,7 @@ function MainScene:onCreate()
 
     self:createKeyboardHandler()
 
+    self:start()
     self:log('Ataxx 준비 완료')
 
 end
@@ -101,10 +158,16 @@ function MainScene:clearAllCells()
 end
 
 function MainScene:nextTurn()
-    Android:nextTurn(function (delta)
+    local ret = Android:nextTurn(function (delta)
         self:processDelta(delta)
     end)
+
+    if ret ~= 0 and ret ~= 1 and ret ~= 2 then
+        self:showTurnErrorEffect('턴 종료 불가')
+    end
 end
+
+
 
 function MainScene:createKeyboardHandler()
     local function onKeyReleased(keyCode, event)
@@ -121,6 +184,7 @@ function MainScene:createKeyboardHandler()
         elseif keyCode == cc.KeyCode.KEY_C then
             self:processDelta('convert user2 user1 4 3')
         elseif keyCode == cc.KeyCode.KEY_R then
+            self:removeUserCell(1, 1)
         elseif keyCode == cc.KeyCode.KEY_T then
             self:processDelta('turn 1')
         elseif keyCode == cc.KeyCode.KEY_J then
@@ -141,6 +205,10 @@ function MainScene:showEffectText(text)
     local timeline = cc.CSLoader:createTimeline('Turn.csb')
     self.turnEffect:runAction(timeline)
     timeline:play('pop', false)
+end
+
+function MainScene:showTurnErrorEffect(msg)
+    self:showEffectText(msg)
 end
 
 function MainScene:showTurnEffect(turn)
@@ -220,11 +288,15 @@ end
 
 function MainScene:processDraw()
     self:showDrawEffect()
+    self:updateScore()
+    self:unscheduleHourglassJob()
 end
 
 function MainScene:processWinner(winnerName)
     self.winnerName = winnerName
     self:showWinnerEffect(winnerName)
+    self:updateScore()
+    self:unscheduleHourglassJob()
 end
 
 function MainScene:processConvert(userFrom, userTo, x, y)
@@ -236,7 +308,7 @@ function MainScene:processConvert(userFrom, userTo, x, y)
     end
 end
 
-function MainScene:processTurn(turn)
+function MainScene:switchCurrentUser()
     if self.currentUserName == nil then
         self.currentUserName = self.user1Name
     elseif self.currentUserName == self.user1Name then
@@ -244,15 +316,38 @@ function MainScene:processTurn(turn)
     else
         self.currentUserName = self.user1Name
     end
+end
+
+function MainScene:processTurn(turn)
+    self:clearSelected()
+    self:clearNeighborCells()
+    self:switchCurrentUser()
     self:log('[안내] ' .. self.currentUserName .. '님 차례입니다.')
     self:showTurnEffect(turn)
+    self:updateScore()
+    self:restartHourglassJob()
+end
+
+function MainScene:updateScore()
+    local user1 = 0
+    local user2 = 0
+    for k, v in ipairs(self.cells) do
+        if v.userProp.texture1 == 'red.png' then
+            user1 = user1 + 1
+        else
+            user2 = user2 + 1
+        end
+    end
+
+    self.user1ScoreText:setString(user1)
+    self.user2ScoreText:setString(user2)
 end
 
 function MainScene:removeUserCell(x, y)
     for k, v in ipairs(self.cells) do
         if v.userProp.x == x and v.userProp.y == y then
             table.remove(self.cells, k)
-            v:removeSelf()
+            v:runAction(cc.Sequence:create(cc.ScaleTo:create(0.1, 0.1), cc.RemoveSelf:create()))
             break
         end
     end
@@ -345,6 +440,10 @@ function MainScene:createCell(texture1, texture2, texture3, x, y)
     cell.userProp = {}
     cell.userProp.x = x
     cell.userProp.y = y
+    cell.userProp.texture1 = texture1
+
+    cell:setScale(0.1, 0.1)
+    cell:runAction(cc.ScaleTo:create(0.1, 1))
 
     table.insert(self.cells, cell)
 end

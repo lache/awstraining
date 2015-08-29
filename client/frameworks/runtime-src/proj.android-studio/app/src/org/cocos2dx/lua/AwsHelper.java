@@ -82,6 +82,10 @@ public class AwsHelper {
         public String accountName;
     }
 
+    private class GetCognitoIdentityIdTaskArgs {
+
+    }
+
     private class LinkGoogleAccountWithCognitoTask extends AsyncTask<LinkGoogleAccountWithCognitoArgs, Void, Void> {
 
         @Override
@@ -104,13 +108,16 @@ public class AwsHelper {
                 e.printStackTrace();
             }
 
+
             Map<String, String> logins = new HashMap<String, String>();
             logins.put("accounts.google.com", token);
             credentialsProvider.setLogins(logins);
 
             Log.d("Sky", "GoogleAuthUtil.getToken returns " + token);
             String cognitoToken = credentialsProvider.getToken();
-            Log.d("Sky", "Cognito Token: " + cognitoToken);
+            Log.d("Sky", "Cognito Token (After Google Login): " + cognitoToken);
+            String identityId = credentialsProvider.getIdentityId();
+            Log.d("Sky", "Cognito Identity ID (After Google Login): " + identityId);
 
             // Cognito Sync 기능 테스트...
             // Initialize the Cognito Sync client
@@ -155,6 +162,16 @@ public class AwsHelper {
         public int luaFunc;
     }
 
+    public int getCognitoIdentityId() {
+        try {
+            GetCognitoIdentityIdTaskArgs args = new GetCognitoIdentityIdTaskArgs();
+            new GetCognitoIdentityIdTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args, null, null);
+            return 0;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
     /** Called when the user touches the button */
     public int connectToSqs(AWSCredentials awsCredentials) {
         try {
@@ -189,6 +206,32 @@ public class AwsHelper {
             return 0;
         } catch (Exception e) {
             return -1;
+        }
+    }
+
+    private class GetCognitoIdentityIdTask extends AsyncTask<GetCognitoIdentityIdTaskArgs, Void, Void> {
+
+        @Override
+        protected Void doInBackground(GetCognitoIdentityIdTaskArgs... params) {
+            Log.d("AWS", "GetCognitoIdentityIdTask.............");
+            try
+            {
+                String identityId = credentialsProvider.getIdentityId();
+                Log.d("Sky", "Cognito Identity ID (Before Google Login): " + identityId);
+
+                Log.d("AWS", "===========================================");
+                Log.d("AWS", "GetCognitoIdentityIdTask completed.");
+                Log.d("AWS", "===========================================\n");
+
+            }
+            catch (Exception e)
+            {
+                Log.d("AWS", "===========================================");
+                Log.d("AWS", "GetCognitoIdentityIdTask ABORTED!!!");
+                Log.d("AWS", "===========================================\n");
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 
