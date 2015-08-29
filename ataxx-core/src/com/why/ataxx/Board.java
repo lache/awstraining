@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Board {
 	
 	public enum NextTurnResult {
@@ -17,6 +18,7 @@ public class Board {
 		ALREADY_FINISHED	// 끝난 판이므로 더이상 턴을 진행시킬 수 없다.
 	}
 
+	public int id;
 	private int width;
 	private int height;
 	private User[][] cells;
@@ -29,6 +31,14 @@ public class Board {
 	private boolean moveSet;
 	private boolean finished;
 	private DeltaLogger dl;
+	
+	public Board() {
+		
+	}
+	
+	public Board(int id) {
+		this.id = id;
+	}
 	
 	public boolean isValidSize() {
 		return (width < 0 || height < 0 || width * height < 2 || width * height > 100) == false;
@@ -83,7 +93,7 @@ public class Board {
 		int count = 0;
 		for (User[] row : cells) {
 			for (User u : row) {
-				if (u == user) {
+				if (user.equals(u)) {
 					count++;
 				}
 			}
@@ -289,12 +299,12 @@ public class Board {
 		}
 		
 		// 현재 차례가 아닌데 움직이려고 했는지 확인
-		if (getCurrentUser() != user) {
+		if (!getCurrentUser().equals(user)) {
 			return false;
 		}
 		
 		// 시작 위치가 user 소유인지 확인
-		if (cells[x][y] != user) {
+		if (!cells[x][y].equals(user)) {
 			return false;
 		}
 		
@@ -355,7 +365,7 @@ public class Board {
 		for (int x = 0; x < width; ++x) {
 			for (int y = 0; y < height; ++y) {
 				
-				if (cells[x][y] == user) {
+				if (user.equals(cells[x][y])) {
 					
 					for (int dx = -2; dx <= 2; ++dx) {
 						for (int dy = -2; dy <= 2; ++dy) {
