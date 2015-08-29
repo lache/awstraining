@@ -81,6 +81,7 @@ public class AppActivity extends Cocos2dxActivity implements GoogleApiClient.Con
     // Are we currently resolving a connection failure?
     private boolean mResolvingConnectionFailure = false;
     private static final int RC_SIGN_IN = 9001;
+    private String deviceId;
 
     public static int connectToSqs() {
         return awsHelper.connectToSqs(awsHelper.getAwsCredentials());
@@ -90,8 +91,22 @@ public class AppActivity extends Cocos2dxActivity implements GoogleApiClient.Con
         return awsHelper.sendToSqs(queueUrl, message);
     }
 
-    public static int receiveFromSqs(final String queueUrl, final int waitTimeSeconds, final int luaFunc) {
-        return awsHelper.receiveFromSqs(queueUrl, waitTimeSeconds, luaFunc);
+    public static int receiveFromSqs(final String queueUrl, final int waitTimeSeconds, final int luaFunc, final int finalizeLuaFunc) {
+        return awsHelper.receiveFromSqs(queueUrl, waitTimeSeconds, luaFunc, finalizeLuaFunc);
+    }
+
+    public static int getDeviceId(final int luaFunc) {
+        Cocos2dxLuaJavaBridge.callLuaFunctionWithString(luaFunc, thisActivity.getDeviceIdInternal());
+        Cocos2dxLuaJavaBridge.releaseLuaFunction(luaFunc);
+        return 0;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getDeviceIdInternal() {
+        return this.deviceId;
     }
 
     @Override
@@ -101,7 +116,7 @@ public class AppActivity extends Cocos2dxActivity implements GoogleApiClient.Con
         thisActivity = this;
 
         awsHelper.initCognitoCredentials(getApplicationContext());
-        awsHelper.getCognitoIdentityId();
+        awsHelper.getCognitoIdentityId(this);
 
         if (nativeIsLandScape()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);

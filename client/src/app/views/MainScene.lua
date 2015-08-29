@@ -12,6 +12,22 @@ function MainScene:start()
 end
 
 function MainScene:step(dt)
+    if self.startNewReceive == true then
+        self.startNewReceive = false
+
+        -- 다시 폴링 시작한다.
+        -- (시뮬레이터에서는 의미 없으므로 하지 않는다.)
+        local targetPlatform = cc.Application:getInstance():getTargetPlatform()
+        if cc.PLATFORM_OS_ANDROID == targetPlatform then
+            self:receive()
+        end
+    end
+
+    for k, v in ipairs(self.deltaQueue) do
+        self:processDelta(v)
+    end
+    self.deltaQueue = {}
+
     return self
 end
 
@@ -53,15 +69,30 @@ function MainScene:decreaseHourglassSeconds()
     end
 end
 
+cc.exports.thisScene = nil
+
+function MainScene:clearAll()
+    self.placeIndex = 0
+    self:clearSelected()
+    self:clearNeighborCells()
+    self:clearAllCells()
+    self:clearLog()
+    self.winnerName = nil
+    self.currentUserName = nil
+end
+
 function MainScene:onCreate()
     printf("resource node = %s", tostring(self:getResourceNode()))
+
+    cc.exports.thisScene = self
 
     self.queueUrl = 'https://sqs.us-east-1.amazonaws.com/280548294548/testq'
     self.cells = {}
     self.logLineList = {}
     self.selects = {}
-    self.width = 4
-    self.height = 4
+    self.deltaQueue = {}
+    self.width = 7
+    self.height = 7
     self.user1Name = 'user1'
     self.user2Name = 'user2'
     self.currentUserName = nil
@@ -98,13 +129,7 @@ function MainScene:onCreate()
 
     self.hud:getChildByTag(2001):addTouchEventListener(function(sender, eventType)
         if eventType == ccui.TouchEventType.ended then
-            self:clearSelected()
-            self:clearNeighborCells()
-            self:clearAllCells()
-            self:clearLog()
-            self.winnerName = nil
-            self.currentUserName = nil
-
+            self:clearAll()
             Android:createBoard(self.width, self.height,
                 self.user1Name, self.user2Name)
             self:nextTurn()
@@ -122,15 +147,24 @@ function MainScene:onCreate()
             --self:log('Test nextTurn...')
         end
     end)
+    self.hud:getChildByTag(2004):addTouchEventListener(function(sender, eventType)
+        if eventType == ccui.TouchEventType.ended then
+            -- enter API 호출한다. enter API 콜백으로 SQS 주소 받아오게 되고
+            -- 그 주소에 폴링을 시작한다.
+            self:sendEnterRequest()
+        end
+    end)
 
     self.logText = self.hud:getChildByTag(4)
     assert(self.logText)
 
-    self:sendEnterRequest()
+    -- AWS Credentials 초기화한다.
+    -- (본 자격증명을 이용해 SQS에 액세스 할 때 까지 실제 액션은 지연된다.)
+    self:connect()
 
     --self:drawGrid()
 
-    self:createUser1(1, 1)
+    --self:createUser1(1, 1)
     --self:createUser2(5, 4)
     --self:createUser1(6, 4)
     --self:createNearSelect(4, 3)
@@ -148,6 +182,7 @@ function MainScene:onCreate()
     self:log('Ataxx 준비 완료')
 
 end
+
 
 function MainScene:clearAllCells()
     for k, v in ipairs(self.cells) do
@@ -216,7 +251,11 @@ function MainScene:showTurnEffect(turn)
 end
 
 function MainScene:showWinnerEffect(winnerName)
-    self:showEffectText(winnerName .. '님 승리!')
+    if winnerName == self.user1Name then
+        self:showEffectText('빨강 승리!')
+    else
+        self:showEffectText('파랑 승리!')
+    end
 end
 
 function MainScene:showDrawEffect()
@@ -240,33 +279,51 @@ function MainScene:log(s)
     self.logText:setString(t)
 end
 
-function MainScene:processDelta(delta)
-    local function mysplit(inputstr, sep)
-        if sep == nil then
-            sep = "%s"
-        end
-        local t={}
-        local i=1
-        for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-            t[i] = str
-            i = i + 1
-        end
-        return t
+cc.exports.mysplit = function (inputstr, sep)
+    if sep == nil then
+        sep = "%s"
     end
+    local t={}
+    local i=1
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        t[i] = str
+        i = i + 1
+    end
+    return t
+end
+
+function MainScene:processDelta(delta)
 
     self:log('DELTA RECV:' .. delta)
 
     local tokens = mysplit(delta, ' ')
     if tokens[1] == 'size' then
         self:log('델타: size')
+        self:clearAll()
     elseif tokens[1] == 'place' then
         self:log('델타: place')
-        -- 로직 코어의 인덱스는 0-based, 여기는 1-based
-        if tokens[2] == self.user1Name then
+        -- place는 size 이후 반드시 네 번 온다는 가정으로 구현한다.
+        -- user1, user1, user2, user2 순서로 온다.
+        if self.placeIndex == 0 or self.placeIndex == 1 then
+            self.user1Name = tokens[2]
             self:createUser1(tokens[3] + 1, tokens[4] + 1)
-        else
+
+            if self.deviceId == self.user1Name then
+                self.userNo = 1
+            end
+        elseif self.placeIndex == 2 or self.placeIndex == 3 then
+            self.user2Name = tokens[2]
             self:createUser2(tokens[3] + 1, tokens[4] + 1)
+
+            if self.deviceId == self.user1Name then
+                self.userNo = 2
+            end
         end
+
+
+
+        self.placeIndex = self.placeIndex + 1
+
     elseif tokens[1] == 'turn' then
         self:processTurn(tokens[2])
     elseif tokens[1] == 'move' then
@@ -326,6 +383,7 @@ function MainScene:processTurn(turn)
     self:showTurnEffect(turn)
     self:updateScore()
     self:restartHourglassJob()
+    self.currentTurnCount = turn
 end
 
 function MainScene:updateScore()
@@ -344,18 +402,24 @@ function MainScene:updateScore()
 end
 
 function MainScene:removeUserCell(x, y)
+    print('REMOVE USER CELL START', x, y)
     for k, v in ipairs(self.cells) do
+        print('REMOVE USER CELL', v.userProp.x, v.userProp.y)
         if v.userProp.x == x and v.userProp.y == y then
-            table.remove(self.cells, k)
-            v:runAction(cc.Sequence:create(cc.ScaleTo:create(0.1, 0.1), cc.RemoveSelf:create()))
+            print('REMOVE USER CELL START XXXXXXX', x, y)
+            local removed = table.remove(self.cells, k)
+            removed:removeSelf()
+            --removed:runAction(cc.Sequence:create(cc.ScaleTo:create(0.1, 0.1), cc.RemoveSelf:create()))
             break
         end
     end
 end
 
 function MainScene:processMove(name, x, y, x2, y2, type)
+    print('**** PROCESS MOVE', name, x, y, x2, y2, type)
     -- clone이 아니라면 x, y위치에 있는 셀을 삭제해야 함
-    if type ~= 'clone' then
+    if type ~= 'clone' or type == 'move' then
+        print('*** PROCESS MOVE REMOVE CELL')
         self:removeUserCell(x, y)
     end
 
@@ -392,8 +456,16 @@ function MainScene:createSelect(texture1, texture2, texture3, x, y)
             self:log('선택 셀 (' .. x .. ',' .. y .. ') 터치!')
             self:clearSelected()
             self:clearNeighborCells()
-            Android:move(self.currentUserName, self.selectedX - 1, self.selectedY - 1, x - 1, y - 1)
-            self:nextTurn()
+
+            if false then
+                -- 클라 전용 테스트
+                Android:move(self.currentUserName, self.selectedX - 1, self.selectedY - 1, x - 1, y - 1)
+                self:nextTurn()
+            else
+                -- 서버 접속 테스트
+                self:sendMove(self.currentUserName,
+                    self.selectedX, self.selectedY, x, y)
+            end
         end
     end)
     cell:addTo(self)
@@ -425,8 +497,14 @@ function MainScene:createCell(texture1, texture2, texture3, x, y)
                 self:log('유저2 셀 (' .. x .. ',' .. y .. ') 터치!')
             end
 
-            if (texture1 == 'red.png' and self.currentUserName == self.user1Name)
-                or (texture1 == 'blue.png' and self.currentUserName == self.user2Name) then
+            local singlePlayerMode =
+                (texture1 == 'red.png' and self.currentUserName == self.deviceId)
+                or (texture1 == 'blue.png' and self.currentUserName == self.user2Name)
+
+            if self.currentUserName == self.deviceId
+                and (cell.userProp.texture1 == 'red.png' and self.deviceId == self.user1Name)
+                    or (cell.userProp.texture1 == 'blue.png' and self.deviceId == self.user2Name)
+                    then
                 self:clearSelected()
                 cell:setColor(cc.c3b(100,255,255))
                 self.selectedX = x
@@ -528,16 +606,33 @@ function MainScene:send()
 end
 
 function MainScene:receive()
+    print('MainScene:receive()...')
     Android:receiveFromSqs(self.queueUrl, 10, function (message)
         print('Message from SQS received: ' .. message)
+        local deltaList = mysplit(message, '\n')
+        for k, v in ipairs(deltaList) do
+            print('[SQS] DELTA RECEIVED - ' .. v)
+            table.insert(self.deltaQueue, v)
+        end
+    end, function (message)
+        print('[FINALIZER] Message from SQS receiving finished. - ' .. message)
+        self.startNewReceive = true
     end)
+end
 
+cc.exports.setDeviceId = function (deviceId)
+    print('Cognito Identity Id : ' .. deviceId)
 end
 
 function MainScene:sendEnterRequest()
+    Android:getDeviceId(function (deviceId)
+        self.deviceId = deviceId
+    end)
+    print('Device ID', self.deviceId)
+
     local xhr = cc.XMLHttpRequest:new()
     local apiKey = 'S4SPXHtfsb59WZ6TFtxa68QkbS249bCeayJM7VXR'
-    local apiUrl = 'https://3vz2l8ty5i.execute-api.us-east-1.amazonaws.com/prod/chat_enter'
+    local apiUrl = 'https://8occyv47jk.execute-api.us-east-1.amazonaws.com/prod/ataxx'
     xhr:setRequestHeader('x-api-key', apiKey)
     xhr.responseType = cc.XMLHTTPREQUEST_RESPONSE_STRING
     xhr:open("POST", apiUrl)
@@ -550,8 +645,45 @@ function MainScene:sendEnterRequest()
           local m = json.decode(contents)
           print('result:', m.result)
           print('sqsUrl:', m.sqsUrl)
-          print('nickname:', m.nickname)
+          print('boardId:', m.boardId)
+          self.queueUrl = m.sqsUrl
+          self.boardId = m.boardId
+          self:receive()
+      else
+          print("[ERROR] xhr.readyState is:", xhr.readyState,
+              "xhr.status is: ",xhr.status,
+              "reponse: ", xhr.response)
+      end
+    end
+    xhr:registerScriptHandler(onReadyStateChange)
+    local reqBody = {
+        command = 'enter',
+	    deviceId = self.deviceId,
+    }
+    local reqBodySerialized = json.encode(reqBody)
+    print('SEND [ENTER] REQUST BODY:' .. reqBodySerialized)
+    xhr:send(reqBodySerialized)
+end
 
+function MainScene:sendMove(name, x, y, x2, y2)
+    -- 서버로 보낼 인덱스이므로 1씩 뺀다.
+    x = x - 1
+    y = y - 1
+    x2 = x2 - 1
+    y2 = y2 - 1
+
+    local xhr = cc.XMLHttpRequest:new()
+    local apiKey = 'S4SPXHtfsb59WZ6TFtxa68QkbS249bCeayJM7VXR'
+    local apiUrl = 'https://8occyv47jk.execute-api.us-east-1.amazonaws.com/prod/ataxx'
+    xhr:setRequestHeader('x-api-key', apiKey)
+    xhr.responseType = cc.XMLHTTPREQUEST_RESPONSE_STRING
+    xhr:open("POST", apiUrl)
+    local function onReadyStateChange()
+      if xhr.readyState == 4 and (xhr.status >= 200 and xhr.status < 207) then
+          print('RESPONSE:' .. xhr.response)
+          local contents = string.sub(xhr.response, 2, string.len(xhr.response) - 1)
+          contents = string.gsub(contents, '\\"', '"')
+          print('contents:', contents)
 
       else
           print("[ERROR] xhr.readyState is:", xhr.readyState,
@@ -560,7 +692,19 @@ function MainScene:sendEnterRequest()
       end
     end
     xhr:registerScriptHandler(onReadyStateChange)
-    xhr:send('{"deviceId":"alien"}')
+    local reqBody = {
+        command = 'move',
+	    deviceId = self.deviceId,
+        boardId = self.boardId,
+        x = x,
+        y = y,
+        x2 = x2,
+        y2 = y2,
+
+    }
+    local reqBodySerialized = json.encode(reqBody)
+    print('SEND [MOVE] REQUST BODY:' .. reqBodySerialized)
+    xhr:send(reqBodySerialized)
 end
 
 return MainScene

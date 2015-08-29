@@ -67,6 +67,28 @@ function Android:nextTurn(callbackLua)
     return ret
 end
 
+function Android:getDeviceId(callbackLua)
+    local targetPlatform = cc.Application:getInstance():getTargetPlatform()
+    if cc.PLATFORM_OS_ANDROID ~= targetPlatform then
+        printf('[SIMULATED] Android:getDeviceId([%s]) called.',
+            tostring(callbackLua))
+        callbackLua('FAKE-DEVICE-ID')
+        return
+    end
+
+    local luaj = require "cocos.cocos2d.luaj"
+    local args = { callbackLua }
+    local sigs = "(I)I"
+    local ok, ret = luaj.callStaticMethod(className, "getDeviceId",
+        args, sigs)
+    if ok then
+        print("Android:getDeviceId The ret is:", ret)
+    else
+        print("Android:getDeviceId luaj error:", ret)
+    end
+    return ret
+end
+
 function Android:signIn(callbackLua)
     local targetPlatform = cc.Application:getInstance():getTargetPlatform()
     if cc.PLATFORM_OS_ANDROID ~= targetPlatform then
@@ -130,12 +152,18 @@ function Android:sendToSqs(queueUrl, message)
     return ret
 end
 
-function Android:receiveFromSqs(queueUrl, waitTimeSeconds, callbackLua)
+function Android:receiveFromSqs(queueUrl, waitTimeSeconds,
+    callbackLua, finalizeCallbackLua)
+
     local targetPlatform = cc.Application:getInstance():getTargetPlatform()
     if cc.PLATFORM_OS_ANDROID ~= targetPlatform then
-        printf('[SIMULATED] Android:receiveFromSqs("%s", %d, [%s]) called.',
-            queueUrl, waitTimeSeconds, tostring(callbackLua))
-        callbackLua('This is simulated message...')
+        printf('[SIMULATED] Android:receiveFromSqs("%s", %d, [%s], [%s]) called.',
+            queueUrl, waitTimeSeconds,
+            tostring(callbackLua), tostring(finalizeCallbackLua))
+        callbackLua('This is simulated message 1...')
+        callbackLua('This is simulated message 2...')
+        callbackLua('This is simulated message 3...')
+        finalizeCallbackLua('FIN')
         return
     end
 
@@ -147,8 +175,8 @@ function Android:receiveFromSqs(queueUrl, waitTimeSeconds, callbackLua)
     end
     ]]
     local luaj = require "cocos.cocos2d.luaj"
-    local args = { queueUrl, waitTimeSeconds, callbackLua }
-    local sigs = "(Ljava/lang/String;II)I"
+    local args = { queueUrl, waitTimeSeconds, callbackLua, finalizeCallbackLua }
+    local sigs = "(Ljava/lang/String;III)I"
     local ok, ret = luaj.callStaticMethod(className, "receiveFromSqs",
         args, sigs)
     if ok then

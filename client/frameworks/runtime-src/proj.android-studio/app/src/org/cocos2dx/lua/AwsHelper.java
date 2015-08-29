@@ -59,7 +59,7 @@ public class AwsHelper {
         // Initialize the Amazon Cognito credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 appContext,
-                "us-east-1:d010c34f-a058-4b0b-a384-9d16bb994546", // Identity Pool ID
+                "us-east-1:da27cca6-6bf6-4938-a40d-da244b5d3232", // Identity Pool ID
                 Regions.US_EAST_1 // Region
         );
 
@@ -83,7 +83,7 @@ public class AwsHelper {
     }
 
     private class GetCognitoIdentityIdTaskArgs {
-
+        public AppActivity activity;
     }
 
     private class LinkGoogleAccountWithCognitoTask extends AsyncTask<LinkGoogleAccountWithCognitoArgs, Void, Void> {
@@ -160,11 +160,13 @@ public class AwsHelper {
         public String queueUrl;
         public int waitTimeSeconds;
         public int luaFunc;
+        public int finalizeLuaFunc;
     }
 
-    public int getCognitoIdentityId() {
+    public int getCognitoIdentityId(AppActivity activity) {
         try {
             GetCognitoIdentityIdTaskArgs args = new GetCognitoIdentityIdTaskArgs();
+            args.activity = activity;
             new GetCognitoIdentityIdTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args, null, null);
             return 0;
         } catch (Exception e) {
@@ -184,12 +186,13 @@ public class AwsHelper {
         }
     }
 
-    public int receiveFromSqs(final String queueUrl, final int waitTimeSeconds, final int luaFunc) {
+    public int receiveFromSqs(final String queueUrl, final int waitTimeSeconds, final int luaFunc, final int finalizeLuaFunc) {
         try {
             ReceiveFromSqsArgs args = new ReceiveFromSqsArgs();
             args.queueUrl = queueUrl;
             args.waitTimeSeconds = waitTimeSeconds;
             args.luaFunc = luaFunc;
+            args.finalizeLuaFunc = finalizeLuaFunc;
             new ReceiveAndDeleteAllMessagesTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, args, null, null);
             return 0;
         } catch (Exception e) {
@@ -218,6 +221,9 @@ public class AwsHelper {
             {
                 String identityId = credentialsProvider.getIdentityId();
                 Log.d("Sky", "Cognito Identity ID (Before Google Login): " + identityId);
+
+                String deviceId = identityId.replace(':', '-');
+                params[0].activity.setDeviceId(deviceId.substring(15));
 
                 Log.d("AWS", "===========================================");
                 Log.d("AWS", "GetCognitoIdentityIdTask completed.");
@@ -290,7 +296,8 @@ public class AwsHelper {
 
                         Cocos2dxLuaJavaBridge.callLuaFunctionWithString(params[0].luaFunc, message.getBody());
                     }
-                    Cocos2dxLuaJavaBridge.releaseLuaFunction(params[0].luaFunc);
+                    //Cocos2dxLuaJavaBridge.releaseLuaFunction(params[0].luaFunc);
+
                     Log.d("AWS", "---");
 
                     for (Message message : messages) {
@@ -302,6 +309,9 @@ public class AwsHelper {
                     Log.d("AWS", "===========================================");
                     Log.d("AWS", "ReceiveAndDeleteAllMessagesTask completed.");
                     Log.d("AWS", "===========================================\n");
+
+                    Cocos2dxLuaJavaBridge.callLuaFunctionWithString(params[0].finalizeLuaFunc, "FIN");
+                    //Cocos2dxLuaJavaBridge.releaseLuaFunction(params[0].finalizeLuaFunc);
 
                 } catch (AmazonServiceException ase) {
                     Log.d("AWS", "Caught an AmazonServiceException, which means your request made it " +
