@@ -69,3 +69,11 @@ dependencies {
     compile 'com.amazonaws:aws-android-sdk-cognito:2.2.5'
     compile 'com.amazonaws:aws-android-sdk-sqs:2.2.5'
 }
+
+task appStart(type: Exec, dependsOn: 'installRelease') {
+    // linux
+    commandLine '/Users/gb/Library/Android/sdk/platform-tools/adb', 'shell', 'am', 'start', '-n', 'com.popsongremix.awstraining/org.cocos2dx.lua.AppActivity'
+
+    // windows
+    //commandLine 'cmd', '/c', 'adb', 'shell', 'am', 'start', '-n', 'com.popsongremix.sky/org.cocos2dx.lua.AppActivity'
+}

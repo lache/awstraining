@@ -501,6 +501,14 @@ function MainScene:createCell(texture1, texture2, texture3, x, y)
                 (texture1 == 'red.png' and self.currentUserName == self.deviceId)
                 or (texture1 == 'blue.png' and self.currentUserName == self.user2Name)
 
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('cell.userProp.texture1', cell.userProp.texture1)
+            print('self.deviceId', self.deviceId)
+            print('self.user1Name', self.user1Name)
+            print('self.user2Name', self.user2Name)
+            print('self.currentUserName', self.currentUserName)
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+
             if self.currentUserName == self.deviceId
                 and (cell.userProp.texture1 == 'red.png' and self.deviceId == self.user1Name)
                     or (cell.userProp.texture1 == 'blue.png' and self.deviceId == self.user2Name)

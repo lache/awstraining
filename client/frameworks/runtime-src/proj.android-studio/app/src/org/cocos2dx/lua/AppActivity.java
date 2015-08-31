@@ -64,7 +64,6 @@ import org.cocos2dx.lib.Cocos2dxLuaJavaBridge;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class AppActivity extends Cocos2dxActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener, RealTimeMessageReceivedListener,
         RoomStatusUpdateListener, RoomUpdateListener, OnInvitationReceivedListener {
