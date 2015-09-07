@@ -1,5 +1,5 @@
 <Solution>
-  <PropertyGroup Name="awstraining" Version="2.3.1.2" Type="CocosStudio" />
+  <PropertyGroup Name="awstraining" Version="2.3.2.2" Type="CocosStudio" />
   <SolutionFolder>
     <Group ctype="ResourceGroup">
       <RootFolder Name=".">
@@ -9,6 +9,16 @@
         <Project Name="RedBlue.csd" Type="Node" />
         <Project Name="Turn.csd" Type="Node" />
         <Image Name="hourglass.png" />
+        <Image Name="ataxx1.png" />
+        <Image Name="ataxx1_1.png" />
+        <Image Name="ataxx2.png" />
+        <Image Name="ataxx2_1.png" />
+        <Image Name="back1.png" />
+        <Image Name="back2.jpg" />
+        <Image Name="back3.jpg" />
+        <Image Name="bt1.png" />
+        <Image Name="bt2.png" />
+        <Image Name="bt3.png" />
       </RootFolder>
     </Group>
   </SolutionFolder>

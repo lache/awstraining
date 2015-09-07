@@ -1,0 +1,26 @@
+<Solution>
+  <PropertyGroup Name="clientjs" Version="2.3.2.2" Type="CocosStudio" />
+  <SolutionFolder>
+    <Group ctype="ResourceGroup">
+      <RootFolder Name=".">
+        <Project Name="MainScene.csd" Type="Scene" />
+        <Image Name="HelloWorld.png" />
+        <Project Name="Turn.csd" Type="Node" />
+        <Project Name="RedBlue.csd" Type="Node" />
+        <Image Name="ataxx1.png" />
+        <Image Name="ataxx1_1.png" />
+        <Image Name="ataxx2.png" />
+        <Image Name="ataxx2_1.png" />
+        <Image Name="back1.png" />
+        <Image Name="back2.jpg" />
+        <Image Name="back3.jpg" />
+        <Image Name="blue.png" />
+        <Image Name="bt1.png" />
+        <Image Name="bt2.png" />
+        <Image Name="bt3.png" />
+        <Image Name="hourglass.png" />
+        <Image Name="red.png" />
+      </RootFolder>
+    </Group>
+  </SolutionFolder>
+</Solution>
