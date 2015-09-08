@@ -304,7 +304,7 @@ public class Board {
 		}
 		
 		// 시작 위치가 user 소유인지 확인
-		if (!cells[x][y].equals(user)) {
+		if (cells[x][y] == null || !cells[x][y].equals(user)) {
 			return false;
 		}
 		
