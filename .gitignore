@@ -24,3 +24,7 @@ ataxx-core/bin/
 client/runtime/mac/awstraining-desktop.app
 client/frameworks/runtime-src/proj.ios_mac/awstraining.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 client/frameworks/runtime-src/proj.ios_mac/awstraining.xcodeproj/project.xcworkspace/xcshareddata/awstraining.xccheckout
+clientjs/frameworks/runtime-src/proj.android/obj
+clientjs/frameworks/runtime-src/proj.android/bin
+clientjs/frameworks/cocos2d-x/cocos/platform/android/libcocos2dx/build/intermediates
+ataxx-debug.apk
