@@ -20,6 +20,10 @@
         <Image Name="bt3.png" />
         <Image Name="hourglass.png" />
         <Image Name="red.png" />
+        <TTF Name="bmjua.ttf" />
+        <Project Name="Button.csd" Type="Node" />
+        <Project Name="StartScene.csd" Type="Scene" />
+        <Project Name="NicknameScene.csd" Type="Scene" />
       </RootFolder>
     </Group>
   </SolutionFolder>

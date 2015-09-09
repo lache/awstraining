@@ -28,3 +28,6 @@ clientjs/frameworks/runtime-src/proj.android/obj
 clientjs/frameworks/runtime-src/proj.android/bin
 clientjs/frameworks/cocos2d-x/cocos/platform/android/libcocos2dx/build/intermediates
 ataxx-debug.apk
+server-test/node_modules
+server/bin
+server/node_modules

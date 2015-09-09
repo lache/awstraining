@@ -200,8 +200,8 @@
               "ScaleY": 1.0
             },
             "Position": {
-              "X": 922.0,
-              "Y": 735.0
+              "X": 921.984,
+              "Y": 734.976
             },
             "Scale": {
               "ScaleX": 1.0,
@@ -260,8 +260,8 @@
               "ScaleY": 0.5
             },
             "Position": {
-              "X": 977.0,
-              "Y": 41.0
+              "X": 977.024,
+              "Y": 40.992
             },
             "Scale": {
               "ScaleX": 1.0,
@@ -279,10 +279,10 @@
             },
             "HorizontalEdge": "BothEdge",
             "VerticalEdge": "BothEdge",
-            "LeftMargin": 657.0,
-            "RightMargin": -657.0,
-            "TopMargin": 889.0,
-            "BottomMargin": 11.0,
+            "LeftMargin": 657.024,
+            "RightMargin": -657.0239,
+            "TopMargin": 889.008,
+            "BottomMargin": 10.992,
             "Tag": 15,
             "Children": [
               {
@@ -945,19 +945,27 @@
           {
             "FontSize": 72,
             "LabelText": "12",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "bmjua.ttf",
+              "Plist": ""
+            },
             "HorizontalAlignmentType": "HT_Right",
             "VerticalAlignmentType": "VT_Center",
+            "OutlineSize": 6,
             "OutlineColor": {
-              "G": 0,
+              "G": 103,
               "B": 0
             },
+            "OutlineEnabled": true,
             "ShadowColor": {
-              "R": 110,
-              "G": 110,
-              "B": 110
+              "R": 140,
+              "G": 38,
+              "B": 0
             },
-            "ShadowOffsetX": 2.0,
-            "ShadowOffsetY": -2.0,
+            "ShadowOffsetX": 0.0,
+            "ShadowOffsetY": -6.0,
+            "ShadowEnabled": true,
             "AnchorPoint": {
               "ScaleX": 1.0,
               "ScaleY": 0.5
@@ -971,9 +979,8 @@
               "ScaleY": 1.0
             },
             "CColor": {
-              "R": 0,
-              "G": 0,
-              "B": 0
+              "G": 237,
+              "B": 194
             },
             "IconVisible": false,
             "PrePosition": {
@@ -981,18 +988,18 @@
               "Y": 0.9167
             },
             "PreSize": {
-              "X": 0.0938,
-              "Y": 0.0313
+              "X": 0.1125,
+              "Y": 0.0771
             },
-            "LeftMargin": 140.0,
+            "LeftMargin": 148.0,
             "RightMargin": 420.0,
-            "TopMargin": 39.5,
-            "BottomMargin": 839.5,
+            "TopMargin": 43.0,
+            "BottomMargin": 843.0,
             "Tag": 19,
             "ActionTag": 136330132,
             "Size": {
-              "X": 80.0,
-              "Y": 81.0
+              "X": 79.0,
+              "Y": 86.0
             },
             "Name": "Text_1_0",
             "ctype": "TextObjectData"
@@ -1000,18 +1007,26 @@
           {
             "FontSize": 72,
             "LabelText": "34",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "bmjua.ttf",
+              "Plist": ""
+            },
             "VerticalAlignmentType": "VT_Center",
+            "OutlineSize": 6,
             "OutlineColor": {
-              "G": 0,
-              "B": 0
+              "R": 142,
+              "G": 0
             },
+            "OutlineEnabled": true,
             "ShadowColor": {
-              "R": 110,
-              "G": 110,
-              "B": 110
+              "R": 75,
+              "G": 0,
+              "B": 130
             },
-            "ShadowOffsetX": 2.0,
-            "ShadowOffsetY": -2.0,
+            "ShadowOffsetX": 0.0,
+            "ShadowOffsetY": -6.0,
+            "ShadowEnabled": true,
             "AnchorPoint": {
               "ScaleY": 0.5
             },
@@ -1024,9 +1039,8 @@
               "ScaleY": 1.0
             },
             "CColor": {
-              "R": 0,
-              "G": 0,
-              "B": 0
+              "R": 252,
+              "G": 217
             },
             "IconVisible": false,
             "PrePosition": {
@@ -1034,75 +1048,82 @@
               "Y": 0.9167
             },
             "PreSize": {
-              "X": 0.0938,
-              "Y": 0.0313
+              "X": 0.1328,
+              "Y": 0.0771
             },
             "LeftMargin": 420.0,
-            "RightMargin": 140.0,
-            "TopMargin": 39.5,
-            "BottomMargin": 839.5,
+            "RightMargin": 135.0,
+            "TopMargin": 43.0,
+            "BottomMargin": 843.0,
             "Tag": 20,
             "ActionTag": -501786714,
             "Size": {
-              "X": 80.0,
-              "Y": 81.0
+              "X": 93.0,
+              "Y": 86.0
             },
             "Name": "Text_1_1",
             "ctype": "TextObjectData"
           },
           {
-            "IsCustomSize": true,
-            "FontSize": 72,
+            "FontSize": 36,
             "LabelText": "10",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "bmjua.ttf",
+              "Plist": ""
+            },
             "HorizontalAlignmentType": "HT_Center",
             "VerticalAlignmentType": "VT_Center",
+            "OutlineSize": 3,
             "OutlineColor": {
-              "G": 0,
-              "B": 0
+              "R": 0,
+              "G": 180,
+              "B": 170
             },
+            "OutlineEnabled": true,
             "ShadowColor": {
-              "R": 110,
-              "G": 110,
-              "B": 110
+              "R": 0,
+              "G": 93,
+              "B": 95
             },
-            "ShadowOffsetX": 2.0,
-            "ShadowOffsetY": -2.0,
+            "ShadowOffsetX": 0.0,
+            "ShadowOffsetY": -3.0,
+            "ShadowEnabled": true,
             "AnchorPoint": {
               "ScaleX": 0.5,
               "ScaleY": 0.5
             },
             "Position": {
               "X": 320.0,
-              "Y": 50.0
+              "Y": 70.0
             },
             "Scale": {
               "ScaleX": 1.0,
               "ScaleY": 1.0
             },
             "CColor": {
-              "R": 0,
-              "G": 0,
-              "B": 0
+              "R": 175,
+              "B": 244
             },
             "IconVisible": false,
             "PrePosition": {
               "X": 0.5,
-              "Y": 0.0521
+              "Y": 0.0729
             },
             "PreSize": {
               "X": 0.0938,
               "Y": 0.0313
             },
             "HorizontalEdge": "BothEdge",
-            "LeftMargin": 280.0,
-            "RightMargin": 280.0,
-            "TopMargin": 869.5,
-            "BottomMargin": 9.5,
+            "LeftMargin": 289.0,
+            "RightMargin": 289.0,
+            "TopMargin": 868.5,
+            "BottomMargin": 48.5,
             "Tag": 2022,
             "ActionTag": 1508604065,
             "Size": {
-              "X": 80.0,
-              "Y": 81.0
+              "X": 40.0,
+              "Y": 43.0
             },
             "Name": "Text_1_1_0",
             "ctype": "TextObjectData"
@@ -1196,6 +1217,214 @@
             },
             "Name": "ataxx2_7",
             "ctype": "SpriteObjectData"
+          },
+          {
+            "FontSize": 36,
+            "LabelText": "남은 시간",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "bmjua.ttf",
+              "Plist": ""
+            },
+            "HorizontalAlignmentType": "HT_Center",
+            "VerticalAlignmentType": "VT_Center",
+            "OutlineSize": 3,
+            "OutlineColor": {
+              "R": 0,
+              "B": 209
+            },
+            "OutlineEnabled": true,
+            "ShadowColor": {
+              "R": 0,
+              "G": 92,
+              "B": 88
+            },
+            "ShadowOffsetX": 0.0,
+            "ShadowOffsetY": -3.0,
+            "ShadowEnabled": true,
+            "AnchorPoint": {
+              "ScaleY": 0.5
+            },
+            "Position": {
+              "X": 130.0,
+              "Y": 70.0
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {
+              "R": 0,
+              "G": 0,
+              "B": 0
+            },
+            "IconVisible": false,
+            "PrePosition": {
+              "X": 0.2031,
+              "Y": 0.0729
+            },
+            "PreSize": {
+              "X": 0.1328,
+              "Y": 0.0771
+            },
+            "LeftMargin": 130.0,
+            "RightMargin": 378.0,
+            "TopMargin": 868.5,
+            "BottomMargin": 48.5,
+            "Tag": 25,
+            "ActionTag": 600175327,
+            "Size": {
+              "X": 132.0,
+              "Y": 43.0
+            },
+            "Name": "Text_1_1_1",
+            "ctype": "TextObjectData"
+          },
+          {
+            "FontSize": 72,
+            "ButtonText": "",
+            "FontResource": {
+              "Type": "Normal",
+              "Path": "bmjua.ttf",
+              "Plist": ""
+            },
+            "TextColor": {
+              "R": 65,
+              "G": 65,
+              "B": 70
+            },
+            "DisabledFileData": {
+              "Type": "Normal",
+              "Path": "bt3.png",
+              "Plist": ""
+            },
+            "PressedFileData": {
+              "Type": "Normal",
+              "Path": "bt2.png",
+              "Plist": ""
+            },
+            "NormalFileData": {
+              "Type": "Normal",
+              "Path": "bt1.png",
+              "Plist": ""
+            },
+            "Scale9Enable": true,
+            "Scale9OriginX": 30,
+            "Scale9OriginY": 30,
+            "Scale9Width": 189,
+            "Scale9Height": 34,
+            "OutlineColor": {
+              "G": 0,
+              "B": 0
+            },
+            "ShadowColor": {
+              "R": 110,
+              "G": 110,
+              "B": 110
+            },
+            "ShadowOffsetX": 2.0,
+            "ShadowOffsetY": -2.0,
+            "TouchEnable": true,
+            "AnchorPoint": {
+              "ScaleY": 1.0
+            },
+            "Position": {
+              "X": 0.0,
+              "Y": 960.0
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {},
+            "IconVisible": false,
+            "PrePosition": {
+              "X": 0.0,
+              "Y": 1.0
+            },
+            "PreSize": {
+              "X": 0.1562,
+              "Y": 0.1042
+            },
+            "HorizontalEdge": "BothEdge",
+            "VerticalEdge": "BothEdge",
+            "RightMargin": 540.0,
+            "BottomMargin": 860.0,
+            "Tag": 64,
+            "Children": [
+              {
+                "FontSize": 54,
+                "LabelText": "<",
+                "FontResource": {
+                  "Type": "Normal",
+                  "Path": "bmjua.ttf",
+                  "Plist": ""
+                },
+                "HorizontalAlignmentType": "HT_Center",
+                "VerticalAlignmentType": "VT_Center",
+                "OutlineSize": 5,
+                "OutlineColor": {
+                  "R": 181,
+                  "B": 197
+                },
+                "OutlineEnabled": true,
+                "ShadowColor": {
+                  "R": 0,
+                  "G": 156,
+                  "B": 38
+                },
+                "ShadowOffsetX": 0.0,
+                "ShadowOffsetY": -5.0,
+                "ShadowEnabled": true,
+                "AnchorPoint": {
+                  "ScaleX": 0.5,
+                  "ScaleY": 0.5
+                },
+                "Position": {
+                  "X": 50.0,
+                  "Y": 50.0
+                },
+                "Scale": {
+                  "ScaleX": 1.0,
+                  "ScaleY": 1.0
+                },
+                "CColor": {
+                  "R": 0,
+                  "G": 108,
+                  "B": 0
+                },
+                "IconVisible": false,
+                "PrePosition": {
+                  "X": 0.5,
+                  "Y": 0.5
+                },
+                "PreSize": {
+                  "X": 0.0,
+                  "Y": 0.0
+                },
+                "HorizontalEdge": "BothEdge",
+                "VerticalEdge": "BothEdge",
+                "LeftMargin": 39.5,
+                "RightMargin": 39.5,
+                "TopMargin": 28.5,
+                "BottomMargin": 28.5,
+                "Tag": 65,
+                "ActionTag": 520356453,
+                "Size": {
+                  "X": 33.0,
+                  "Y": 66.0
+                },
+                "Name": "Text_1",
+                "ctype": "TextObjectData"
+              }
+            ],
+            "ActionTag": 1213391040,
+            "Size": {
+              "X": 100.0,
+              "Y": 100.0
+            },
+            "Name": "backBtn",
+            "ctype": "ButtonObjectData"
           }
         ],
         "Size": {
@@ -1211,6 +1440,10 @@
         "back1.png",
         "back2.jpg",
         "back3.jpg",
+        "bmjua.ttf",
+        "bt1.png",
+        "bt2.png",
+        "bt3.png",
         "Default/Button_Disable.png",
         "Default/Button_Normal.png",
         "Default/Button_Press.png",
