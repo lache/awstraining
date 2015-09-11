@@ -39,7 +39,7 @@
 #if TARGET_OS_IPHONE
     return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
 #else
-    return @"yes is a return string form objective-c";
+    return @"MAC-MINI-DEV";
 #endif
 }
 +(BOOL)callNativeWithReturnBool{

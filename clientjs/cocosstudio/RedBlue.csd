@@ -14,7 +14,7 @@
             <CColor A="255" R="255" G="255" B="255" />
             <PrePosition />
             <PreSize X="0.0000" Y="0.0000" />
-            <FileData Type="Normal" Path="blue.png" Plist="" />
+            <FileData Type="MarkedSubImage" Path="blue.png" Plist="Plist.plist" />
             <BlendFunc Src="1" Dst="771" />
           </AbstractNodeData>
           <AbstractNodeData Name="red_2" ActionTag="675563563" Tag="14" IconVisible="False" LeftMargin="183.0000" RightMargin="-263.0000" TopMargin="-60.0000" BottomMargin="-20.0000" ctype="SpriteObjectData">
@@ -25,7 +25,7 @@
             <CColor A="255" R="255" G="255" B="255" />
             <PrePosition />
             <PreSize X="0.0000" Y="0.0000" />
-            <FileData Type="Normal" Path="red.png" Plist="" />
+            <FileData Type="MarkedSubImage" Path="red.png" Plist="Plist.plist" />
             <BlendFunc Src="1" Dst="771" />
           </AbstractNodeData>
         </Children>

@@ -30,9 +30,9 @@
             <PreSize X="0.0000" Y="0.0000" />
             <FontResource Type="Normal" Path="bmjua.ttf" Plist="" />
             <TextColor A="255" R="65" G="65" B="70" />
-            <DisabledFileData Type="Normal" Path="bt3.png" Plist="" />
-            <PressedFileData Type="Normal" Path="bt2.png" Plist="" />
-            <NormalFileData Type="Normal" Path="bt1.png" Plist="" />
+            <DisabledFileData Type="PlistSubImage" Path="bt3.png" Plist="Plist.plist" />
+            <PressedFileData Type="PlistSubImage" Path="bt2.png" Plist="Plist.plist" />
+            <NormalFileData Type="PlistSubImage" Path="bt1.png" Plist="Plist.plist" />
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
           </AbstractNodeData>

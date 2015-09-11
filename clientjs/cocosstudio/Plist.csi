@@ -1,0 +1,18 @@
+<PlistInfoProjectFile>
+  <PropertyGroup Type="Plist" Name="Plist" ID="901180b4-4558-4a0b-8429-b545adeeb315" Version="2.3.2.2" />
+  <Content ExportType="Png" SortAlgorithm="MaxRects" PicturePadding="2" AllowRotation="True" AllowAnySize="False" AllowTrim="False" ctype="PlistInfoData">
+    <ImageFiles>
+      <FilePathData Path="ataxx1.png" />
+      <FilePathData Path="ataxx1_1.png" />
+      <FilePathData Path="ataxx2.png" />
+      <FilePathData Path="ataxx2_1.png" />
+      <FilePathData Path="bt1.png" />
+      <FilePathData Path="bt2.png" />
+      <FilePathData Path="bt3.png" />
+      <FilePathData Path="empty_profile.png" />
+      <FilePathData Path="hourglass.png" />
+      <FilePathData Path="rounded.png" />
+    </ImageFiles>
+    <MaxSize Width="1024" Height="1024" />
+  </Content>
+</PlistInfoProjectFile>

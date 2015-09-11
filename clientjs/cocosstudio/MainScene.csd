@@ -28,27 +28,16 @@
             <FileData Type="Normal" Path="back2.jpg" Plist="" />
             <BlendFunc Src="770" Dst="771" />
           </AbstractNodeData>
-          <AbstractNodeData Name="bgboard" CanEdit="False" ActionTag="-902283898" Tag="23" IconVisible="False" HorizontalEdge="BothEdge" TopMargin="160.0000" BottomMargin="176.0000" ctype="SpriteObjectData">
+          <AbstractNodeData Name="bgboard" CanEdit="False" ActionTag="-902283898" Tag="23" IconVisible="False" HorizontalEdge="BothEdge" TopMargin="198.0000" BottomMargin="138.0000" ctype="SpriteObjectData">
             <Size X="640.0000" Y="624.0000" />
-            <AnchorPoint ScaleX="0.5000" ScaleY="1.0000" />
-            <Position X="320.0000" Y="800.0000" />
-            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
+            <Position X="320.0000" Y="450.0000" />
+            <Scale ScaleX="0.9000" ScaleY="0.9000" />
             <CColor A="255" R="255" G="255" B="255" />
-            <PrePosition X="0.5000" Y="0.8333" />
+            <PrePosition X="0.5000" Y="0.4688" />
             <PreSize X="0.0000" Y="0.0000" />
             <FileData Type="Normal" Path="back1.png" Plist="" />
             <BlendFunc Src="770" Dst="771" />
-          </AbstractNodeData>
-          <AbstractNodeData Name="hourglass_3" ActionTag="521159210" Tag="21" IconVisible="False" HorizontalEdge="BothEdge" LeftMargin="296.0000" RightMargin="296.0000" TopMargin="810.0000" BottomMargin="90.0000" ctype="SpriteObjectData">
-            <Size X="48.0000" Y="60.0000" />
-            <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
-            <Position X="320.0000" Y="120.0000" />
-            <Scale ScaleX="1.0000" ScaleY="1.0000" />
-            <CColor A="255" R="255" G="255" B="255" />
-            <PrePosition X="0.5000" Y="0.1250" />
-            <PreSize X="0.0000" Y="0.0000" />
-            <FileData Type="Normal" Path="hourglass.png" Plist="" />
-            <BlendFunc Src="1" Dst="771" />
           </AbstractNodeData>
           <AbstractNodeData Name="Text_2" ActionTag="813638612" Tag="4" IconVisible="False" PercentWidthEnable="True" PercentHeightEnable="True" PercentWidthEnabled="True" PercentHeightEnabled="True" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" LeftMargin="666.0000" RightMargin="-282.0000" TopMargin="225.0000" BottomMargin="255.0000" IsCustomSize="True" FontSize="16" LabelText="Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1Text Label Line 1&#xA;Line 2&#xA;Line 3" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="TextObjectData">
             <Size X="256.0000" Y="480.0000" />
@@ -229,18 +218,6 @@
             <OutlineColor A="255" R="142" G="0" B="255" />
             <ShadowColor A="255" R="75" G="0" B="130" />
           </AbstractNodeData>
-          <AbstractNodeData Name="Text_1_1_0" ActionTag="1508604065" Tag="2022" IconVisible="False" HorizontalEdge="BothEdge" LeftMargin="289.0000" RightMargin="289.0000" TopMargin="868.5000" BottomMargin="48.5000" FontSize="36" LabelText="10" HorizontalAlignmentType="HT_Center" VerticalAlignmentType="VT_Center" OutlineSize="3" OutlineEnabled="True" ShadowOffsetX="0.0000" ShadowOffsetY="-3.0000" ShadowEnabled="True" ctype="TextObjectData">
-            <Size X="40.0000" Y="43.0000" />
-            <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
-            <Position X="320.0000" Y="70.0000" />
-            <Scale ScaleX="1.0000" ScaleY="1.0000" />
-            <CColor A="255" R="175" G="255" B="244" />
-            <PrePosition X="0.5000" Y="0.0729" />
-            <PreSize X="0.0938" Y="0.0313" />
-            <FontResource Type="Normal" Path="bmjua.ttf" Plist="" />
-            <OutlineColor A="255" R="0" G="180" B="170" />
-            <ShadowColor A="255" R="0" G="93" B="95" />
-          </AbstractNodeData>
           <AbstractNodeData Name="ataxx1_6" ActionTag="-75532975" Tag="25" IconVisible="False" LeftMargin="228.0000" RightMargin="348.0000" TopMargin="46.0000" BottomMargin="846.0000" ctype="SpriteObjectData">
             <Size X="64.0000" Y="68.0000" />
             <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
@@ -249,7 +226,7 @@
             <CColor A="255" R="255" G="255" B="255" />
             <PrePosition X="0.4063" Y="0.9167" />
             <PreSize X="0.0000" Y="0.0000" />
-            <FileData Type="Normal" Path="ataxx1.png" Plist="" />
+            <FileData Type="PlistSubImage" Path="ataxx1.png" Plist="Plist.plist" />
             <BlendFunc Src="770" Dst="771" />
           </AbstractNodeData>
           <AbstractNodeData Name="ataxx2_7" ActionTag="-224340559" Tag="26" IconVisible="False" LeftMargin="348.0000" RightMargin="228.0000" TopMargin="46.0000" BottomMargin="846.0000" ctype="SpriteObjectData">
@@ -260,28 +237,16 @@
             <CColor A="255" R="255" G="255" B="255" />
             <PrePosition X="0.5938" Y="0.9167" />
             <PreSize X="0.0000" Y="0.0000" />
-            <FileData Type="Normal" Path="ataxx2.png" Plist="" />
+            <FileData Type="PlistSubImage" Path="ataxx2.png" Plist="Plist.plist" />
             <BlendFunc Src="770" Dst="771" />
           </AbstractNodeData>
-          <AbstractNodeData Name="Text_1_1_1" ActionTag="600175327" Tag="25" IconVisible="False" LeftMargin="130.0000" RightMargin="378.0000" TopMargin="868.5000" BottomMargin="48.5000" FontSize="36" LabelText="남은 시간" HorizontalAlignmentType="HT_Center" VerticalAlignmentType="VT_Center" OutlineSize="3" OutlineEnabled="True" ShadowOffsetX="0.0000" ShadowOffsetY="-3.0000" ShadowEnabled="True" ctype="TextObjectData">
-            <Size X="132.0000" Y="43.0000" />
-            <AnchorPoint ScaleY="0.5000" />
-            <Position X="130.0000" Y="70.0000" />
-            <Scale ScaleX="1.0000" ScaleY="1.0000" />
-            <CColor A="255" R="0" G="0" B="0" />
-            <PrePosition X="0.2031" Y="0.0729" />
-            <PreSize X="0.1328" Y="0.0771" />
-            <FontResource Type="Normal" Path="bmjua.ttf" Plist="" />
-            <OutlineColor A="255" R="0" G="255" B="209" />
-            <ShadowColor A="255" R="0" G="92" B="88" />
-          </AbstractNodeData>
-          <AbstractNodeData Name="backBtn" ActionTag="1213391040" Tag="64" IconVisible="False" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" RightMargin="540.0000" BottomMargin="860.0000" TouchEnable="True" FontSize="72" Scale9Enable="True" LeftEage="30" RightEage="30" TopEage="30" BottomEage="30" Scale9OriginX="30" Scale9OriginY="30" Scale9Width="189" Scale9Height="34" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
-            <Size X="100.0000" Y="100.0000" />
+          <AbstractNodeData Name="backBtn" ActionTag="1213391040" Tag="64" IconVisible="False" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" RightMargin="540.0000" BottomMargin="866.0000" TouchEnable="True" FontSize="72" Scale9Enable="True" LeftEage="30" RightEage="30" TopEage="30" BottomEage="30" Scale9OriginX="30" Scale9OriginY="30" Scale9Width="189" Scale9Height="34" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="ButtonObjectData">
+            <Size X="100.0000" Y="94.0000" />
             <Children>
               <AbstractNodeData Name="Text_1" ActionTag="520356453" Tag="65" IconVisible="False" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" LeftMargin="39.5000" RightMargin="39.5000" TopMargin="28.5000" BottomMargin="28.5000" FontSize="54" LabelText="&lt;" HorizontalAlignmentType="HT_Center" VerticalAlignmentType="VT_Center" OutlineSize="5" OutlineEnabled="True" ShadowOffsetX="0.0000" ShadowOffsetY="-5.0000" ShadowEnabled="True" ctype="TextObjectData">
                 <Size X="33.0000" Y="66.0000" />
                 <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
-                <Position X="50.0000" Y="50.0000" />
+                <Position X="50.0000" Y="47.0000" />
                 <Scale ScaleX="1.0000" ScaleY="1.0000" />
                 <CColor A="255" R="0" G="108" B="0" />
                 <PrePosition X="0.5000" Y="0.5000" />
@@ -296,14 +261,44 @@
             <Scale ScaleX="1.0000" ScaleY="1.0000" />
             <CColor A="255" R="255" G="255" B="255" />
             <PrePosition Y="1.0000" />
-            <PreSize X="0.1563" Y="0.1042" />
+            <PreSize X="0.1563" Y="0.0979" />
             <FontResource Type="Normal" Path="bmjua.ttf" Plist="" />
             <TextColor A="255" R="65" G="65" B="70" />
-            <DisabledFileData Type="Normal" Path="bt3.png" Plist="" />
-            <PressedFileData Type="Normal" Path="bt2.png" Plist="" />
-            <NormalFileData Type="Normal" Path="bt1.png" Plist="" />
+            <DisabledFileData Type="PlistSubImage" Path="bt3.png" Plist="Plist.plist" />
+            <PressedFileData Type="PlistSubImage" Path="bt2.png" Plist="Plist.plist" />
+            <NormalFileData Type="PlistSubImage" Path="bt1.png" Plist="Plist.plist" />
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
+          </AbstractNodeData>
+          <AbstractNodeData Name="ProjectNode_1" ActionTag="724972638" Tag="69" IconVisible="True" LeftMargin="160.0000" RightMargin="480.0000" TopMargin="160.0000" BottomMargin="800.0000" InnerActionSpeed="1.0000" ctype="ProjectNodeObjectData">
+            <Size X="0.0000" Y="0.0000" />
+            <AnchorPoint />
+            <Position X="160.0000" Y="800.0000" />
+            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <CColor A="255" R="255" G="255" B="255" />
+            <PrePosition X="0.2500" Y="0.8333" />
+            <PreSize X="0.0000" Y="0.0000" />
+            <FileData Type="Normal" Path="Profile.csd" Plist="" />
+          </AbstractNodeData>
+          <AbstractNodeData Name="ProjectNode_1_0" ActionTag="-146706210" Tag="82" IconVisible="True" LeftMargin="480.0000" RightMargin="160.0000" TopMargin="160.0000" BottomMargin="800.0000" InnerActionSpeed="1.0000" ctype="ProjectNodeObjectData">
+            <Size X="0.0000" Y="0.0000" />
+            <AnchorPoint />
+            <Position X="480.0000" Y="800.0000" />
+            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <CColor A="255" R="255" G="255" B="255" />
+            <PrePosition X="0.7500" Y="0.8333" />
+            <PreSize X="0.0000" Y="0.0000" />
+            <FileData Type="Normal" Path="Profile.csd" Plist="" />
+          </AbstractNodeData>
+          <AbstractNodeData Name="ProjectNode_2" ActionTag="-1041269418" Tag="171" IconVisible="True" LeftMargin="500.0000" RightMargin="140.0000" TopMargin="860.0000" BottomMargin="100.0000" InnerActionSpeed="1.0000" ctype="ProjectNodeObjectData">
+            <Size X="0.0000" Y="0.0000" />
+            <AnchorPoint />
+            <Position X="500.0000" Y="100.0000" />
+            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <CColor A="255" R="255" G="255" B="255" />
+            <PrePosition X="0.7813" Y="0.1042" />
+            <PreSize X="0.0000" Y="0.0000" />
+            <FileData Type="Normal" Path="Time.csd" Plist="" />
           </AbstractNodeData>
         </Children>
       </ObjectData>

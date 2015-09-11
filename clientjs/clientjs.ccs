@@ -4,26 +4,45 @@
     <Group ctype="ResourceGroup">
       <RootFolder Name=".">
         <Project Name="MainScene.csd" Type="Scene" />
-        <Image Name="HelloWorld.png" />
         <Project Name="Turn.csd" Type="Node" />
-        <Project Name="RedBlue.csd" Type="Node" />
-        <Image Name="ataxx1.png" />
         <Image Name="ataxx1_1.png" />
         <Image Name="ataxx2.png" />
         <Image Name="ataxx2_1.png" />
         <Image Name="back1.png" />
         <Image Name="back2.jpg" />
         <Image Name="back3.jpg" />
-        <Image Name="blue.png" />
         <Image Name="bt1.png" />
         <Image Name="bt2.png" />
         <Image Name="bt3.png" />
         <Image Name="hourglass.png" />
-        <Image Name="red.png" />
         <TTF Name="bmjua.ttf" />
         <Project Name="Button.csd" Type="Node" />
         <Project Name="StartScene.csd" Type="Scene" />
         <Project Name="NicknameScene.csd" Type="Scene" />
+        <Image Name="empty_profile.png" />
+        <Project Name="Profile.csd" Type="Node" />
+        <Image Name="rounded.png" />
+        <Project Name="Node.csd" Type="Node" />
+        <Image Name="ataxx1.png" />
+        <PlistInfo Name="Plist.csi" Type="Plist" />
+        <PlistImageFolder Image="Plist.png" PListFile="Plist.plist" Name=".Plist_PList.Dir">
+          <PlistImageFile Name="ataxx1.png" Key="ataxx1.png" />
+          <PlistImageFile Name="ataxx1_1.png" Key="ataxx1_1.png" />
+          <PlistImageFile Name="ataxx2.png" Key="ataxx2.png" />
+          <PlistImageFile Name="ataxx2_1.png" Key="ataxx2_1.png" />
+          <PlistImageFile Name="blue.png" Key="blue.png" />
+          <PlistImageFile Name="bt1.png" Key="bt1.png" />
+          <PlistImageFile Name="bt2.png" Key="bt2.png" />
+          <PlistImageFile Name="bt3.png" Key="bt3.png" />
+          <PlistImageFile Name="empty_profile.png" Key="empty_profile.png" />
+          <PlistImageFile Name="hourglass.png" Key="hourglass.png" />
+          <PlistImageFile Name="red.png" Key="red.png" />
+          <PlistImageFile Name="rounded.png" Key="rounded.png" />
+        </PlistImageFolder>
+        <Project Name="Time.csd" Type="Node" />
+        <Project Name="Red.csd" Type="Node" />
+        <Project Name="Blue.csd" Type="Node" />
+        <Project Name="MatchingScene.csd" Type="Scene" />
       </RootFolder>
     </Group>
   </SolutionFolder>

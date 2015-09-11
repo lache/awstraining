@@ -102,29 +102,29 @@
             },
             "AnchorPoint": {
               "ScaleX": 0.5,
-              "ScaleY": 1.0
+              "ScaleY": 0.5
             },
             "Position": {
               "X": 320.0,
-              "Y": 800.0
+              "Y": 450.0
             },
             "Scale": {
-              "ScaleX": 1.0,
-              "ScaleY": 1.0
+              "ScaleX": 0.9,
+              "ScaleY": 0.9
             },
             "CColor": {},
             "IconVisible": false,
             "PrePosition": {
               "X": 0.5,
-              "Y": 0.8333
+              "Y": 0.4688
             },
             "PreSize": {
               "X": 0.0,
               "Y": 0.0
             },
             "HorizontalEdge": "BothEdge",
-            "TopMargin": 160.0,
-            "BottomMargin": 176.0,
+            "TopMargin": 198.0,
+            "BottomMargin": 138.0,
             "Tag": 23,
             "ActionTag": -902283898,
             "Size": {
@@ -132,52 +132,6 @@
               "Y": 624.0
             },
             "Name": "bgboard",
-            "ctype": "SpriteObjectData"
-          },
-          {
-            "FileData": {
-              "Type": "Normal",
-              "Path": "hourglass.png",
-              "Plist": ""
-            },
-            "BlendFunc": {
-              "Src": 1,
-              "Dst": 771
-            },
-            "AnchorPoint": {
-              "ScaleX": 0.5,
-              "ScaleY": 0.5
-            },
-            "Position": {
-              "X": 320.0,
-              "Y": 120.0
-            },
-            "Scale": {
-              "ScaleX": 1.0,
-              "ScaleY": 1.0
-            },
-            "CColor": {},
-            "IconVisible": false,
-            "PrePosition": {
-              "X": 0.5,
-              "Y": 0.125
-            },
-            "PreSize": {
-              "X": 0.0,
-              "Y": 0.0
-            },
-            "HorizontalEdge": "BothEdge",
-            "LeftMargin": 296.0,
-            "RightMargin": 296.0,
-            "TopMargin": 810.0,
-            "BottomMargin": 90.0,
-            "Tag": 21,
-            "ActionTag": 521159210,
-            "Size": {
-              "X": 48.0,
-              "Y": 60.0
-            },
-            "Name": "hourglass_3",
             "ctype": "SpriteObjectData"
           },
           {
@@ -1065,74 +1019,10 @@
             "ctype": "TextObjectData"
           },
           {
-            "FontSize": 36,
-            "LabelText": "10",
-            "FontResource": {
-              "Type": "Normal",
-              "Path": "bmjua.ttf",
-              "Plist": ""
-            },
-            "HorizontalAlignmentType": "HT_Center",
-            "VerticalAlignmentType": "VT_Center",
-            "OutlineSize": 3,
-            "OutlineColor": {
-              "R": 0,
-              "G": 180,
-              "B": 170
-            },
-            "OutlineEnabled": true,
-            "ShadowColor": {
-              "R": 0,
-              "G": 93,
-              "B": 95
-            },
-            "ShadowOffsetX": 0.0,
-            "ShadowOffsetY": -3.0,
-            "ShadowEnabled": true,
-            "AnchorPoint": {
-              "ScaleX": 0.5,
-              "ScaleY": 0.5
-            },
-            "Position": {
-              "X": 320.0,
-              "Y": 70.0
-            },
-            "Scale": {
-              "ScaleX": 1.0,
-              "ScaleY": 1.0
-            },
-            "CColor": {
-              "R": 175,
-              "B": 244
-            },
-            "IconVisible": false,
-            "PrePosition": {
-              "X": 0.5,
-              "Y": 0.0729
-            },
-            "PreSize": {
-              "X": 0.0938,
-              "Y": 0.0313
-            },
-            "HorizontalEdge": "BothEdge",
-            "LeftMargin": 289.0,
-            "RightMargin": 289.0,
-            "TopMargin": 868.5,
-            "BottomMargin": 48.5,
-            "Tag": 2022,
-            "ActionTag": 1508604065,
-            "Size": {
-              "X": 40.0,
-              "Y": 43.0
-            },
-            "Name": "Text_1_1_0",
-            "ctype": "TextObjectData"
-          },
-          {
             "FileData": {
-              "Type": "Normal",
+              "Type": "PlistSubImage",
               "Path": "ataxx1.png",
-              "Plist": ""
+              "Plist": "Plist.plist"
             },
             "BlendFunc": {
               "Src": 770,
@@ -1175,9 +1065,9 @@
           },
           {
             "FileData": {
-              "Type": "Normal",
+              "Type": "PlistSubImage",
               "Path": "ataxx2.png",
-              "Plist": ""
+              "Plist": "Plist.plist"
             },
             "BlendFunc": {
               "Src": 770,
@@ -1219,68 +1109,6 @@
             "ctype": "SpriteObjectData"
           },
           {
-            "FontSize": 36,
-            "LabelText": "남은 시간",
-            "FontResource": {
-              "Type": "Normal",
-              "Path": "bmjua.ttf",
-              "Plist": ""
-            },
-            "HorizontalAlignmentType": "HT_Center",
-            "VerticalAlignmentType": "VT_Center",
-            "OutlineSize": 3,
-            "OutlineColor": {
-              "R": 0,
-              "B": 209
-            },
-            "OutlineEnabled": true,
-            "ShadowColor": {
-              "R": 0,
-              "G": 92,
-              "B": 88
-            },
-            "ShadowOffsetX": 0.0,
-            "ShadowOffsetY": -3.0,
-            "ShadowEnabled": true,
-            "AnchorPoint": {
-              "ScaleY": 0.5
-            },
-            "Position": {
-              "X": 130.0,
-              "Y": 70.0
-            },
-            "Scale": {
-              "ScaleX": 1.0,
-              "ScaleY": 1.0
-            },
-            "CColor": {
-              "R": 0,
-              "G": 0,
-              "B": 0
-            },
-            "IconVisible": false,
-            "PrePosition": {
-              "X": 0.2031,
-              "Y": 0.0729
-            },
-            "PreSize": {
-              "X": 0.1328,
-              "Y": 0.0771
-            },
-            "LeftMargin": 130.0,
-            "RightMargin": 378.0,
-            "TopMargin": 868.5,
-            "BottomMargin": 48.5,
-            "Tag": 25,
-            "ActionTag": 600175327,
-            "Size": {
-              "X": 132.0,
-              "Y": 43.0
-            },
-            "Name": "Text_1_1_1",
-            "ctype": "TextObjectData"
-          },
-          {
             "FontSize": 72,
             "ButtonText": "",
             "FontResource": {
@@ -1294,19 +1122,19 @@
               "B": 70
             },
             "DisabledFileData": {
-              "Type": "Normal",
+              "Type": "PlistSubImage",
               "Path": "bt3.png",
-              "Plist": ""
+              "Plist": "Plist.plist"
             },
             "PressedFileData": {
-              "Type": "Normal",
+              "Type": "PlistSubImage",
               "Path": "bt2.png",
-              "Plist": ""
+              "Plist": "Plist.plist"
             },
             "NormalFileData": {
-              "Type": "Normal",
+              "Type": "PlistSubImage",
               "Path": "bt1.png",
-              "Plist": ""
+              "Plist": "Plist.plist"
             },
             "Scale9Enable": true,
             "Scale9OriginX": 30,
@@ -1344,12 +1172,12 @@
             },
             "PreSize": {
               "X": 0.1562,
-              "Y": 0.1042
+              "Y": 0.0979
             },
             "HorizontalEdge": "BothEdge",
             "VerticalEdge": "BothEdge",
             "RightMargin": 540.0,
-            "BottomMargin": 860.0,
+            "BottomMargin": 866.0,
             "Tag": 64,
             "Children": [
               {
@@ -1382,7 +1210,7 @@
                 },
                 "Position": {
                   "X": 50.0,
-                  "Y": 50.0
+                  "Y": 47.0
                 },
                 "Scale": {
                   "ScaleX": 1.0,
@@ -1421,10 +1249,127 @@
             "ActionTag": 1213391040,
             "Size": {
               "X": 100.0,
-              "Y": 100.0
+              "Y": 94.0
             },
             "Name": "backBtn",
             "ctype": "ButtonObjectData"
+          },
+          {
+            "FileData": {
+              "Type": "Normal",
+              "Path": "Profile.json",
+              "Plist": ""
+            },
+            "InnerActionSpeed": 1.0,
+            "AnchorPoint": {},
+            "Position": {
+              "X": 160.0,
+              "Y": 800.0
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {},
+            "IconVisible": true,
+            "PrePosition": {
+              "X": 0.25,
+              "Y": 0.8333
+            },
+            "PreSize": {
+              "X": 0.0,
+              "Y": 0.0
+            },
+            "LeftMargin": 160.0,
+            "RightMargin": 480.0,
+            "TopMargin": 160.0,
+            "BottomMargin": 800.0,
+            "Tag": 69,
+            "ActionTag": 724972638,
+            "Size": {
+              "X": 0.0,
+              "Y": 0.0
+            },
+            "Name": "ProjectNode_1",
+            "ctype": "ProjectNodeObjectData"
+          },
+          {
+            "FileData": {
+              "Type": "Normal",
+              "Path": "Profile.json",
+              "Plist": ""
+            },
+            "InnerActionSpeed": 1.0,
+            "AnchorPoint": {},
+            "Position": {
+              "X": 480.0,
+              "Y": 800.0
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {},
+            "IconVisible": true,
+            "PrePosition": {
+              "X": 0.75,
+              "Y": 0.8333
+            },
+            "PreSize": {
+              "X": 0.0,
+              "Y": 0.0
+            },
+            "LeftMargin": 480.0,
+            "RightMargin": 160.0,
+            "TopMargin": 160.0,
+            "BottomMargin": 800.0,
+            "Tag": 82,
+            "ActionTag": -146706210,
+            "Size": {
+              "X": 0.0,
+              "Y": 0.0
+            },
+            "Name": "ProjectNode_1_0",
+            "ctype": "ProjectNodeObjectData"
+          },
+          {
+            "FileData": {
+              "Type": "Normal",
+              "Path": "Time.json",
+              "Plist": ""
+            },
+            "InnerActionSpeed": 1.0,
+            "AnchorPoint": {},
+            "Position": {
+              "X": 500.0,
+              "Y": 100.0
+            },
+            "Scale": {
+              "ScaleX": 1.0,
+              "ScaleY": 1.0
+            },
+            "CColor": {},
+            "IconVisible": true,
+            "PrePosition": {
+              "X": 0.7812,
+              "Y": 0.1042
+            },
+            "PreSize": {
+              "X": 0.0,
+              "Y": 0.0
+            },
+            "LeftMargin": 500.0,
+            "RightMargin": 140.0,
+            "TopMargin": 860.0,
+            "BottomMargin": 100.0,
+            "Tag": 171,
+            "ActionTag": -1041269418,
+            "Size": {
+              "X": 0.0,
+              "Y": 0.0
+            },
+            "Name": "ProjectNode_2",
+            "ctype": "ProjectNodeObjectData"
           }
         ],
         "Size": {
@@ -1435,19 +1380,17 @@
         "ctype": "SingleNodeObjectData"
       },
       "UsedResources": [
-        "ataxx1.png",
-        "ataxx2.png",
         "back1.png",
         "back2.jpg",
         "back3.jpg",
         "bmjua.ttf",
-        "bt1.png",
-        "bt2.png",
-        "bt3.png",
         "Default/Button_Disable.png",
         "Default/Button_Normal.png",
         "Default/Button_Press.png",
-        "hourglass.png"
+        "Plist.plist",
+        "Plist.png",
+        "Profile.json",
+        "Time.json"
       ],
       "ctype": "GameProjectData"
     }

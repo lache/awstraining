@@ -39,6 +39,17 @@
             <PreSize X="0.0000" Y="0.0000" />
             <FileData Type="Normal" Path="Button.csd" Plist="" />
           </AbstractNodeData>
+          <AbstractNodeData Name="Text_4" ActionTag="1920630778" Tag="56" IconVisible="False" PercentWidthEnable="True" PercentWidthEnabled="True" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" TopMargin="920.0000" IsCustomSize="True" FontSize="16" LabelText="Device ID" HorizontalAlignmentType="HT_Center" VerticalAlignmentType="VT_Center" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="TextObjectData">
+            <Size X="640.0000" Y="40.0000" />
+            <AnchorPoint ScaleX="0.5000" />
+            <Position X="320.0000" />
+            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <CColor A="255" R="0" G="80" B="180" />
+            <PrePosition X="0.5000" />
+            <PreSize X="1.0000" Y="0.0417" />
+            <OutlineColor A="255" R="255" G="0" B="0" />
+            <ShadowColor A="255" R="110" G="110" B="110" />
+          </AbstractNodeData>
         </Children>
       </ObjectData>
     </Content>
