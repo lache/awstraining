@@ -123,7 +123,7 @@ describe('Async', function() {
             });
         });
     });
-
+    /*
     xdescribe("long asynchronous specs", function() {
         var originalTimeout;
         beforeEach(function() {
@@ -141,4 +141,5 @@ describe('Async', function() {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
         });
     });
+    */
 });
