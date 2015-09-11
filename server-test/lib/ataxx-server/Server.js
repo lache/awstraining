@@ -66,7 +66,8 @@ Server.prototype.requestMatchAsync = function(did) {
     if (matched == null) {
         waitingSet[did] = true;
         deferred.resolve({
-            result: 'wait'
+            result: 'wait',
+            type: 'matchInfo',
         });
     } else {
         this.fillNicknamesForMatched(did, matched, deferred);
@@ -102,6 +103,7 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
         //console.log('did2Nickname='+matched.did2Nickname);
         deferred.resolve({
             result: 'ok',
+            type: 'matchInfo',
             opponentNickname: did === matched.did1 ? matched.did2Nickname : matched.did1Nickname,
             sessionId: matched.sid,
             matchedDateTime: matched.matchedDateTime,

@@ -71,7 +71,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 #if(CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
         glview = cocos2d::GLViewImpl::create("ataxx");
 #else
-        glview = cocos2d::GLViewImpl::createWithRect("ataxx", Rect(0, 0, 640, 960));
+        glview = cocos2d::GLViewImpl::createWithRect("ataxx", Rect(0, 0, 640/2, 960/2));
 #endif
         director->setOpenGLView(glview);
 }

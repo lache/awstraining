@@ -14,6 +14,34 @@ function Command(command, args) {
     return SERVER_URL + '/' + command + '?' + EncodeQueryData(args);
 }
 
+function RequestXhr(cmd, args, responseCmd, cb) {
+    var xhr = cc.loader.getXMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status <= 207)) {
+            var httpStatus = xhr.statusText;
+            var response = xhr.responseText.substring(0, 100) + '...';
+            cc.log('GET Response (100 chars):)');
+            cc.log(response);
+            cc.log('Status: Got GET response! ' + httpStatus);
+        } else {
+            cc.log('onreadystatechange unknown result');
+        }
+
+        var r = JSON.parse(xhr.responseText);
+        if (r.type === responseCmd) {
+            cb(r);
+        }
+    }
+    xhr.timeout = 5000;
+    ['loadstart', 'abort', 'error', 'load', 'loadend', 'timeout'].forEach(function(eventname) {
+        xhr['on' + eventname] = function() {
+            cc.log('\nEvent : ' + eventname);
+        }
+    });
+    xhr.open('GET', Command(cmd, args), true);
+    xhr.send();
+}
+
 var HelloWorldLayer = cc.Layer.extend({
     sprite: null,
     ctor: function() {
@@ -63,6 +91,7 @@ var HelloWorldLayer = cc.Layer.extend({
         this.node = node;
 
         this.printDeviceId();
+
         return true;
     },
     touchEvent: function(sender, type) {
@@ -72,6 +101,7 @@ var HelloWorldLayer = cc.Layer.extend({
             case ccui.Widget.TOUCH_ENDED:
                 if (nickname.length > 0) {
                     cc.director.pushScene(new cc.TransitionSlideInR(1, new MatchingScene()));
+                    //cc.director.pushScene(new cc.TransitionSlideInR(1, new MainScene()));
                 } else {
                     cc.director.pushScene(new cc.TransitionSlideInR(1, new NicknameScene()));
                 }
@@ -101,38 +131,19 @@ var HelloWorldLayer = cc.Layer.extend({
             did = jsb.reflection.callStaticMethod(
                 'NativeOcClass',
                 'callNativeWithReturnString');
+
+            did = did + '2';
+
             cc.log('did ret val is ' + did);
             this.node.getChildByTag(56).setString(did);
             var startBtn = this.node.getChildByTag(46).getChildByTag(30);
 
-            var xhr = cc.loader.getXMLHttpRequest();
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status <= 207)) {
-                    var httpStatus = xhr.statusText;
-                    var response = xhr.responseText.substring(0, 100) + '...';
-                    cc.log('GET Response (100 chars):)');
-                    cc.log(response);
-                    cc.log('Status: Got GET response! ' + httpStatus);
-                } else {
-                    cc.log('onreadystatechange unknown result');
-                }
-
-                var r = JSON.parse(xhr.responseText);
-                if (r.type == 'nickname') {
-                    startBtn.setVisible(true);
-                    nickname = r.nickname;
-                }
-            }
-            xhr.timeout = 5000;
-            ['loadstart', 'abort', 'error', 'load', 'loadend', 'timeout'].forEach(function(eventname) {
-                xhr['on' + eventname] = function() {
-                    cc.log('\nEvent : ' + eventname);
-                }
-            });
-            xhr.open('GET', Command('getNickname', {
+            RequestXhr('getNickname', {
                 did: did
-            }), true);
-            xhr.send();
+            }, 'nickname', function(r) {
+                startBtn.setVisible(true);
+                nickname = r.nickname;
+            });
         }
     },
 });
@@ -173,46 +184,27 @@ var NicknameScene = cc.Scene.extend({
         }
     },
     onNicknameChangeButton: function() {
-        var xhr = cc.loader.getXMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status <= 207)) {
-                var httpStatus = xhr.statusText;
-                var response = xhr.responseText.substring(0, 100) + '...';
-                cc.log('GET Response (100 chars):)');
-                cc.log(response);
-                cc.log('Status: Got GET response! ' + httpStatus);
-            } else {
-                cc.log('onreadystatechange unknown result');
-            }
-
-            var r = JSON.parse(xhr.responseText);
-            if (r.type == 'nicknameSet') {
-                cc.director.pushScene(new cc.TransitionSlideInR(1, new MatchingScene()));
-
-            }
-        }
-        xhr.timeout = 5000;
-        ['loadstart', 'abort', 'error', 'load', 'loadend', 'timeout'].forEach(function(eventname) {
-            xhr['on' + eventname] = function() {
-                cc.log('\nEvent : ' + eventname);
-            }
-        });
-
         var nickname = this.node.getChildByTag(74).getChildByTag(72).getString();
 
-        xhr.open('GET', Command('setNickname', {
+        RequestXhr('setNickname', {
             did: did,
             nickname: nickname
-        }), true);
-        xhr.send();
-
-        //cc.director.runScene(new cc.TransitionSlideInR(0.33, new MainScene()));
+        }, 'nicknameSet', function(r) {
+            cc.director.pushScene(new cc.TransitionSlideInR(1, new MatchingScene()));
+        });
     }
 });
 
-
 var MatchingScene = cc.Scene.extend({
     onEnter: function() {
+        this._super();
+        var layer = new MatchingLayer();
+        this.addChild(layer);
+    }
+});
+
+var MatchingLayer = cc.Layer.extend({
+    ctor: function() {
         this._super();
         //var layer = new HelloWorldLayer();
         //this.addChild(layer);
@@ -222,11 +214,28 @@ var MatchingScene = cc.Scene.extend({
         var node = json.node;
         this.addChild(node);
         this.node = node;
-        /*
-        var nextBtn = node.getChildByTag(77).getChildByTag(30);
-        nextBtn.getChildByTag(31).setString('다음으로');
-        nextBtn.addTouchEventListener(this.touchEvent, this);
-        */
+        var commandQueue = [];
+        this.commandQueue = commandQueue;
+        var self = this;
+        this.scheduleUpdate();
+
+        RequestXhr('requestMatch', {
+            did: did
+        }, 'matchInfo', function(r) {
+            if (r.result === 'ok') {
+                console.log('HEHE');
+                // 어느정도 시간 안기다려줬더니 장면 전환이 안되네... ㅋㅋ
+                self.scheduleOnce(self.startMainScene, 1.0);
+
+                self.commandQueue.push(function() {
+                    console.log('pushed>');
+                    //cc.director.pushScene(new cc.TransitionSlideInR(1, new MainScene()));
+                });
+            }
+        });
+    },
+    startMainScene: function(dt) {
+        cc.director.pushScene(new cc.TransitionSlideInR(1, new MainScene()));
     },
     touchEvent: function(sender, type) {
         switch (type) {
@@ -238,6 +247,22 @@ var MatchingScene = cc.Scene.extend({
                 break;
         }
     },
+    onEnterTransitionDidFinish: function() {
+        console.log('11 - ' + this.commandQueue.length);
+        for (var i = 0; i < this.commandQueue.length; ++i) {
+            this.commandQueue[i]();
+        }
+        this.commandQueue = [];
+    },
+    update: function(dt) {
+        /*
+        console.log('11 - ' + this.commandQueue.length);
+        for (var i = 0; i < this.commandQueue.length; ++i) {
+            this.commandQueue[i]();
+        }
+        this.commandQueue = [];
+        */
+    },
 });
 
 var MainScene = cc.Scene.extend({
@@ -245,7 +270,7 @@ var MainScene = cc.Scene.extend({
         this._super();
         //var layer = new HelloWorldLayer();
         //this.addChild(layer);
-        cc.log('NicknameScene 입장');
+        cc.log('MainScene 입장');
         var size = cc.winSize;
 
         var json = ccs.load('res/MainScene.json');
@@ -309,7 +334,7 @@ var MainScene = cc.Scene.extend({
             case ccui.Widget.TOUCH_BEGAN:
                 break;
             case ccui.Widget.TOUCH_ENDED:
-                cc.director.popScene();
+                //cc.director.popScene();
                 break;
             default:
                 break;

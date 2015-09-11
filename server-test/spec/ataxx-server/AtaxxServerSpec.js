@@ -82,6 +82,7 @@ describe('AtaxxServer', function() {
             return server.requestMatchAsync(did1); // 두 번 연속 중 둘째
         }).then(function(data) {
             expect(data.result).toBe('wait');
+            expect(data.type).toBe('matchInfo');
             if (overlapped) {
                 server.requestMatchAsync(did2); // 두 번 연속 중 첫째
             }
@@ -90,22 +91,26 @@ describe('AtaxxServer', function() {
             var dt = new Date() - new Date(data.matchedDateTime);
             expect(dt).toBeLessThan(1000);
             expect(data.result).toBe('ok');
+            expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname1);
             expect(data.sessionId.length).toBeGreaterThan(0);
             sid = data.sessionId;
             return server.requestMatchAsync(did1);
         }).then(function(data) {
             expect(data.result).toBe('ok');
+            expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname2);
             expect(data.sessionId).toBe(sid);
             return server.requestMatchAsync(did2);
         }).then(function(data) {
             expect(data.result).toBe('ok');
+            expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname1);
             expect(data.sessionId).toBe(sid);
             return server.requestMatchAsync(did1);
         }).then(function(data) {
             expect(data.result).toBe('ok');
+            expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname2);
             expect(data.sessionId).toBe(sid);
             if (done) {
