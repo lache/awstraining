@@ -49,7 +49,8 @@ Server.prototype.requestMatchAsync = function(did) {
             matched = {
                 sid: sid,
                 did1: k,
-                did2: did
+                did2: did,
+                matchedDateTime: new Date().toISOString(),
             };
             matchedSet[sid] = matched;
             // 세션 정보 업데이트
@@ -103,6 +104,7 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
             result: 'ok',
             opponentNickname: did === matched.did1 ? matched.did2Nickname : matched.did1Nickname,
             sessionId: matched.sid,
+            matchedDateTime: matched.matchedDateTime,
         });
     }, function(error) {
         deferred.reject(new Error('fillNicknamesForMatched error : [' + error + ']'));

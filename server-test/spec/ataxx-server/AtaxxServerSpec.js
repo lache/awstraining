@@ -60,43 +60,7 @@ describe('AtaxxServer', function() {
     // did1, did2 순으로 차례차례 들어가서 둘이 매치되는 것을 확인
     // did, did2가 들어가는 시점에서 waiting 중인 기기는 없는 것을 가정한다.
     function expectPairing(did1, nickname1, did2, nickname2, done) {
-        var sid;
-        server.setNicknameAsync(did1, nickname1).then(function(data) {
-            return server.setNicknameAsync(did2, nickname2);
-        }).then(function(data) {
-            return server.requestMatchAsync(did1);
-        }).then(function(data) {
-            expect(data.result).toBe('wait');
-            return server.requestMatchAsync(did2);
-        }).then(function(data) {
-            expect(data.result).toBe('ok');
-            expect(data.opponentNickname).toBe(nickname1);
-            expect(data.sessionId.length).toBeGreaterThan(0);
-            sid = data.sessionId;
-            return server.requestMatchAsync(did1);
-        }).then(function(data) {
-            expect(data.result).toBe('ok');
-            expect(data.opponentNickname).toBe(nickname2);
-            expect(data.sessionId).toBe(sid);
-            return server.requestMatchAsync(did2);
-        }).then(function(data) {
-            expect(data.result).toBe('ok');
-            expect(data.opponentNickname).toBe(nickname1);
-            expect(data.sessionId).toBe(sid);
-            return server.requestMatchAsync(did1);
-        }).then(function(data) {
-            expect(data.result).toBe('ok');
-            expect(data.opponentNickname).toBe(nickname2);
-            expect(data.sessionId).toBe(sid);
-            if (done) {
-                done();
-            }
-        }, function(error) {
-            expect(error).not.toBeDefined();
-            if (done) {
-                done();
-            }
-        });
+        expectPairingInternal(did1, nickname1, did2, nickname2, done, false);
     }
 
     // did1, did2 순으로 차례차례 들어가서 둘이 매치되는 것을 확인
@@ -104,17 +68,27 @@ describe('AtaxxServer', function() {
     // 의도적으로 만든다.
     // did, did2가 들어가는 시점에서 waiting 중인 기기는 없는 것을 가정한다.
     function expectPairingOverlapped(did1, nickname1, did2, nickname2, done) {
+        expectPairingInternal(did1, nickname1, did2, nickname2, done, true);
+    }
+
+    function expectPairingInternal(did1, nickname1, did2, nickname2, done, overlapped) {
         var sid;
         server.setNicknameAsync(did1, nickname1).then(function(data) {
             return server.setNicknameAsync(did2, nickname2);
         }).then(function(data) {
-            server.requestMatchAsync(did1); // 두 번 연속 중 첫째
+            if (overlapped) {
+                server.requestMatchAsync(did1); // 두 번 연속 중 첫째
+            }
             return server.requestMatchAsync(did1); // 두 번 연속 중 둘째
         }).then(function(data) {
             expect(data.result).toBe('wait');
-            server.requestMatchAsync(did2); // 두 번 연속 중 첫째
+            if (overlapped) {
+                server.requestMatchAsync(did2); // 두 번 연속 중 첫째
+            }
             return server.requestMatchAsync(did2); // 두 번 연속 중 둘째
         }).then(function(data) {
+            var dt = new Date() - new Date(data.matchedDateTime);
+            expect(dt).toBeLessThan(1000);
             expect(data.result).toBe('ok');
             expect(data.opponentNickname).toBe(nickname1);
             expect(data.sessionId.length).toBeGreaterThan(0);
@@ -164,8 +138,8 @@ describe('AtaxxServer', function() {
     it('#requestMatch - 또 다음으로 들어오는 두 명(echo, fox)도 끼리끼리 매치가 된다.', function(done) {
         var did1 = 'echo';
         var nickname1 = 'echo-nickname';
-        var did2 = 'fox';
-        var nickname2 = 'fox-nickname';
+        var did2 = 'foxtrot';
+        var nickname2 = 'foxtrot-nickname';
         expectPairing(did1, nickname1, did2, nickname2, done);
     });
 
