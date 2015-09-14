@@ -1171,7 +1171,7 @@
               "Y": 1.0
             },
             "PreSize": {
-              "X": 0.1562,
+              "X": 0.1563,
               "Y": 0.0979
             },
             "HorizontalEdge": "BothEdge",
@@ -1351,7 +1351,7 @@
             "CColor": {},
             "IconVisible": true,
             "PrePosition": {
-              "X": 0.7812,
+              "X": 0.7813,
               "Y": 0.1042
             },
             "PreSize": {

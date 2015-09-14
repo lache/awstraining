@@ -2,7 +2,7 @@ AWS = require('aws-sdk');
 AWS.config.update({
     accessKeyId: "myKeyId",
     secretAccessKey: "secretKey",
-    region: "us-east-1"
+    region: "us-east-1",
 });
 
 var Q = require('q');
@@ -197,8 +197,10 @@ Server.prototype.getNickname = function(did, cb) {
         }
     };
     dyn.getItem(params, function(err, data) {
-        if (err || !data.Item || !data.Item.Nickname) {
+        if (err) {
             cb(undefined);
+        } else if (!data.Item || !data.Item.Nickname) {
+            cb(null);
         } else {
             cb(data.Item.Nickname.S);
         }
@@ -222,6 +224,29 @@ Server.prototype.setNickname = function(did, nickname, cb) {
     };
     dyn.putItem(params, function(err, data) {
         cb(err);
+    });
+}
+
+Server.prototype.simulateDbServerDown = function() {
+    // DB 서버를 이상한 주소로 설정한다.
+    //console.log('Simulate DB Server Down');
+    AWS.config.update({
+        /*
+        httpOptions: {
+            timeout: 3000,
+        },
+        */
+        maxRetries: 3,
+    });
+    dyn = new AWS.DynamoDB({
+        endpoint: new AWS.Endpoint('http://localhost:8123')
+    });
+    //console.log('Retry Delays:' + dyn.retryDelays())
+}
+
+Server.prototype.stopSimulateDbServerDown = function() {
+    dyn = new AWS.DynamoDB({
+        endpoint: new AWS.Endpoint('http://localhost:8000')
     });
 }
 

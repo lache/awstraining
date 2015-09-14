@@ -8,7 +8,7 @@ describe('AtaxxServer', function() {
 
     it('#getNickname', function(done) {
         server.getNickname('not available device id', function(nickname) {
-            expect(nickname).not.toBeDefined();
+            expect(nickname).toBeNull();
             done();
         });
     });

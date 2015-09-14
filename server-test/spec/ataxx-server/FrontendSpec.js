@@ -177,3 +177,28 @@ describe("Ataxx Server", function() {
         });
     });
 });
+
+describe("FrontendDbServerDown", function() {
+    it('DB 서버 다운 시 getNickname API 테스트 (실제 DB 서버 다운 시에는 실패하는 것이 정상)', function(done) {
+        requestGetAsync('simulateDbServerDown', {}).then(function(data) {
+            expect(data.response.statusCode).toBe(200);
+            return requestGetAsync('getNickname', {
+                did: 'testdid'
+            });
+        }).then(function(data) {
+            expect(data.response.statusCode).toBe(500);
+            return requestGetAsync('stopSimulateDbServerDown', {});
+        }).then(function(data) {
+            expect(data.response.statusCode).toBe(200);
+            return requestGetAsync('getNickname', {
+                did: 'testdid'
+            });
+        }).then(function(data) {
+            expect(data.response.statusCode).toBe(200);
+            done();
+        }, function(error) {
+            expect(error).not.toBeDefined();
+            done();
+        });
+    });
+});

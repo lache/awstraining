@@ -42,7 +42,7 @@ app.get('/getNickname', function(req, res) {
             nickname: nn
         });
     }, function(error) {
-        res.status(404);
+        res.status(500).send();
     });
 });
 
@@ -56,7 +56,7 @@ app.get('/getNicknameAddedDate', function(req, res) {
             nicknameaddeddate: d
         });
     }, function(error) {
-        res.status(404);
+        res.status(404).send();
     });
 });
 
@@ -67,6 +67,16 @@ app.get('/requestMatch', function(req, res) {
     }, function(error) {
         res.status(404);
     });
+});
+
+app.get('/simulateDbServerDown', function(req, res) {
+    server.simulateDbServerDown();
+    res.status(200).send();
+});
+
+app.get('/stopSimulateDbServerDown', function(req, res) {
+    server.stopSimulateDbServerDown();
+    res.status(200).send();
 });
 
 module.exports = app;

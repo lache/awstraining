@@ -11,7 +11,11 @@
     "modules" : ["cocos2d"],
 
     "jsList" : [
-        "src/resource.js",
-        "src/app.js"
+        "src/Resource.js",
+        "src/Util.js",
+        "src/MainScene.js",
+        "src/NicknameScene.js",
+        "src/MatchingScene.js",
+        "src/StartScene.js"
     ]
 }

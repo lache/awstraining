@@ -50,6 +50,17 @@
             <OutlineColor A="255" R="255" G="0" B="0" />
             <ShadowColor A="255" R="110" G="110" B="110" />
           </AbstractNodeData>
+          <AbstractNodeData Name="Text_5" ActionTag="541322103" Tag="83" IconVisible="False" HorizontalEdge="BothEdge" VerticalEdge="BothEdge" TopMargin="748.0000" BottomMargin="172.0000" IsCustomSize="True" FontSize="20" LabelText="접속 상황 텍스트" HorizontalAlignmentType="HT_Center" VerticalAlignmentType="VT_Center" ShadowOffsetX="2.0000" ShadowOffsetY="-2.0000" ctype="TextObjectData">
+            <Size X="640.0000" Y="40.0000" />
+            <AnchorPoint ScaleX="0.5000" ScaleY="0.5000" />
+            <Position X="320.0000" Y="192.0000" />
+            <Scale ScaleX="1.0000" ScaleY="1.0000" />
+            <CColor A="255" R="0" G="4" B="203" />
+            <PrePosition X="0.5000" Y="0.2000" />
+            <PreSize X="1.0000" Y="0.0417" />
+            <OutlineColor A="255" R="255" G="0" B="0" />
+            <ShadowColor A="255" R="110" G="110" B="110" />
+          </AbstractNodeData>
         </Children>
       </ObjectData>
     </Content>
