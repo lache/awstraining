@@ -14,7 +14,7 @@ function Command(command, args) {
     return base_url + '/' + command + '?' + EncodeQueryData(args);
 }
 
-var app = require('../../app/hello_world');
+var app = require('../../app/ServerApp');
 app.listen(3000);
 console.log('app.listen() called');
 

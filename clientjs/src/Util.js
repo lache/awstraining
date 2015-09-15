@@ -45,5 +45,5 @@ function RequestXhr(cmd, args, responseCmd, cb, cbOnError) {
 }
 
 function PushScene(scene) {
-    cc.director.pushScene(new cc.CCTransitionCrossFade(1, scene));
+    cc.director.pushScene(new cc.TransitionCrossFade(1, scene));
 }

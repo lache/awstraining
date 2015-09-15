@@ -50,17 +50,18 @@ var StartLayer = cc.Layer.extend({
             RequestXhr('getNickname', {
                 did: did
             }, 'nickname', function(r) {
-                // 성공 시
+                // 응답 받았을 때 (성공 응답일 수도 있고 실패 응답일 수도 있다)
                 //startBtn.setVisible(true);
-                nickname = r.nickname;
-                nicknameQueried = true;
-                if (nickname.length > 0) {
-                    PushScene(new MatchingScene());
+                if (r.result == 'ok') {
+                    nickname = r.nickname;
+                    nicknameQueried = true;
+                    self.scheduleOnce(self.changeToNextScene, 1.0);
                 } else {
-                    PushScene(new NicknameScene());
+                    self.stateString.setString('서버에 오류가 있습니다.');
+                    self.startBtn.setVisible(true);
                 }
             }, function(error) {
-                // 실패 시
+                // 응답 받지 못했을 때
                 if (error == 'error') {
                     self.stateString.setString('서버에 접속할 수 없습니다.');
                 } else if (error == 'timeout') {
@@ -68,6 +69,13 @@ var StartLayer = cc.Layer.extend({
                 }
                 self.startBtn.setVisible(true);
             });
+        }
+    },
+    changeToNextScene: function(dt) {
+        if (nickname.length > 0) {
+            PushScene(new MatchingScene());
+        } else {
+            PushScene(new NicknameScene());
         }
     },
 });

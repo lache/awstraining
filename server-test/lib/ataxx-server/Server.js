@@ -3,6 +3,7 @@ AWS.config.update({
     accessKeyId: "myKeyId",
     secretAccessKey: "secretKey",
     region: "us-east-1",
+    maxRetries: 3,
 });
 
 var Q = require('q');

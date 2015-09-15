@@ -39,10 +39,14 @@ app.get('/getNickname', function(req, res) {
             result: 'ok',
             type: 'nickname',
             did: did,
-            nickname: nn
+            nickname: nn,
         });
     }, function(error) {
-        res.status(500).send();
+        res.status(500).send({
+            result: 'error',
+            type: 'nickname',
+            reason: 500,
+        });
     });
 });
 

@@ -34,6 +34,9 @@ var MainScene = cc.Scene.extend({
         var nicknameText = node.getChildByTag(69).getChildByTag(67);
         nicknameText.setString(nickname);
 
+        var opponentNicknameText = node.getChildByTag(82).getChildByTag(67);
+        opponentNicknameText.setString(opponentNickname);
+
         var cellCountXHalf = Math.floor(cellCountX / 2);
         var cellCountYHalf = Math.floor(cellCountY / 2);
 

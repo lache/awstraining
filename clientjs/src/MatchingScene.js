@@ -20,15 +20,19 @@ var MatchingLayer = cc.Layer.extend({
         this.node = node;
         var commandQueue = [];
         this.commandQueue = commandQueue;
-        var self = this;
         this.scheduleUpdate();
+        this.waitEffect = node.getChildByTag(235);
+        this.stateString = node.getChildByTag(232);
 
+        var self = this;
         RequestXhr('requestMatch', {
             did: did
         }, 'matchInfo', function(r) {
             if (r.result === 'ok') {
                 console.log('HEHE');
                 // 어느정도 시간 안기다려줬더니 장면 전환이 안되네... ㅋㅋ
+                opponentNickname = r.opponentNickname;
+                sessionId = r.sessionId;
                 self.scheduleOnce(self.startMainScene, 1.0);
 
                 self.commandQueue.push(function() {
@@ -39,7 +43,13 @@ var MatchingLayer = cc.Layer.extend({
         });
     },
     startMainScene: function(dt) {
-        cc.director.pushScene(new cc.TransitionSlideInR(1, new MainScene()));
+        this.stateString.setString(opponentNickname + '님과 매치 완료');
+        this.waitEffect.stopSystem();
+        this.scheduleOnce(this.startMainScene2, 1.0);
+    },
+    startMainScene2: function(dt) {
+        var scene = new MainScene();
+        PushScene(scene);
     },
     touchEvent: function(sender, type) {
         switch (type) {
