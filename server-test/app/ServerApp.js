@@ -83,6 +83,21 @@ app.get('/stopSimulateDbServerDown', function(req, res) {
     res.status(200).send();
 });
 
+app.get('/requestSessionState', function(req, res) {
+    var did = req.query.did;
+    var sid = req.query.sid;
+    server.requestSessionStateAsync(did, sid).then(function(d) {
+        res.status(200).send({
+            result: 'ok',
+            type: 'sessionState',
+            gameType: 'ataxx',
+            fullState: d.fullState,
+        });
+    }, function(error) {
+        res.status(404).send();
+    });
+});
+
 module.exports = app;
 
 //app.listen(3000);

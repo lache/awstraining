@@ -74,13 +74,16 @@ describe('AtaxxServer', function() {
     function expectPairingInternal(did1, nickname1, did2, nickname2, done, overlapped) {
         var sid;
         server.setNicknameAsync(did1, nickname1).then(function(data) {
+            //console.log('#1');
             return server.setNicknameAsync(did2, nickname2);
         }).then(function(data) {
+            //console.log('#2');
             if (overlapped) {
                 server.requestMatchAsync(did1); // 두 번 연속 중 첫째
             }
             return server.requestMatchAsync(did1); // 두 번 연속 중 둘째
         }).then(function(data) {
+            //console.log('#3');
             expect(data.result).toBe('wait');
             expect(data.type).toBe('matchInfo');
             if (overlapped) {
@@ -88,6 +91,7 @@ describe('AtaxxServer', function() {
             }
             return server.requestMatchAsync(did2); // 두 번 연속 중 둘째
         }).then(function(data) {
+            //console.log('#4');
             var dt = new Date() - new Date(data.matchedDateTime);
             expect(dt).toBeLessThan(1000);
             expect(data.result).toBe('ok');
@@ -97,18 +101,21 @@ describe('AtaxxServer', function() {
             sid = data.sessionId;
             return server.requestMatchAsync(did1);
         }).then(function(data) {
+            //console.log('#5');
             expect(data.result).toBe('ok');
             expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname2);
             expect(data.sessionId).toBe(sid);
             return server.requestMatchAsync(did2);
         }).then(function(data) {
+            //console.log('#6');
             expect(data.result).toBe('ok');
             expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname1);
             expect(data.sessionId).toBe(sid);
             return server.requestMatchAsync(did1);
         }).then(function(data) {
+            //console.log('#7');
             expect(data.result).toBe('ok');
             expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname2);
@@ -116,7 +123,8 @@ describe('AtaxxServer', function() {
             if (done) {
                 done();
             }
-        }, function(error) {
+        }).catch(function(error) {
+            //console.log('#8');
             expect(error).not.toBeDefined();
             if (done) {
                 done();

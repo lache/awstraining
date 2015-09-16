@@ -1,4 +1,6 @@
-AWS = require('aws-sdk');
+'use strict';
+
+var AWS = require('aws-sdk');
 AWS.config.update({
     accessKeyId: "myKeyId",
     secretAccessKey: "secretKey",
@@ -7,7 +9,8 @@ AWS.config.update({
 });
 
 var Q = require('q');
-
+var CHARLIE = require('charlie-core');
+var dyn;
 function Server() {
     dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
@@ -15,8 +18,22 @@ function Server() {
 }
 
 var waitingSet = {}; // requestMatch를 호출한 DID 맵: DID (Device ID) -> true
-var matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -> {did1:*, did2:*}
+var matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -> {did1:*, did2:*, ...}
 var lastSessionSet = {}; // DID별 소속된 세션 맵: DID -> SID
+
+Server.prototype.requestSessionStateAsync = function(did, sid) {
+    var deferred = Q.defer();
+
+    if (sid in matchedSet) {
+        deferred.resolve({
+            fullState: matchedSet[sid].board
+        });
+    } else {
+        deferred.reject(new Error('Not found'));
+    }
+
+    return deferred.promise;
+}
 
 Server.prototype.requestMatchAsync = function(did) {
     var deferred = Q.defer();
@@ -102,15 +119,33 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
 
         //console.log('did1Nickname='+matched.did1Nickname);
         //console.log('did2Nickname='+matched.did2Nickname);
+
+        // 게임 컨택스트 생성!
+        if (typeof matched.board === 'undefined') {
+            var board = new CHARLIE.ataxx.Board();
+            var user1 = new CHARLIE.ataxx.User(matched.did1Nickname);
+            var user2 = new CHARLIE.ataxx.User(matched.did2Nickname);
+            var w = 7,
+                h = 7;
+            board.setSize(w, h);
+            board.place(user1, 0, 0);
+            board.place(user1, w - 1, h - 1);
+            board.place(user2, w - 1, 0);
+            board.place(user2, 0, h - 1);
+            matched.board = board;
+        }
+
         deferred.resolve({
             result: 'ok',
             type: 'matchInfo',
+            gameType: 'ataxx',
             opponentNickname: did === matched.did1 ? matched.did2Nickname : matched.did1Nickname,
             sessionId: matched.sid,
             matchedDateTime: matched.matchedDateTime,
+            fullState: matched.board,
         });
-    }, function(error) {
-        deferred.reject(new Error('fillNicknamesForMatched error : [' + error + ']'));
+    }).catch(function(error) {
+        deferred.reject(error);
     });
 }
 

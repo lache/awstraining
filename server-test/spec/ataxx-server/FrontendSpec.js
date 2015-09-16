@@ -2,6 +2,8 @@ var request = require("request");
 var Q = require('q');
 var base_url = "http://localhost:3000"
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
+
 function EncodeQueryData(data) {
     var ret = [];
     for (var d in data) {
@@ -38,7 +40,7 @@ var nickname = 'testdidnickname';
 var did2 = 'testdid2';
 var nickname2 = 'testdidnickname2';
 
-describe("Ataxx Server", function() {
+describe("Ataxx Frontend", function() {
 
     it("returns status code 200", function(done) {
         request.get(base_url, function(error, response, body) {
@@ -123,24 +125,29 @@ describe("Ataxx Server", function() {
         });
     });
 
+    function checkInitialFullState(b) {
+        expect(b.gameType).toBe('ataxx');
+        expect(b.fullState.width).toBe(7);
+        expect(b.fullState.height).toBe(7);
+        expect(b.fullState.userList.length).toBe(2);
+        expect(b.fullState.userList[0].name).toBe(nickname);
+        expect(b.fullState.userList[1].name).toBe(nickname2);
+    }
+
     // 매칭 테스트 (did가 먼저 요청하고 did2가 나중에 요청하는 시나리오)
     it('requestMatch API 테스트', function(done) {
         // (1) did 요청 -> (2) wait 반환
         // (3) did2 요청 -> (4) did, did2와 매칭됨. 매칭 결과 반환
-        // (5) did 요청 -> (6) 매칭 결과 반환
-
+        // (5) did 요청 -> (6) 매칭 결과(세션 ID; sid) 반환
+        // (7) did/sid로 세션 정보 요청 -> (8) 세션 정보 반환
         var sessionId = '';
 
         // (1)
         requestGetAsync('requestMatch', {
             did: did
         }).then(function(data) {
-            // (2)
             expect(data.response.statusCode).toBe(200);
-            var b;
-            try {
-                b = JSON.parse(data.body);
-            } catch (e) {}
+            var b = JSON.parse(data.body);
             expect(b.result).toBe('wait');
             // (3)
             return requestGetAsync('requestMatch', {
@@ -149,29 +156,37 @@ describe("Ataxx Server", function() {
         }).then(function(data) {
             // (4)
             expect(data.response.statusCode).toBe(200);
-            var b;
-            try {
-                b = JSON.parse(data.body);
-            } catch (e) {}
+            var b = JSON.parse(data.body);
             expect(b.result).toBe('ok');
             expect(b.sessionId.length).toBeGreaterThan(0);
             sessionId = b.sessionId;
             expect(b.opponentNickname).toBe(nickname);
+            checkInitialFullState(b);
             // (5)
             return requestGetAsync('requestMatch', {
                 did: did
             });
         }).then(function(data) {
             // (6)
-            var b;
-            try {
-                b = JSON.parse(data.body);
-            } catch (e) {}
+            var b = JSON.parse(data.body);
             expect(b.result).toBe('ok');
             expect(b.opponentNickname).toBe(nickname2);
             expect(b.sessionId).toBe(sessionId);
+            checkInitialFullState(b);
+            // (7)
+            return requestGetAsync('requestSessionState', {
+                did: did,
+                sid: sessionId,
+            });
+        }).then(function(data) {
+            // (8)
+            // 현재 상태 정보를 받아서 기대한대로 값이 다 들어있는지 확인한다.
+            var b = JSON.parse(data.body);
+            expect(b.result).toBe('ok');
+            expect(b.type).toBe('sessionState');
+            checkInitialFullState(b);
             done();
-        }, function(error) {
+        }).catch(function(error) {
             expect(error).not.toBeDefined();
             done();
         });
