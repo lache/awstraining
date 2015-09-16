@@ -15,7 +15,7 @@ function RequestXhr(cmd, args, responseCmd, cb, cbOnError) {
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status <= 207)) {
             var httpStatus = xhr.statusText;
-            var response = xhr.responseText.substring(0, 100) + '...';
+            var response = xhr.responseText;
             cc.log('GET Response (100 chars):)');
             cc.log(response);
             cc.log('Status: Got GET response! ' + httpStatus);

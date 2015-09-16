@@ -12,6 +12,8 @@
 	<dict>
 		<key>379E11AE845C22B1FB459A5C4B25CB93CBA537C6</key>
 		<string>https://github.com/lache/awstraining.git</string>
+		<key>436AA1DD795F359ED9D5694C539B35FA716324B2</key>
+		<string>https://bitbucket.org/blueholemobileteam/charlie.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>clientjs/frameworks/runtime-src/proj.ios_mac/ataxx.xcodeproj</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>379E11AE845C22B1FB459A5C4B25CB93CBA537C6</key>
 		<string>../../../../../..</string>
+		<key>436AA1DD795F359ED9D5694C539B35FA716324B2</key>
+		<string>../../../../../../../charlie</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/lache/awstraining.git</string>
@@ -35,6 +39,14 @@
 			<string>379E11AE845C22B1FB459A5C4B25CB93CBA537C6</string>
 			<key>IDESourceControlWCCName</key>
 			<string>awstraining</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>436AA1DD795F359ED9D5694C539B35FA716324B2</string>
+			<key>IDESourceControlWCCName</key>
+			<string>charlie</string>
 		</dict>
 	</array>
 </dict>

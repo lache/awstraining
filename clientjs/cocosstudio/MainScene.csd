@@ -6,7 +6,7 @@
       <ObjectData Name="Scene" ctype="GameNodeObjectData">
         <Size X="640.0000" Y="960.0000" />
         <Children>
-          <AbstractNodeData Name="bg" CanEdit="False" ActionTag="-544091904" Tag="20" IconVisible="False" ctype="SpriteObjectData">
+          <AbstractNodeData Name="bg" CanEdit="False" ActionTag="-544091904" Tag="-1" IconVisible="False" ctype="SpriteObjectData">
             <Size X="640.0000" Y="960.0000" />
             <AnchorPoint />
             <Position />

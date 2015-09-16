@@ -33,6 +33,7 @@ var MatchingLayer = cc.Layer.extend({
                 // 어느정도 시간 안기다려줬더니 장면 전환이 안되네... ㅋㅋ
                 opponentNickname = r.opponentNickname;
                 sessionId = r.sessionId;
+                fullState = r.fullState;
                 self.scheduleOnce(self.startMainScene, 1.0);
 
                 self.commandQueue.push(function() {
