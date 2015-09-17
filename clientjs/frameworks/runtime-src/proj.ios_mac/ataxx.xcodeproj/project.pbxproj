@@ -14,6 +14,8 @@
 		1AD7E0A818C9DB93004817A6 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 1A6BF21418C9DB5900FB0E1C /* main.js */; };
 		1AD7E0A918C9DBE3004817A6 /* main.js in Resources */ = {isa = PBXBuildFile; fileRef = 1A6BF21418C9DB5900FB0E1C /* main.js */; };
 		1AE159EC18C9DF3600FCA372 /* project.json in Resources */ = {isa = PBXBuildFile; fileRef = 1A1A081B18C9DF05005C6854 /* project.json */; };
+		263813E71BAABAD2003C92FE /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 263813E61BAABAD2003C92FE /* lib */; };
+		263813E81BAABAD2003C92FE /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 263813E61BAABAD2003C92FE /* lib */; };
 		265C71711BA01AB700097B21 /* NativeOcClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 265C71701BA01AB700097B21 /* NativeOcClass.m */; };
 		265C71721BA01AB700097B21 /* NativeOcClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 265C71701BA01AB700097B21 /* NativeOcClass.m */; };
 		265C71741BA01D9500097B21 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 265C71731BA01D9500097B21 /* Launch Screen.xib */; };
@@ -143,6 +145,7 @@
 		1A82F5FA169AC92500C4B13A /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		1A96A4F2174A3432008653A9 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = "../../cocos2d-x/cocos2dx/platform/third_party/ios/libraries/libcurl.a"; sourceTree = "<group>"; };
 		1AC6FB34180E9ACB004C840B /* cocos2d_libs.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cocos2d_libs.xcodeproj; path = "../../cocos2d-x/build/cocos2d_libs.xcodeproj"; sourceTree = "<group>"; };
+		263813E61BAABAD2003C92FE /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = ../../../../../charlie/core/lib; sourceTree = "<group>"; };
 		265C716F1BA01AB700097B21 /* NativeOcClass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeOcClass.h; sourceTree = "<group>"; };
 		265C71701BA01AB700097B21 /* NativeOcClass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeOcClass.m; sourceTree = "<group>"; };
 		265C71731BA01D9500097B21 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
@@ -256,6 +259,7 @@
 		15628F5B15F0F5C2000CF24B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				263813E61BAABAD2003C92FE /* lib */,
 				1A1A081B18C9DF05005C6854 /* project.json */,
 				1A6BF21418C9DB5900FB0E1C /* main.js */,
 				C0799CB518BAE62000E9C828 /* res */,
@@ -517,6 +521,7 @@
 			files = (
 				1AC22EDE18CA0E11007112B9 /* project.json in Resources */,
 				1AD7E0A918C9DBE3004817A6 /* main.js in Resources */,
+				263813E81BAABAD2003C92FE /* lib in Resources */,
 				C0799CBA18BAE62000E9C828 /* res in Resources */,
 				BAF426FC19484B3E002B22EF /* script in Resources */,
 				509D4ACF17EBB2BE00697056 /* Icon.icns in Resources */,
@@ -529,6 +534,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				263813E71BAABAD2003C92FE /* lib in Resources */,
 				BAF426FB19484B3E002B22EF /* script in Resources */,
 				1AE159EC18C9DF3600FCA372 /* project.json in Resources */,
 				1AD7E0A818C9DB93004817A6 /* main.js in Resources */,

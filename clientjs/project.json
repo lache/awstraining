@@ -18,16 +18,16 @@
         "src/MatchingScene.js",
         "src/StartScene.js",
 
-        "src/lib/charlie.js",
-        "src/lib/ataxx/Board.js",
-        "src/lib/ataxx/ConvertDelta.js",
-        "src/lib/ataxx/DeltaLogger.js",
-        "src/lib/ataxx/DrawDelta.js",
-        "src/lib/ataxx/MoveDelta.js",
-        "src/lib/ataxx/PlaceDelta.js",
-        "src/lib/ataxx/SizeDelta.js",
-        "src/lib/ataxx/TurnDelta.js",
-        "src/lib/ataxx/User.js",
-        "src/lib/ataxx/WinnerDelta.js"
+        "lib/charlie.js",
+        "lib/ataxx/Board.js",
+        "lib/ataxx/ConvertDelta.js",
+        "lib/ataxx/DeltaLogger.js",
+        "lib/ataxx/DrawDelta.js",
+        "lib/ataxx/MoveDelta.js",
+        "lib/ataxx/PlaceDelta.js",
+        "lib/ataxx/SizeDelta.js",
+        "lib/ataxx/TurnDelta.js",
+        "lib/ataxx/User.js",
+        "lib/ataxx/WinnerDelta.js"
     ]
 }
