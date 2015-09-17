@@ -1,0 +1,327 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Charlie API",
+        "description": "Charlie 공용 프레임워크 API",
+        "version": "0.1.0"
+    },
+    "host": "localhost:3000",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "summary": "서버 상태 조회",
+                "description": "서버의 메모리, 업타임을 조회한다.\n",
+                "tags": [
+                    "시스템관리"
+                ],
+                "responses": {
+                    "default": {
+                        "description": "결과"
+                    }
+                }
+            }
+        },
+        "/simulateDbServerDown": {
+            "get": {
+                "summary": "DB 접근 불가 모드로 설정",
+                "description": "DB 주소를 존재하지 않는 것으로 지정함으로써, 서버가 DB에\n접근하지 못하는 상황에서 어떻게 작동하는지를 테스트 하기 위해\n쓰인다. (개발 전용 기능)\n",
+                "tags": [
+                    "시스템관리"
+                ],
+                "responses": {
+                    "default": {
+                        "description": "결과"
+                    }
+                }
+            }
+        },
+        "/stopSimulateDbServerDown": {
+            "get": {
+                "summary": "DB 접근 불가 모드 해제 설정",
+                "description": "DB 주소를 존재하지 않는 것으로 지정했던 것을 원상 복구시킨다.\n(개발 전용 기능)\n",
+                "tags": [
+                    "시스템관리"
+                ],
+                "responses": {
+                    "default": {
+                        "description": "결과"
+                    }
+                }
+            }
+        },
+        "/getNickname": {
+            "get": {
+                "summary": "닉네임 조회",
+                "description": "특정 유저의 닉네임을 조회한다.\n닉네임이 지정되어 있지 않은 기기 혹은 한번도 지정한 적이 없는\n기기에 대해서 빈 문자열이 반환된다.\n",
+                "parameters": [
+                    {
+                        "name": "did",
+                        "in": "query",
+                        "type": "string",
+                        "description": "장치 ID",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "계정정보"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "처리 결과",
+                        "schema": {
+                            "$ref": "#/definitions/NicknameResult"
+                        }
+                    },
+                    "default": {
+                        "description": "오류",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/setNickname": {
+            "get": {
+                "summary": "닉네임 설정",
+                "description": "특정 유저의 닉네임을 신규 등록 및 변경한다.\n",
+                "parameters": [
+                    {
+                        "name": "did",
+                        "in": "query",
+                        "type": "string",
+                        "description": "장치 ID",
+                        "required": true
+                    },
+                    {
+                        "name": "nickname",
+                        "in": "query",
+                        "type": "string",
+                        "description": "변경할 닉네임",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "계정정보"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "처리 결과",
+                        "schema": {
+                            "$ref": "#/definitions/Nickname"
+                        }
+                    },
+                    "default": {
+                        "description": "오류",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/getNicknameAddedDate": {
+            "get": {
+                "summary": "닉네임 추가 날짜 조회",
+                "description": "특정 유저의 닉네임 지정 날짜(타임스탬프)를 조회한다.\n",
+                "parameters": [
+                    {
+                        "name": "did",
+                        "in": "query",
+                        "type": "string",
+                        "description": "장치 ID",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "계정정보"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "처리 결과",
+                        "schema": {
+                            "$ref": "#/definitions/NicknameAddedDate"
+                        }
+                    },
+                    "default": {
+                        "description": "오류",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/requestMatch": {
+            "get": {
+                "summary": "매치 요청",
+                "description": "매치를 요청한다.\n",
+                "parameters": [
+                    {
+                        "name": "did",
+                        "in": "query",
+                        "type": "string",
+                        "description": "장치 ID",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "매치"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "처리 결과",
+                        "schema": {
+                            "$ref": "#/definitions/RequestMatchResult"
+                        }
+                    },
+                    "default": {
+                        "description": "오류",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/requestSessionState": {
+            "get": {
+                "summary": "매치 세션 상태 조회",
+                "description": "세션 ID를 이용해 매치 세션 상태를 조죄합니다.\n",
+                "parameters": [
+                    {
+                        "name": "did",
+                        "in": "query",
+                        "type": "string",
+                        "description": "장치 ID",
+                        "required": true
+                    },
+                    {
+                        "name": "sid",
+                        "in": "query",
+                        "type": "string",
+                        "description": "세션 ID",
+                        "required": true
+                    }
+                ],
+                "tags": [
+                    "매치"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "처리 결과",
+                        "schema": {
+                            "$ref": "#/definitions/RequestMatchResult"
+                        }
+                    },
+                    "default": {
+                        "description": "오류",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "RequestMatchResult": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "string",
+                    "description": "결과 (wait, ok)"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "응답 타입 (matchInfo)"
+                }
+            }
+        },
+        "NicknameAddedDate": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "string",
+                    "description": "결과"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "응답 타입"
+                },
+                "did": {
+                    "type": "string",
+                    "description": "장치 ID"
+                },
+                "nicknameaddeddate": {
+                    "type": "string",
+                    "description": "닉네임 지정 일시"
+                }
+            }
+        },
+        "NicknameResult": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "string",
+                    "description": "결과"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "응답 타입"
+                },
+                "did": {
+                    "type": "string",
+                    "description": "장치 ID"
+                },
+                "nickname": {
+                    "type": "string",
+                    "description": "닉네임"
+                },
+                "reason": {
+                    "type": "number",
+                    "description": "오류 종류"
+                }
+            }
+        },
+        "Nickname": {
+            "type": "object",
+            "properties": {
+                "result": {
+                    "type": "string",
+                    "description": "결과"
+                },
+                "did": {
+                    "type": "string",
+                    "description": "장치 ID"
+                },
+                "nickname": {
+                    "type": "string",
+                    "description": "닉네임"
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

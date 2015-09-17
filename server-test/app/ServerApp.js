@@ -1,5 +1,7 @@
+var cors = require('cors')
 var express = require('express');
 var app = express();
+app.use(cors());
 
 // 'Hello World' array generator
 var generator = require('./generator');
@@ -97,6 +99,16 @@ app.get('/requestSessionState', function(req, res) {
         res.status(404).send();
     });
 });
+
+app.get('/health', function(req, res) {
+    res.send({
+        pid: process.pid,
+        memory: process.memoryUsage(),
+        uptime: process.uptime()
+    });
+});
+
+app.use('/static', express.static(__dirname + '/public'));
 
 module.exports = app;
 
