@@ -427,14 +427,19 @@ describe("Ataxx Frontend", function() {
             expect(data[0].state).toBe('fulfilled');
             expect(data[1].state).toBe('fulfilled');
 
+            var expectedDelta = String.format('move {0} {1} {2} {3} {4}',
+                nn1, 0, 0, 1, 0, 'clone'
+            );
+
             var b1 = JSON.parse(data[0].value);
             expect(b1.result).toBe('ok');
             expect(b1.type).toBe('ataxxCommand');
+            expect(b1.data).toBe(expectedDelta);
 
             var b2 = JSON.parse(data[1].value);
             expect(b2.result).toBe('ok');
             expect(b2.type).toBe('ataxxCommand');
-            expect(b2.data).toBe('move 0 0 1 0');
+            expect(b2.data).toBe(expectedDelta);
             done();
         }).done();
     });

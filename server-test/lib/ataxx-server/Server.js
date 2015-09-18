@@ -23,6 +23,8 @@ var matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -
 var lastSessionSet = {}; // DID별 소속된 세션 맵: DID -> SID
 var didConnectionSet = {}; // DID -> WebSocket connection
 var connectionDidSet = new Map(); // WebSocket connection -> DID
+var deltaQueue = {}; // DID+SID -> Delta 배열
+
 Server.prototype.getMatchSessionCount = function() {
     return Object.keys(matchedSet).length;
 }
@@ -129,16 +131,24 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
         // 게임 컨택스트 생성!
         if (typeof matched.board === 'undefined') {
             var board = new CHARLIE.ataxx.Board();
+            var dl = new CHARLIE.ataxx.DeltaLogger();
             var user1 = new CHARLIE.ataxx.User(matched.did1Nickname);
+            user1.did = matched.did1;
             var user2 = new CHARLIE.ataxx.User(matched.did2Nickname);
+            user2.did = matched.did2;
             var w = 7,
                 h = 7;
+            board.setDeltaLogger(dl);
             board.setSize(w, h);
             board.place(user1, 0, 0);
             board.place(user1, w - 1, h - 1);
             board.place(user2, w - 1, 0);
             board.place(user2, 0, h - 1);
+            board.nextTurn();
             matched.board = board;
+
+            deltaQueue[matched.did1 + '+' + matched.sid] = [];
+            deltaQueue[matched.did2 + '+' + matched.sid] = [];
         }
 
         deferred.resolve({
@@ -292,13 +302,30 @@ Server.prototype.stopSimulateDbServerDown = function() {
     });
 }
 
-Server.prototype.onWebSocketMessage = function(connection, b) {
-    var responseJson = {
-        result: 'ok',
-    };
+Server.prototype.processUserDelta = function(board, did, delta) {
+    var t = delta.split(' ');
+    if (t[0] == 'move' && t.length == 5) {
+        var u;
+        for (var k in board.userList) {
+            if (board.userList[k].did == did) {
+                u = board.userList[k];
+            }
+        }
 
+        if (board.move(u, Number(t[1]), Number(t[2]), Number(t[3]), Number(t[4]))) {
+            if (board.nextTurn() == CHARLIE.ataxx.NextTurnResult.OK) {
+                return true;
+            }
+        }
+    } else {
+        console.error('Unknown user delta: ' + delta);
+    }
+
+    return false;
+}
+
+Server.prototype.onWebSocketMessage = function(connection, b) {
     if (b.cmd == 'openSession') {
-        responseJson.type = b.cmd;
         var lastSessionId = lastSessionSet[b.did];
         if (b.sid != lastSessionId) {
             responseJson.result = 'fail';
@@ -306,7 +333,10 @@ Server.prototype.onWebSocketMessage = function(connection, b) {
             didConnectionSet[b.did] = connection;
             connectionDidSet.set(connection, b.did);
         }
-        connection.sendUTF(JSON.stringify(responseJson));
+        connection.sendUTF(JSON.stringify({
+            result: 'ok',
+            type: b.cmd,
+        }));
     } else if (b.cmd == 'ataxxCommand') {
         // 패킷을 보낸 did
         var did = connectionDidSet.get(connection);
@@ -314,23 +344,53 @@ Server.prototype.onWebSocketMessage = function(connection, b) {
         var sid = lastSessionSet[did];
         // 방을 찾아서...
         var matched = matchedSet[sid];
+        // 게임 컨텍스트를 찾고...
+        var board = matched.board;
         // 상대방 DID를 파악
         var didOther = (did == matched.did1) ? matched.did2 : matched.did1;
         // 패킷을 보낸 did, 같은 방에 있는 didOther 모두에게 응답 패킷을 보낸다.
         var connOther = didConnectionSet[didOther];
 
-        responseJson.type = b.cmd;
-        responseJson.data = b.data;
-        var r = JSON.stringify(responseJson);
-        if (connOther) {
-            connOther.sendUTF(r);
-        }
-        if (connection) {
-            connection.sendUTF(r);
+        if (this.processUserDelta(board, did, b.data) == true) {
+            var dq = deltaQueue[did + '+' + sid];
+            var dqOther = deltaQueue[didOther + '+' + sid];
+            var d;
+            while (d = board.dl.pop()) {
+                var ds = d.toString();
+                dq.push(ds);
+                dqOther.push(ds);
+            }
+
+            if (dq.length > 0 && connection) {
+                connection.sendUTF(JSON.stringify({
+                    result: 'ok',
+                    type: b.cmd,
+                    data: dq,
+                }));
+                dq = [];
+            }
+
+            if (dqOther.length > 0 && connOther) {
+                connOther.sendUTF(JSON.stringify({
+                    result: 'ok',
+                    type: b.cmd,
+                    data: dqOther,
+                }));
+                dqOther = [];
+            }
+        } else {
+            connection.sendUTF(JSON.stringify({
+                result: 'fail',
+                type: b.cmd,
+                reason: 'delta processing failure',
+            }));
         }
     } else {
-        responseJson.result = 'fail';
-        connection.sendUTF(JSON.stringify(responseJson));
+        connection.sendUTF(JSON.stringify({
+            result: 'fail',
+            type: b.cmd,
+            reason: 'unknown command',
+        }));
     }
 }
 
