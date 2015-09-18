@@ -21,6 +21,7 @@
     "express": "^4.13.3",
     "jasmine-node": "^1.14.5",
     "q": "^1.4.1",
-    "request": "^2.61.0"
+    "request": "^2.61.0",
+    "websocket": "^1.0.21"
   }
 }

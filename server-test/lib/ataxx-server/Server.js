@@ -11,6 +11,7 @@ AWS.config.update({
 var Q = require('q');
 var CHARLIE = require('charlie-core');
 var dyn;
+
 function Server() {
     dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
@@ -20,7 +21,8 @@ function Server() {
 var waitingSet = {}; // requestMatch를 호출한 DID 맵: DID (Device ID) -> true
 var matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -> {did1:*, did2:*, ...}
 var lastSessionSet = {}; // DID별 소속된 세션 맵: DID -> SID
-
+var didConnectionSet = {}; // DID -> WebSocket connection
+var connectionDidSet = new Map(); // WebSocket connection -> DID
 Server.prototype.getMatchSessionCount = function() {
     return Object.keys(matchedSet).length;
 }
@@ -288,6 +290,48 @@ Server.prototype.stopSimulateDbServerDown = function() {
     dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
     });
+}
+
+Server.prototype.onWebSocketMessage = function(connection, b) {
+    var responseJson = {
+        result: 'ok',
+    };
+
+    if (b.cmd == 'openSession') {
+        responseJson.type = b.cmd;
+        var lastSessionId = lastSessionSet[b.did];
+        if (b.sid != lastSessionId) {
+            responseJson.result = 'fail';
+        } else {
+            didConnectionSet[b.did] = connection;
+            connectionDidSet.set(connection, b.did);
+        }
+        connection.sendUTF(JSON.stringify(responseJson));
+    } else if (b.cmd == 'ataxxCommand') {
+        // 패킷을 보낸 did
+        var did = connectionDidSet.get(connection);
+        // 패킷을 보낸 did가 지금 하고 있는 게임 sid
+        var sid = lastSessionSet[did];
+        // 방을 찾아서...
+        var matched = matchedSet[sid];
+        // 상대방 DID를 파악
+        var didOther = (did == matched.did1) ? matched.did2 : matched.did1;
+        // 패킷을 보낸 did, 같은 방에 있는 didOther 모두에게 응답 패킷을 보낸다.
+        var connOther = didConnectionSet[didOther];
+
+        responseJson.type = b.cmd;
+        responseJson.data = b.data;
+        var r = JSON.stringify(responseJson);
+        if (connOther) {
+            connOther.sendUTF(r);
+        }
+        if (connection) {
+            connection.sendUTF(r);
+        }
+    } else {
+        responseJson.result = 'fail';
+        connection.sendUTF(JSON.stringify(responseJson));
+    }
 }
 
 module.exports = Server;

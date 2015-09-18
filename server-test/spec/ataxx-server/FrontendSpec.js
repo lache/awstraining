@@ -1,8 +1,10 @@
 var request = require("request");
 var Q = require('q');
-var base_url = "http://localhost:3000"
+var WebSocketClient = require('websocket').client;
+var base_url = "http://localhost:3000";
+var ws_base_url = "ws://localhost:3000"
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 
 function EncodeQueryData(data) {
     var ret = [];
@@ -17,8 +19,6 @@ function Command(command, args) {
 }
 
 var app = require('../../app/ServerApp');
-app.listen(3000);
-console.log('app.listen() called');
 
 function requestGetAsync(cmd, params) {
     var deferred = Q.defer();
@@ -138,6 +138,7 @@ describe("Ataxx Frontend", function() {
     // 두 기기는 한번도 매치 요청을 하지 않은 상태여야 한다.
     // 매치가 완료되면 세션 ID를 반환한다.
     function createMatchSessionPairAsync(did, nickname, did2, nickname2) {
+        // (0) did, did2에 대해 닉네임 지정
         // (1) did 요청 -> (2) wait 반환
         // (3) did2 요청 -> (4) did, did2와 매칭됨. 매칭 결과 반환
         // (5) did 요청 -> (6) 매칭 결과(세션 ID; sid) 반환
@@ -145,15 +146,17 @@ describe("Ataxx Frontend", function() {
         var deferred = Q.defer();
         var sessionId = '';
 
-        requestGetAsync('setNickname', {
-            did: did,
-            nickname: nickname,
-        }).then(function(data) {
-            return requestGetAsync('setNickname', {
+        // (0)
+        Q.allSettled([
+            requestGetAsync('setNickname', {
+                did: did,
+                nickname: nickname,
+            }),
+            requestGetAsync('setNickname', {
                 did: did2,
                 nickname: nickname2,
-            });
-        }).then(function(data) {
+            }),
+        ]).then(function(data) {
             // (1)
             return requestGetAsync('requestMatch', {
                 did: did
@@ -240,21 +243,18 @@ describe("Ataxx Frontend", function() {
     // 매칭 테스트 (여러 쌍 더 매칭되도록 하기)
     it('requestMatch API 테스트 (여러 쌍 더)', function(done) {
         var funcs = [];
-        var matchCount = 5;
+        var matchCount = 3;
         for (var i = 0; i < matchCount; i++) {
             funcs.push(function(i) {
                 return function() {
                     return createMatchSessionPairAsync(
-                        did + '_' + i,
-                        nickname + '_' + i,
-                        did2 + '_' + i,
-                        nickname2 + '_' + i);
+                        did + '__' + i,
+                        nickname + '__' + i,
+                        did2 + '__' + i,
+                        nickname2 + '__' + i);
                 };
             }(i));
         }
-        // funcs[0]().then(funcs[1]).then(funcs[2]).then(function(data) {
-        //     done();
-        // }).done();
 
         var matchSessionCount;
         getMatchSessionCountAsync().then(function(data) {
@@ -264,6 +264,177 @@ describe("Ataxx Frontend", function() {
             return getMatchSessionCountAsync();
         }).then(function(data) {
             expect(data.matchSessionCount - matchSessionCount).toBe(matchCount);
+            done();
+        }).done();
+    });
+
+    it('웹소켓 기본 기능 테스트 - 클라이언트가 열었다 닫는다.', function(done) {
+        var client = new WebSocketClient();
+        expect(client).toBeDefined();
+        client.on('connectFailed', function(error) {
+            fail('[WS] connectFailed - ' + error);
+        });
+        client.on('connect', function(connection) {
+            connection.on('error', function(error) {
+                fail('[WS] connect error - ' + error);
+            });
+            connection.on('close', function() {
+                done();
+            });
+            connection.on('message', function(message) {
+                if (message.type === 'utf8') {
+                    connection.close();
+                }
+            });
+
+            if (connection.connected) {
+                connection.sendUTF('hehe');
+            } else {
+                fail('Not connected error');
+            }
+        });
+        client.connect('ws://html5rocks.websocket.org/echo');
+    });
+
+    // 연결 성립된 웹소켓 연결 객체에 message 핸들러를 1회용으로 달고,
+    // data를 송신한다. data 송신에 따른 수신은 1회용으로 단 핸들러가
+    // 호출되는 것을 가정하고 있다.
+    function sendWithVolatileMessageHandlerAsync(data) {
+        expect(this.connection.connected).toBeTruthy();
+        var deferred = Q.defer();
+        this.connection.once('message', function(message) {
+            if (message.type === 'utf8') {
+                deferred.resolve(message.utf8Data);
+            } else {
+                deferred.reject(new Error('Unsupported type ' + message.type + ' received.'));
+            }
+        });
+        this.connection.sendUTF(data);
+        return deferred.promise;
+    }
+
+    // sendWithVolatileMessageHandlerAsync와 동일한데,
+    // send는 하지 않고 메시지를 받기만 한다.
+    function recvAsync() {
+        expect(this.connection.connected).toBeTruthy();
+        var deferred = Q.defer();
+        this.connection.once('message', function(message) {
+            if (message.type === 'utf8') {
+                deferred.resolve(message.utf8Data);
+            } else {
+                deferred.reject(new Error('Unsupported type ' + message.type + ' received.'));
+            }
+        });
+        return deferred.promise;
+    }
+
+    function openWebSocketConnectionAsync(addr, protocol) {
+        var deferred = Q.defer();
+        var client = new WebSocketClient();
+        client.on('connectFailed', function(error) {
+            deferred.reject(error);
+        });
+        client.on('connect', function(connection) {
+            connection.on('error', function(error) {
+                deferred.reject(error);
+            });
+            connection.on('close', function() {
+                done();
+            });
+
+            if (connection.connected) {
+                deferred.resolve({
+                    connection: connection,
+                    sendAsync: sendWithVolatileMessageHandlerAsync,
+                    recvAsync: recvAsync,
+                });
+            } else {
+                deferred.reject(new Error('Connect error'));
+            }
+        });
+        client.connect(addr, protocol);
+        return deferred.promise;
+    }
+
+    it('매치 세션과의 WebSocket 연결 확인', function(done) {
+        var did1 = 'did1',
+            nn1 = 'nickname1',
+            did2 = 'did2',
+            nn2 = 'nickname2';
+        var sid;
+        var conn1;
+        var conn2;
+
+        // did1이 먼저 말을 두게 되는 매치 상황을 만든다.
+        createMatchSessionPairAsync(did1, nn1, did2, nn2).then(function(data) {
+            sid = data.sessionId;
+
+            // 매치 세션은 생성됐으니 두 개의 ataxx 프로토콜 웹소켓을 연다.
+            return Q.allSettled([
+                openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
+                openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
+            ]);
+        }).then(function(connections) {
+            expect(connections[0].state).toBe('fulfilled');
+            expect(connections[1].state).toBe('fulfilled');
+
+            conn1 = connections[0].value;
+            conn2 = connections[1].value;
+
+            // did1, did2 각자 자신의 세션을 연다.
+            return Q.allSettled([
+                conn1.sendAsync(JSON.stringify({
+                    cmd: 'openSession',
+                    did: did1,
+                    sid: sid,
+                })),
+                conn2.sendAsync(JSON.stringify({
+                    cmd: 'openSession',
+                    did: did2,
+                    sid: sid,
+                })),
+            ]);
+        }).then(function(data) {
+            expect(data[0].state).toBe('fulfilled');
+            expect(data[1].state).toBe('fulfilled');
+
+            var b1 = JSON.parse(data[0].value);
+            expect(b1.result).toBe('ok');
+            expect(b1.type).toBe('openSession');
+
+            var b2 = JSON.parse(data[1].value);
+            expect(b2.result).toBe('ok');
+            expect(b2.type).toBe('openSession');
+
+            // did2는 메시지가 오기를 기다리고,
+            // did1이 (0,0)에 있는 말을 (1,0)으로 옮기도록 한다.
+            // did2가 받기 전에 did1이 보내면 안되므로 conn2, conn1 순으로
+            // 호출한다.
+            var conn2RecvAsync = conn2.recvAsync();
+            var conn1SendAsync = conn1.sendAsync(JSON.stringify({
+                cmd: 'ataxxCommand',
+                data: 'move 0 0 1 0'
+            }));
+
+            // did1, did2 모두 상황 변화에 대한 응답을 제대로 받는 것을 확인한다.
+            // did1은 move 요청에 대한 응답으로 메시지를 받고,
+            // did2는 서버가 먼저 메시지를 보냄으로써 받는다.
+            return Q.allSettled([
+                conn1SendAsync,
+                conn2RecvAsync,
+            ]);
+        }).then(function(data) {
+            expect(data[0].state).toBe('fulfilled');
+            expect(data[1].state).toBe('fulfilled');
+
+            var b1 = JSON.parse(data[0].value);
+            expect(b1.result).toBe('ok');
+            expect(b1.type).toBe('ataxxCommand');
+
+            var b2 = JSON.parse(data[1].value);
+            expect(b2.result).toBe('ok');
+            expect(b2.type).toBe('ataxxCommand');
+            expect(b2.data).toBe('move 0 0 1 0');
             done();
         }).done();
     });
