@@ -2,7 +2,7 @@ var request = require("request");
 var Q = require('q');
 var base_url = "http://localhost:3000"
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000;
 
 function EncodeQueryData(data) {
     var ret = [];
@@ -125,7 +125,7 @@ describe("Ataxx Frontend", function() {
         });
     });
 
-    function checkInitialFullState(b) {
+    function checkInitialFullState(b, did, nickname, did2, nickname2) {
         expect(b.gameType).toBe('ataxx');
         expect(b.fullState.width).toBe(7);
         expect(b.fullState.height).toBe(7);
@@ -134,17 +134,30 @@ describe("Ataxx Frontend", function() {
         expect(b.fullState.userList[1].name).toBe(nickname2);
     }
 
-    // 매칭 테스트 (did가 먼저 요청하고 did2가 나중에 요청하는 시나리오)
-    it('requestMatch API 테스트', function(done) {
+    // 두 기기를 입장시켜서 새로운 매치 세션을 만든다.
+    // 두 기기는 한번도 매치 요청을 하지 않은 상태여야 한다.
+    // 매치가 완료되면 세션 ID를 반환한다.
+    function createMatchSessionPairAsync(did, nickname, did2, nickname2) {
         // (1) did 요청 -> (2) wait 반환
         // (3) did2 요청 -> (4) did, did2와 매칭됨. 매칭 결과 반환
         // (5) did 요청 -> (6) 매칭 결과(세션 ID; sid) 반환
         // (7) did/sid로 세션 정보 요청 -> (8) 세션 정보 반환
+        var deferred = Q.defer();
         var sessionId = '';
 
-        // (1)
-        requestGetAsync('requestMatch', {
-            did: did
+        requestGetAsync('setNickname', {
+            did: did,
+            nickname: nickname,
+        }).then(function(data) {
+            return requestGetAsync('setNickname', {
+                did: did2,
+                nickname: nickname2,
+            });
+        }).then(function(data) {
+            // (1)
+            return requestGetAsync('requestMatch', {
+                did: did
+            });
         }).then(function(data) {
             expect(data.response.statusCode).toBe(200);
             var b = JSON.parse(data.body);
@@ -161,7 +174,7 @@ describe("Ataxx Frontend", function() {
             expect(b.sessionId.length).toBeGreaterThan(0);
             sessionId = b.sessionId;
             expect(b.opponentNickname).toBe(nickname);
-            checkInitialFullState(b);
+            checkInitialFullState(b, did, nickname, did2, nickname2);
             // (5)
             return requestGetAsync('requestMatch', {
                 did: did
@@ -172,7 +185,7 @@ describe("Ataxx Frontend", function() {
             expect(b.result).toBe('ok');
             expect(b.opponentNickname).toBe(nickname2);
             expect(b.sessionId).toBe(sessionId);
-            checkInitialFullState(b);
+            checkInitialFullState(b, did, nickname, did2, nickname2);
             // (7)
             return requestGetAsync('requestSessionState', {
                 did: did,
@@ -184,12 +197,75 @@ describe("Ataxx Frontend", function() {
             var b = JSON.parse(data.body);
             expect(b.result).toBe('ok');
             expect(b.type).toBe('sessionState');
-            checkInitialFullState(b);
-            done();
-        }).catch(function(error) {
-            expect(error).not.toBeDefined();
-            done();
+            checkInitialFullState(b, did, nickname, did2, nickname2);
+            deferred.resolve({
+                sessionId: sessionId
+            });
+        }).done();
+
+        return deferred.promise;
+    }
+
+    function getMatchSessionCountAsync() {
+        var deferred = Q.defer();
+        requestGetAsync('getMatchSessionCount', {}).then(function(data) {
+            deferred.resolve(JSON.parse(data.body));
         });
+        return deferred.promise;
+    }
+
+    it('매치 세션 개수 조회', function(done) {
+        getMatchSessionCountAsync().then(function(b) {
+            expect(b.matchSessionCount).toBeDefined();
+            done();
+        }).done();
+    })
+
+    // 매칭 테스트 (did가 먼저 요청하고 did2가 나중에 요청하는 시나리오)
+    it('requestMatch API 테스트', function(done) {
+        var matchSessionCount;
+        getMatchSessionCountAsync().then(function(data) {
+            matchSessionCount = data.matchSessionCount;
+            return createMatchSessionPairAsync(did, nickname, did2, nickname2);
+        }).then(function(data) {
+            expect(data.sessionId).toBeDefined();
+            expect(data.sessionId.length).toBeGreaterThan(0);
+            return getMatchSessionCountAsync();
+        }).then(function(data) {
+            expect(data.matchSessionCount - matchSessionCount).toBe(1);
+            done();
+        }).done();
+    });
+
+    // 매칭 테스트 (여러 쌍 더 매칭되도록 하기)
+    it('requestMatch API 테스트 (여러 쌍 더)', function(done) {
+        var funcs = [];
+        var matchCount = 5;
+        for (var i = 0; i < matchCount; i++) {
+            funcs.push(function(i) {
+                return function() {
+                    return createMatchSessionPairAsync(
+                        did + '_' + i,
+                        nickname + '_' + i,
+                        did2 + '_' + i,
+                        nickname2 + '_' + i);
+                };
+            }(i));
+        }
+        // funcs[0]().then(funcs[1]).then(funcs[2]).then(function(data) {
+        //     done();
+        // }).done();
+
+        var matchSessionCount;
+        getMatchSessionCountAsync().then(function(data) {
+            matchSessionCount = data.matchSessionCount;
+            return funcs.reduce(Q.when, Q());
+        }).then(function(data) {
+            return getMatchSessionCountAsync();
+        }).then(function(data) {
+            expect(data.matchSessionCount - matchSessionCount).toBe(matchCount);
+            done();
+        }).done();
     });
 });
 

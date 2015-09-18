@@ -108,6 +108,12 @@ app.get('/health', function(req, res) {
     });
 });
 
+app.get('/getMatchSessionCount', function(req, res) {
+    res.send({
+        matchSessionCount: server.getMatchSessionCount()
+    });
+});
+
 app.use('/static', express.static(__dirname + '/public'));
 
 module.exports = app;

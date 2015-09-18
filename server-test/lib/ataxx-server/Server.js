@@ -21,6 +21,10 @@ var waitingSet = {}; // requestMatch를 호출한 DID 맵: DID (Device ID) -> tr
 var matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -> {did1:*, did2:*, ...}
 var lastSessionSet = {}; // DID별 소속된 세션 맵: DID -> SID
 
+Server.prototype.getMatchSessionCount = function() {
+    return Object.keys(matchedSet).length;
+}
+
 Server.prototype.requestSessionStateAsync = function(did, sid) {
     var deferred = Q.defer();
 
