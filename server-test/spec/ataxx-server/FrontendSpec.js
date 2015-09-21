@@ -1,10 +1,11 @@
+'use strict';
 var request = require("request");
 var Q = require('q');
 var WebSocketClient = require('websocket').client;
 var base_url = "http://localhost:3000";
 var ws_base_url = "ws://localhost:3000"
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 function EncodeQueryData(data) {
     var ret = [];
@@ -268,7 +269,7 @@ describe("Ataxx Frontend", function() {
         }).done();
     });
 
-    it('웹소켓 기본 기능 테스트 - 클라이언트가 열었다 닫는다.', function(done) {
+    xit('웹소켓 기본 기능 테스트 - 클라이언트가 열었다 닫는다.', function(done) {
         var client = new WebSocketClient();
         expect(client).toBeDefined();
         client.on('connectFailed', function(error) {
@@ -299,7 +300,7 @@ describe("Ataxx Frontend", function() {
     // 연결 성립된 웹소켓 연결 객체에 message 핸들러를 1회용으로 달고,
     // data를 송신한다. data 송신에 따른 수신은 1회용으로 단 핸들러가
     // 호출되는 것을 가정하고 있다.
-    function sendWithVolatileMessageHandlerAsync(data) {
+    function sendRecvOnceAsync(data) {
         expect(this.connection.connected).toBeTruthy();
         var deferred = Q.defer();
         this.connection.once('message', function(message) {
@@ -313,9 +314,9 @@ describe("Ataxx Frontend", function() {
         return deferred.promise;
     }
 
-    // sendWithVolatileMessageHandlerAsync와 동일한데,
+    // sendRecvOnceAsync와 동일한데,
     // send는 하지 않고 메시지를 받기만 한다.
-    function recvAsync() {
+    function recvOnceAsync() {
         expect(this.connection.connected).toBeTruthy();
         var deferred = Q.defer();
         this.connection.once('message', function(message) {
@@ -345,8 +346,8 @@ describe("Ataxx Frontend", function() {
             if (connection.connected) {
                 deferred.resolve({
                     connection: connection,
-                    sendAsync: sendWithVolatileMessageHandlerAsync,
-                    recvAsync: recvAsync,
+                    sendAsync: sendRecvOnceAsync,
+                    recvOnceAsync: recvOnceAsync,
                 });
             } else {
                 deferred.reject(new Error('Connect error'));
@@ -370,19 +371,17 @@ describe("Ataxx Frontend", function() {
             sid = data.sessionId;
 
             // 매치 세션은 생성됐으니 두 개의 ataxx 프로토콜 웹소켓을 연다.
-            return Q.allSettled([
+            return Q.all([
                 openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
                 openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
             ]);
-        }).then(function(connections) {
-            expect(connections[0].state).toBe('fulfilled');
-            expect(connections[1].state).toBe('fulfilled');
-
-            conn1 = connections[0].value;
-            conn2 = connections[1].value;
+        }).spread(function(c1, c2) {
+            // 다음 단계에서 계속 쓸 변수니까 저장해 둔다.
+            conn1 = c1;
+            conn2 = c2;
 
             // did1, did2 각자 자신의 세션을 연다.
-            return Q.allSettled([
+            return Q.all([
                 conn1.sendAsync(JSON.stringify({
                     cmd: 'openSession',
                     did: did1,
@@ -394,15 +393,12 @@ describe("Ataxx Frontend", function() {
                     sid: sid,
                 })),
             ]);
-        }).then(function(data) {
-            expect(data[0].state).toBe('fulfilled');
-            expect(data[1].state).toBe('fulfilled');
-
-            var b1 = JSON.parse(data[0].value);
+        }).spread(function(r1, r2) {
+            var b1 = JSON.parse(r1);
             expect(b1.result).toBe('ok');
             expect(b1.type).toBe('openSession');
 
-            var b2 = JSON.parse(data[1].value);
+            var b2 = JSON.parse(r2);
             expect(b2.result).toBe('ok');
             expect(b2.type).toBe('openSession');
 
@@ -410,7 +406,7 @@ describe("Ataxx Frontend", function() {
             // did1이 (0,0)에 있는 말을 (1,0)으로 옮기도록 한다.
             // did2가 받기 전에 did1이 보내면 안되므로 conn2, conn1 순으로
             // 호출한다.
-            var conn2RecvAsync = conn2.recvAsync();
+            var conn2recvOnceAsync = conn2.recvOnceAsync();
             var conn1SendAsync = conn1.sendAsync(JSON.stringify({
                 cmd: 'ataxxCommand',
                 data: 'move 0 0 1 0'
@@ -419,24 +415,21 @@ describe("Ataxx Frontend", function() {
             // did1, did2 모두 상황 변화에 대한 응답을 제대로 받는 것을 확인한다.
             // did1은 move 요청에 대한 응답으로 메시지를 받고,
             // did2는 서버가 먼저 메시지를 보냄으로써 받는다.
-            return Q.allSettled([
+            return Q.all([
                 conn1SendAsync,
-                conn2RecvAsync,
+                conn2recvOnceAsync,
             ]);
-        }).then(function(data) {
-            expect(data[0].state).toBe('fulfilled');
-            expect(data[1].state).toBe('fulfilled');
-
+        }).spread(function(r1, r2) {
             var expectedDelta = String.format('move {0} {1} {2} {3} {4}',
                 nn1, 0, 0, 1, 0, 'clone'
             );
 
-            var b1 = JSON.parse(data[0].value);
+            var b1 = JSON.parse(r1);
             expect(b1.result).toBe('ok');
             expect(b1.type).toBe('ataxxCommand');
             expect(b1.data).toBe(expectedDelta);
 
-            var b2 = JSON.parse(data[1].value);
+            var b2 = JSON.parse(r2);
             expect(b2.result).toBe('ok');
             expect(b2.type).toBe('ataxxCommand');
             expect(b2.data).toBe(expectedDelta);

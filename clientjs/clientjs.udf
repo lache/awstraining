@@ -7,5 +7,21 @@
         <LastRunType Value="Mac" />
       </Value>
     </Item>
+    <Item Key="TabsParamsKey">
+      <Value ctype="TabsInfo">
+        <OpenedDocuments>
+          <FilePathData Path="MainScene.csd" />
+          <FilePathData Path="Time.csd" />
+          <FilePathData Path="Profile.csd" />
+          <FilePathData Path="StartScene.csd" />
+          <FilePathData Path="Button.csd" />
+          <FilePathData Path="Plist.csi" />
+          <FilePathData Path="Red.csd" />
+          <FilePathData Path="Blue.csd" />
+          <FilePathData Path="NicknameScene.csd" />
+        </OpenedDocuments>
+        <ActiveDocument Path="MainScene.csd" />
+      </Value>
+    </Item>
   </Properties>
 </UserData>
