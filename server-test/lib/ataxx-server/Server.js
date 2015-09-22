@@ -332,18 +332,13 @@ Server.prototype.onWebSocketMessage = function(connection, b) {
             connection.sendUTF(JSON.stringify({
                 result: 'fail',
                 type: b.cmd,
+                reason: 'sid not matched',
             }));
         } else {
             didConnectionSet[b.did] = connection;
             connectionDidSet.set(connection, b.did);
 
-            // (1) openSession에 대한 응답을 먼저 보내고,
-            connection.sendUTF(JSON.stringify({
-                result: 'ok',
-                type: b.cmd,
-            }));
-
-            // (2) 델타를 연이어 보낸다.
+            // 델타를 보낸다.
             // 방을 찾아서...
             var matched = matchedSet[b.sid];
             // 게임 컨텍스트를 찾고...

@@ -5,7 +5,7 @@ var WebSocketClient = require('websocket').client;
 var base_url = "http://localhost:3000";
 var ws_base_url = "ws://localhost:3000"
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
 
 function EncodeQueryData(data) {
     var ret = [];
@@ -363,25 +363,28 @@ describe("Ataxx Frontend", function() {
         return deferred.promise;
     }
 
-    function checkExpectedDelta(r1, r2, expectedDelta) {
-        // 초기 보드 상태가 오는지 확인한다.
-        var b1 = JSON.parse(r1);
-        expect(b1.result).toBe('ok');
-        expect(b1.type).toBe('delta');
-        expect(b1.data).toEqual(expectedDelta);
+    function checkExpectedDelta(r, expectedDelta) {
+        var b = JSON.parse(r);
+        expect(b.result).toBe('ok');
+        expect(b.type).toBe('delta');
+        expect(b.data).toEqual(expectedDelta);
+    }
 
-        var b2 = JSON.parse(r2);
-        expect(b2.result).toBe('ok');
-        expect(b2.type).toBe('delta');
-        expect(b2.data).toEqual(expectedDelta);
+    function checkExpectedDeltaBoth(r1, r2, expectedDelta) {
+        checkExpectedDelta(r1, expectedDelta);
+        checkExpectedDelta(r2, expectedDelta);
+    }
+
+    function connSendRecvOnceAsync(conn, command) {
+        return conn.sendRecvOnceAsync(JSON.stringify({
+            cmd: 'ataxxCommand',
+            data: command,
+        }));
     }
 
     function conn1SendConn2Recv(conn1, conn2, command) {
         return Q.all([
-            conn1.sendRecvOnceAsync(JSON.stringify({
-                cmd: 'ataxxCommand',
-                data: command,
-            })),
+            connSendRecvOnceAsync(conn1, command),
             conn2.recvOnceAsync(),
         ])
     }
@@ -389,39 +392,28 @@ describe("Ataxx Frontend", function() {
     function conn2SendConn1Recv(conn1, conn2, command) {
         return Q.all([
             conn1.recvOnceAsync(),
-            conn2.sendRecvOnceAsync(JSON.stringify({
-                cmd: 'ataxxCommand',
-                data: command,
-            })),
+            connSendRecvOnceAsync(conn2, command),
         ])
     }
 
-    // did1, did2가 매칭되고, 각자의 웹소켓 열어서 커맨드 주고 받기
-    it('매치 세션과의 WebSocket 연결 확인', function(done) {
-        var did1 = 'did1',
-            nn1 = 'nickname1',
-            did2 = 'did2',
-            nn2 = 'nickname2';
-        var sid;
-        var conn1;
-        var conn2;
-
-        // did1이 먼저 말을 두게 되는 매치 상황을 만든다.
-        createMatchSessionPairAsync(did1, nn1, did2, nn2).then(function(data) {
-            sid = data.sessionId;
-
+    // did1-did2 간에 매치 시키고
+    // did1, did2 모두 제각기 WebSocket 열고,
+    // openSession 명령까지 내린 뒤,
+    // 결과 읽어올 수 있는 시점에서 작업 종료한다.
+    function createWebSocketPair(did1, nn1, did2, nn2) {
+        return createMatchSessionPairAsync(did1, nn1, did2, nn2).then(function(data) {
             // 매치 세션은 생성됐으니 두 개의 ataxx 프로토콜 웹소켓을 연다.
             return Q.all([
+                data.sessionId,
                 openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
                 openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
             ]);
-        }).spread(function(c1, c2) {
-            // 다음 단계에서 계속 쓸 변수니까 저장해 둔다.
-            conn1 = c1;
-            conn2 = c2;
-
+        }).spread(function(sid, conn1, conn2) {
             // did1, did2 각자 자신의 세션을 연다.
             return Q.all([
+                sid,
+                conn1,
+                conn2,
                 conn1.sendRecvOnceAsync(JSON.stringify({
                     cmd: 'openSession',
                     did: did1,
@@ -433,44 +425,118 @@ describe("Ataxx Frontend", function() {
                     sid: sid,
                 })),
             ]);
-        }).spread(function(r1, r2) {
-            var b1 = JSON.parse(r1);
-            expect(b1.result).toBe('ok');
-            expect(b1.type).toBe('openSession');
+        });
+    }
 
-            var b2 = JSON.parse(r2);
-            expect(b2.result).toBe('ok');
-            expect(b2.type).toBe('openSession');
-
-            // did1, did2는 초기 보드 상태가 오기를 기다린다.
+    // did1-did2 간에 매치 시키고
+    // did1만 WebSocket 열고,
+    // openSession 명령까지 내린 뒤,
+    // 결과 읽어올 수 있는 시점에서 작업 종료한다.
+    function createWebSocketSingle(did1, nn1, did2, nn2) {
+        return createMatchSessionPairAsync(did1, nn1, did2, nn2).then(function(data) {
+            // 매치 세션은 생성됐으니 두 개의 ataxx 프로토콜 웹소켓을 연다.
             return Q.all([
-                conn1.recvOnceAsync(),
-                conn2.recvOnceAsync(),
+                data.sessionId,
+                openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
             ]);
-        }).spread(function(r1, r2) {
+        }).spread(function(sid, conn1) {
+            // did1, did2 각자 자신의 세션을 연다.
+            return Q.all([
+                sid,
+                conn1,
+                conn1.sendRecvOnceAsync(JSON.stringify({
+                    cmd: 'openSession',
+                    did: did1,
+                    sid: sid,
+                })),
+            ]);
+        });
+    }
+
+    // did1, did2가 매칭되고, 각자의 웹소켓 열어서 커맨드 주고 받기
+    it('매치 세션과의 WebSocket 연결 확인', function(done) {
+        var did1 = 'did1',
+            nn1 = 'nickname1',
+            did2 = 'did2',
+            nn2 = 'nickname2';
+        var sid,
+            conn1,
+            conn2;
+
+        createWebSocketPair(did1, nn1, did2, nn2).spread(function(sidPromise, conn1Promise, conn2Promise, r1, r2) {
+            sid = sidPromise;
+            conn1 = conn1Promise;
+            conn2 = conn2Promise;
+
             var expectedDelta = ['size 7 7', 'place nickname1 0 0', 'place nickname1 6 6', 'place nickname2 6 0', 'place nickname2 0 6', 'turn 1'];
-            checkExpectedDelta(r1, r2, expectedDelta);
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did1이 (0,0)에 있는 말을 (1,0)으로 옮기도록 한다.
             return conn1SendConn2Recv(conn1, conn2, 'move 0 0 1 0');
         }).spread(function(r1, r2) {
             var expectedDelta = ['move nickname1 0 0 1 0 clone', 'turn 2']
-            checkExpectedDelta(r1, r2, expectedDelta);
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did2가 (6,6)에 있는 말을 (5,6)으로 옮기도록 한다.
             return conn2SendConn1Recv(conn1, conn2, 'move 0 6 1 6');
         }).spread(function(r1, r2) {
             var expectedDelta = ['move nickname2 0 6 1 6 clone', 'turn 3']
-            checkExpectedDelta(r1, r2, expectedDelta);
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did2가 (6,6)에 있는 말을 (6,4)으로 옮기도록 한다.
             return conn1SendConn2Recv(conn1, conn2, 'move 6 6 6 4');
         }).spread(function(r1, r2) {
             var expectedDelta = ['move nickname1 6 6 6 4 move', 'turn 4']
-            checkExpectedDelta(r1, r2, expectedDelta);
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             done();
         }).done();
+    });
+
+    // did1, did2가 매칭되고, 각자의 웹소켓 열어서 커맨드 주고 받기
+    // 단 did1가 먼저 웹소켓 세션을 열고, 커맨드까지 먼저 날린 뒤에
+    // did2가 웹소켓을 열었을 때도 문제가 없는지 확인한다.
+    it('매치 세션과의 WebSocket 연결 확인 (2)', function(done) {
+        var did1 = 'did1-b',
+            nn1 = 'nickname1-b',
+            did2 = 'did2-b',
+            nn2 = 'nickname2-b';
+        var sid,
+            conn1,
+            conn2;
+
+        // did1 웹소켓을 연다.
+        createWebSocketSingle(did1, nn1, did2, nn2).spread(function(sidPromise, conn1Promise, r1) {
+            sid = sidPromise;
+            conn1 = conn1Promise;
+
+            var expectedDelta = ['size 7 7', 'place nickname1-b 0 0', 'place nickname1-b 6 6', 'place nickname2-b 6 0', 'place nickname2-b 0 6', 'turn 1'];
+            checkExpectedDelta(r1, expectedDelta);
+
+            return [
+                connSendRecvOnceAsync(conn1, 'move 0 0 1 0'),
+                // did2 웹소켓을 연다.
+                openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
+            ];
+        }).spread(function(r1, conn2) {
+            var expectedDelta = ['move nickname1-b 0 0 1 0 clone', 'turn 2'];
+            checkExpectedDelta(r1, expectedDelta);
+
+            return conn2.sendRecvOnceAsync(JSON.stringify({
+                cmd: 'openSession',
+                did: did2,
+                sid: sid,
+            }));
+        }).then(function(r2) {
+            var expectedDelta = ['size 7 7', 'place nickname1-b 0 0', 'place nickname1-b 6 6', 'place nickname2-b 6 0', 'place nickname2-b 0 6', 'turn 1', 'move nickname1-b 0 0 1 0 clone', 'turn 2'];
+            checkExpectedDelta(r2, expectedDelta);
+
+            done();
+        }).done();
+    });
+
+    it('매치 완료된 상태에서 did2가 중도 포기할 때 처리', function(done) {
+
     });
 });
 
