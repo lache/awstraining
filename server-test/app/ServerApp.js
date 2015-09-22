@@ -152,7 +152,7 @@ wsServer.on('request', function(request) {
         if (message.type === 'utf8') {
             //console.log('Received Message: ' + message.utf8Data);
             var b = JSON.parse(message.utf8Data);
-            server.onWebSocketMessage(connection, b);
+            server.onWebSocketMessage(server, connection, b);
         }
         else if (message.type === 'binary') {
             //console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');

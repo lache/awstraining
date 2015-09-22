@@ -1,3 +1,4 @@
+'use strict';
 describe('AtaxxServer', function() {
     var Server = require('../../lib/ataxx-server/Server');
     var server;
@@ -123,13 +124,13 @@ describe('AtaxxServer', function() {
             if (done) {
                 done();
             }
-        }).catch(function(error) {
-            //console.log('#8');
-            expect(error).not.toBeDefined();
-            if (done) {
-                done();
-            }
-        });
+        // }).catch(function(error) {
+        //     //console.log('#8');
+        //     expect(error).not.toBeDefined();
+        //     if (done) {
+        //         done();
+        //     }
+        }).done();
     }
 
     it('#requestMatch - 처음 들어온 두 명(alpha, bravo)는 끼리끼리 매치가 된다.', function(done) {

@@ -535,8 +535,43 @@ describe("Ataxx Frontend", function() {
         }).done();
     });
 
-    it('매치 완료된 상태에서 did2가 중도 포기할 때 처리', function(done) {
+    it('매치 완료 후 did1이 기권할 때 처리 확인', function(done) {
+        var did1 = 'did1-c',
+            nn1 = 'nickname1-c',
+            did2 = 'did2-c',
+            nn2 = 'nickname2-c';
+        var sid,
+            conn1,
+            conn2;
 
+        createWebSocketPair(did1, nn1, did2, nn2).spread(function(sidPromise, conn1Promise, conn2Promise, r1, r2) {
+            sid = sidPromise;
+            conn1 = conn1Promise;
+            conn2 = conn2Promise;
+
+            var expectedDelta = ['size 7 7', 'place nickname1-c 0 0', 'place nickname1-c 6 6', 'place nickname2-c 6 0', 'place nickname2-c 0 6', 'turn 1'];
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
+
+            // did1이 기권한다.
+            return conn1SendConn2Recv(conn1, conn2, 'giveup');
+        }).spread(function(r1, r2) {
+            var expectedDelta = ['winner nickname2-c']
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
+
+            // 다시 did1, did2가 매치 신청하면 잘 되어야한다. 크킄
+            return createWebSocketPair(did1, nn1, did2, nn2);
+        }).spread(function(sidPromise, conn1Promise, conn2Promise, r1, r2) {
+            expect(sid).not.toBe(sidPromise);
+
+            sid = sidPromise;
+            conn1 = conn1Promise;
+            conn2 = conn2Promise;
+
+            var expectedDelta = ['size 7 7', 'place nickname1-c 0 0', 'place nickname1-c 6 6', 'place nickname2-c 6 0', 'place nickname2-c 0 6', 'turn 1'];
+            checkExpectedDeltaBoth(r1, r2, expectedDelta);
+
+            done();
+        }).done();
     });
 });
 

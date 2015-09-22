@@ -10,37 +10,44 @@ AWS.config.update({
 
 var Q = require('q');
 var CHARLIE = require('charlie-core');
-var dyn;
 
 function Server() {
-    dyn = new AWS.DynamoDB({
+    this.dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
     });
+
+    this.waitingSet = {}; // requestMatch를 호출한 DID 맵: DID (Device ID) -> true
+    this.matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -> {did1:*, did2:*, ...}
+    this.lastSessionSet = {}; // DID별 소속된 세션 맵: DID -> SID
+    this.didConnectionSet = {}; // DID -> WebSocket connection
+    this.connectionDidSet = new Map(); // WebSocket connection -> DID
+    this.deltaQueue = {}; // DID+SID -> Delta 배열
 }
 
-var waitingSet = {}; // requestMatch를 호출한 DID 맵: DID (Device ID) -> true
-var matchedSet = {}; // 세션(매칭 완료된 DID 쌍) 맵: SID (Session ID) -> {did1:*, did2:*, ...}
-var lastSessionSet = {}; // DID별 소속된 세션 맵: DID -> SID
-var didConnectionSet = {}; // DID -> WebSocket connection
-var connectionDidSet = new Map(); // WebSocket connection -> DID
-var deltaQueue = {}; // DID+SID -> Delta 배열
-
 Server.prototype.getMatchSessionCount = function() {
-    return Object.keys(matchedSet).length;
+    return Object.keys(this.matchedSet).length;
 }
 
 Server.prototype.requestSessionStateAsync = function(did, sid) {
     var deferred = Q.defer();
 
-    if (sid in matchedSet) {
+    if (sid in this.matchedSet) {
         deferred.resolve({
-            fullState: matchedSet[sid].board
+            fullState: this.matchedSet[sid].board
         });
     } else {
         deferred.reject(new Error('Not found'));
     }
 
     return deferred.promise;
+}
+
+var getNewGuid = function() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0,
+            v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
 }
 
 Server.prototype.requestMatchAsync = function(did) {
@@ -56,20 +63,16 @@ Server.prototype.requestMatchAsync = function(did) {
         return deferred.promise;
     }
     // 이미 매칭된 상태라면
-    if (did in lastSessionSet) {
-        var matched = matchedSet[lastSessionSet[did]];
+    if (did in this.lastSessionSet) {
+        var matched = this.matchedSet[this.lastSessionSet[did]];
         this.fillNicknamesForMatched(did, matched, deferred);
         return deferred.promise;
     }
 
     var matched = null;
-    for (var k in waitingSet) {
+    for (var k in this.waitingSet) {
         if (k !== did) {
-            var sid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0,
-                    v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
+            var sid = getNewGuid();
 
             // 매치 정보 저장
             matched = {
@@ -78,19 +81,19 @@ Server.prototype.requestMatchAsync = function(did) {
                 did2: did,
                 matchedDateTime: new Date().toISOString(),
             };
-            matchedSet[sid] = matched;
+            this.matchedSet[sid] = matched;
             // 세션 정보 업데이트
-            lastSessionSet[did] = sid;
-            lastSessionSet[k] = sid;
+            this.lastSessionSet[did] = sid;
+            this.lastSessionSet[k] = sid;
             // 대기열에서 지운다.
-            delete waitingSet[did];
-            delete waitingSet[k];
+            delete this.waitingSet[did];
+            delete this.waitingSet[k];
             break;
         }
     }
 
     if (matched == null) {
-        waitingSet[did] = true;
+        this.waitingSet[did] = true;
         deferred.resolve({
             result: 'wait',
             type: 'matchInfo',
@@ -116,12 +119,11 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
     }
     //console.log('matched.did1=' + matched.did1);
     //console.log('matched.did2=' + matched.did2);
-    var self = this;
     this.getNicknameAsync(matched.did1).then(function(nn) {
         matched.did1Nickname = nn;
 
-        return self.getNicknameAsync(matched.did2);
-    }).then(function(nn) {
+        return this.getNicknameAsync(matched.did2);
+    }.bind(this)).then(function(nn) {
         //console.log('b');
         matched.did2Nickname = nn;
 
@@ -147,20 +149,24 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
             board.nextTurn();
             matched.board = board;
 
-            deltaQueue[matched.did1 + '+' + matched.sid] = [];
-            deltaQueue[matched.did2 + '+' + matched.sid] = [];
+            this.deltaQueue[matched.did1 + '+' + matched.sid] = [];
+            this.deltaQueue[matched.did2 + '+' + matched.sid] = [];
         }
+
+        var opponentNickname = did === matched.did1 ?
+            matched.did2Nickname :
+            matched.did1Nickname;
 
         deferred.resolve({
             result: 'ok',
             type: 'matchInfo',
             gameType: 'ataxx',
-            opponentNickname: did === matched.did1 ? matched.did2Nickname : matched.did1Nickname,
+            opponentNickname: opponentNickname,
             sessionId: matched.sid,
             matchedDateTime: matched.matchedDateTime,
             fullState: matched.board,
         });
-    }).catch(function(error) {
+    }.bind(this)).catch(function(error) {
         deferred.reject(error);
     });
 }
@@ -175,7 +181,7 @@ Server.prototype.getNicknameAsync = function(did) {
             }
         }
     };
-    dyn.getItem(params, function(err, data) {
+    this.dyn.getItem(params, function(err, data) {
         if (err) {
             deferred.reject(new Error(err));
         } else if (!data.Item) {
@@ -199,7 +205,7 @@ Server.prototype.getNicknameAddedDateAsync = function(did) {
             }
         }
     };
-    dyn.getItem(params, function(err, data) {
+    this.dyn.getItem(params, function(err, data) {
         if (err) {
             deferred.reject(new Error(err));
         } else if (!data.Item) {
@@ -229,7 +235,7 @@ Server.prototype.setNicknameAsync = function(did, nickname) {
             },
         },
     };
-    dyn.putItem(params, function(err, data) {
+    this.dyn.putItem(params, function(err, data) {
         if (err) {
             deferred.reject(new Error(err));
         } else {
@@ -248,7 +254,7 @@ Server.prototype.getNickname = function(did, cb) {
             }
         }
     };
-    dyn.getItem(params, function(err, data) {
+    this.dyn.getItem(params, function(err, data) {
         if (err) {
             cb(undefined);
         } else if (!data.Item || !data.Item.Nickname) {
@@ -274,7 +280,7 @@ Server.prototype.setNickname = function(did, nickname, cb) {
             },
         },
     };
-    dyn.putItem(params, function(err, data) {
+    this.dyn.putItem(params, function(err, data) {
         cb(err);
     });
 }
@@ -290,133 +296,18 @@ Server.prototype.simulateDbServerDown = function() {
         */
         maxRetries: 3,
     });
-    dyn = new AWS.DynamoDB({
+    this.dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8123')
     });
     //console.log('Retry Delays:' + dyn.retryDelays())
 }
 
 Server.prototype.stopSimulateDbServerDown = function() {
-    dyn = new AWS.DynamoDB({
+    this.dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
     });
 }
 
-Server.prototype.processUserDelta = function(board, did, delta) {
-    var t = delta.split(' ');
-    if (t[0] == 'move' && t.length == 5) {
-        var u;
-        for (var k in board.userList) {
-            if (board.userList[k].did == did) {
-                u = board.userList[k];
-            }
-        }
-
-        if (board.move(u, Number(t[1]), Number(t[2]), Number(t[3]), Number(t[4]))) {
-            if (board.nextTurn() == CHARLIE.ataxx.NextTurnResult.OK) {
-                return true;
-            }
-        }
-    } else {
-        console.error('Unknown user delta: ' + delta);
-    }
-
-    return false;
-}
-
-Server.prototype.onWebSocketMessage = function(connection, b) {
-    if (b.cmd == 'openSession') {
-        var lastSessionId = lastSessionSet[b.did];
-        if (b.sid != lastSessionId) {
-            // (1) openSession에 대한 실패 응답을 보내고 끝.
-            connection.sendUTF(JSON.stringify({
-                result: 'fail',
-                type: b.cmd,
-                reason: 'sid not matched',
-            }));
-        } else {
-            didConnectionSet[b.did] = connection;
-            connectionDidSet.set(connection, b.did);
-
-            // 델타를 보낸다.
-            // 방을 찾아서...
-            var matched = matchedSet[b.sid];
-            // 게임 컨텍스트를 찾고...
-            var board = matched.board;
-            var didOther = (b.did == matched.did1) ? matched.did2 : matched.did1;
-            var dq = deltaQueue[b.did + '+' + b.sid];
-            var dqOther = deltaQueue[didOther + '+' + b.sid];
-            var d;
-            while (d = board.dl.pop()) {
-                var ds = d.toString();
-                dq.push(ds);
-                dqOther.push(ds);
-            }
-
-            if (dq.length > 0 && connection) {
-                connection.sendUTF(JSON.stringify({
-                    result: 'ok',
-                    type: 'delta',
-                    data: dq,
-                }));
-                dq.length = 0;
-            }
-        }
-    } else if (b.cmd == 'ataxxCommand') {
-        // 패킷을 보낸 did
-        var did = connectionDidSet.get(connection);
-        // 패킷을 보낸 did가 지금 하고 있는 게임 sid
-        var sid = lastSessionSet[did];
-        // 방을 찾아서...
-        var matched = matchedSet[sid];
-        // 게임 컨텍스트를 찾고...
-        var board = matched.board;
-        // 상대방 DID를 파악
-        var didOther = (did == matched.did1) ? matched.did2 : matched.did1;
-        // 패킷을 보낸 did, 같은 방에 있는 didOther 모두에게 응답 패킷을 보낸다.
-        var connOther = didConnectionSet[didOther];
-
-        if (this.processUserDelta(board, did, b.data) == true) {
-            var dq = deltaQueue[did + '+' + sid];
-            var dqOther = deltaQueue[didOther + '+' + sid];
-            var d;
-            while (d = board.dl.pop()) {
-                var ds = d.toString();
-                dq.push(ds);
-                dqOther.push(ds);
-            }
-
-            if (dq.length > 0 && connection) {
-                connection.sendUTF(JSON.stringify({
-                    result: 'ok',
-                    type: 'delta',
-                    data: dq,
-                }));
-                dq.length = 0;
-            }
-
-            if (dqOther.length > 0 && connOther) {
-                connOther.sendUTF(JSON.stringify({
-                    result: 'ok',
-                    type: 'delta',
-                    data: dqOther,
-                }));
-                dqOther.length = 0;
-            }
-        } else {
-            connection.sendUTF(JSON.stringify({
-                result: 'fail',
-                type: 'delta',
-                reason: 'delta processing failure',
-            }));
-        }
-    } else {
-        connection.sendUTF(JSON.stringify({
-            result: 'fail',
-            type: b.cmd,
-            reason: 'unknown command',
-        }));
-    }
-}
+Server.prototype.onWebSocketMessage = require('./AtaxxLogic');
 
 module.exports = Server;
