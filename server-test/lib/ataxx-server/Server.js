@@ -328,15 +328,45 @@ Server.prototype.onWebSocketMessage = function(connection, b) {
     if (b.cmd == 'openSession') {
         var lastSessionId = lastSessionSet[b.did];
         if (b.sid != lastSessionId) {
-            responseJson.result = 'fail';
+            // (1) openSession에 대한 실패 응답을 보내고 끝.
+            connection.sendUTF(JSON.stringify({
+                result: 'fail',
+                type: b.cmd,
+            }));
         } else {
             didConnectionSet[b.did] = connection;
             connectionDidSet.set(connection, b.did);
+
+            // (1) openSession에 대한 응답을 먼저 보내고,
+            connection.sendUTF(JSON.stringify({
+                result: 'ok',
+                type: b.cmd,
+            }));
+
+            // (2) 델타를 연이어 보낸다.
+            // 방을 찾아서...
+            var matched = matchedSet[b.sid];
+            // 게임 컨텍스트를 찾고...
+            var board = matched.board;
+            var didOther = (b.did == matched.did1) ? matched.did2 : matched.did1;
+            var dq = deltaQueue[b.did + '+' + b.sid];
+            var dqOther = deltaQueue[didOther + '+' + b.sid];
+            var d;
+            while (d = board.dl.pop()) {
+                var ds = d.toString();
+                dq.push(ds);
+                dqOther.push(ds);
+            }
+
+            if (dq.length > 0 && connection) {
+                connection.sendUTF(JSON.stringify({
+                    result: 'ok',
+                    type: 'delta',
+                    data: dq,
+                }));
+                dq.length = 0;
+            }
         }
-        connection.sendUTF(JSON.stringify({
-            result: 'ok',
-            type: b.cmd,
-        }));
     } else if (b.cmd == 'ataxxCommand') {
         // 패킷을 보낸 did
         var did = connectionDidSet.get(connection);
@@ -364,24 +394,24 @@ Server.prototype.onWebSocketMessage = function(connection, b) {
             if (dq.length > 0 && connection) {
                 connection.sendUTF(JSON.stringify({
                     result: 'ok',
-                    type: b.cmd,
+                    type: 'delta',
                     data: dq,
                 }));
-                dq = [];
+                dq.length = 0;
             }
 
             if (dqOther.length > 0 && connOther) {
                 connOther.sendUTF(JSON.stringify({
                     result: 'ok',
-                    type: b.cmd,
+                    type: 'delta',
                     data: dqOther,
                 }));
-                dqOther = [];
+                dqOther.length = 0;
             }
         } else {
             connection.sendUTF(JSON.stringify({
                 result: 'fail',
-                type: b.cmd,
+                type: 'delta',
                 reason: 'delta processing failure',
             }));
         }

@@ -57,7 +57,11 @@ describe("Ataxx Frontend", function() {
 
     it('Hello World 배열을 받는다.', function(done) {
         request.get(base_url + '?number=3', function(error, response, body) {
-            expect(body).toBe(JSON.stringify(['Hello World', 'Hello World', 'Hello World']));
+            expect(body).toBe(JSON.stringify([
+                'Hello World',
+                'Hello World',
+                'Hello World'
+            ]));
             done();
         });
     });
@@ -307,7 +311,8 @@ describe("Ataxx Frontend", function() {
             if (message.type === 'utf8') {
                 deferred.resolve(message.utf8Data);
             } else {
-                deferred.reject(new Error('Unsupported type ' + message.type + ' received.'));
+                var errMsg = 'Unsupported type ' + message.type + ' received.';
+                deferred.reject(new Error(errMsg));
             }
         });
         this.connection.sendUTF(data);
@@ -323,7 +328,8 @@ describe("Ataxx Frontend", function() {
             if (message.type === 'utf8') {
                 deferred.resolve(message.utf8Data);
             } else {
-                deferred.reject(new Error('Unsupported type ' + message.type + ' received.'));
+                var errMsg = 'Unsupported type ' + message.type + ' received.';
+                deferred.reject(new Error(errMsg));
             }
         });
         return deferred.promise;
@@ -346,7 +352,7 @@ describe("Ataxx Frontend", function() {
             if (connection.connected) {
                 deferred.resolve({
                     connection: connection,
-                    sendAsync: sendRecvOnceAsync,
+                    sendRecvOnceAsync: sendRecvOnceAsync,
                     recvOnceAsync: recvOnceAsync,
                 });
             } else {
@@ -355,6 +361,39 @@ describe("Ataxx Frontend", function() {
         });
         client.connect(addr, protocol);
         return deferred.promise;
+    }
+
+    function checkExpectedDelta(r1, r2, expectedDelta) {
+        // 초기 보드 상태가 오는지 확인한다.
+        var b1 = JSON.parse(r1);
+        expect(b1.result).toBe('ok');
+        expect(b1.type).toBe('delta');
+        expect(b1.data).toEqual(expectedDelta);
+
+        var b2 = JSON.parse(r2);
+        expect(b2.result).toBe('ok');
+        expect(b2.type).toBe('delta');
+        expect(b2.data).toEqual(expectedDelta);
+    }
+
+    function conn1SendConn2Recv(conn1, conn2, command) {
+        return Q.all([
+            conn1.sendRecvOnceAsync(JSON.stringify({
+                cmd: 'ataxxCommand',
+                data: command,
+            })),
+            conn2.recvOnceAsync(),
+        ])
+    }
+
+    function conn2SendConn1Recv(conn1, conn2, command) {
+        return Q.all([
+            conn1.recvOnceAsync(),
+            conn2.sendRecvOnceAsync(JSON.stringify({
+                cmd: 'ataxxCommand',
+                data: command,
+            })),
+        ])
     }
 
     it('매치 세션과의 WebSocket 연결 확인', function(done) {
@@ -382,12 +421,12 @@ describe("Ataxx Frontend", function() {
 
             // did1, did2 각자 자신의 세션을 연다.
             return Q.all([
-                conn1.sendAsync(JSON.stringify({
+                conn1.sendRecvOnceAsync(JSON.stringify({
                     cmd: 'openSession',
                     did: did1,
                     sid: sid,
                 })),
-                conn2.sendAsync(JSON.stringify({
+                conn2.sendRecvOnceAsync(JSON.stringify({
                     cmd: 'openSession',
                     did: did2,
                     sid: sid,
@@ -402,44 +441,40 @@ describe("Ataxx Frontend", function() {
             expect(b2.result).toBe('ok');
             expect(b2.type).toBe('openSession');
 
-            // did2는 메시지가 오기를 기다리고,
-            // did1이 (0,0)에 있는 말을 (1,0)으로 옮기도록 한다.
-            // did2가 받기 전에 did1이 보내면 안되므로 conn2, conn1 순으로
-            // 호출한다.
-            var conn2recvOnceAsync = conn2.recvOnceAsync();
-            var conn1SendAsync = conn1.sendAsync(JSON.stringify({
-                cmd: 'ataxxCommand',
-                data: 'move 0 0 1 0'
-            }));
-
-            // did1, did2 모두 상황 변화에 대한 응답을 제대로 받는 것을 확인한다.
-            // did1은 move 요청에 대한 응답으로 메시지를 받고,
-            // did2는 서버가 먼저 메시지를 보냄으로써 받는다.
+            // did1, did2는 초기 보드 상태가 오기를 기다린다.
             return Q.all([
-                conn1SendAsync,
-                conn2recvOnceAsync,
+                conn1.recvOnceAsync(),
+                conn2.recvOnceAsync(),
             ]);
         }).spread(function(r1, r2) {
-            var expectedDelta = String.format('move {0} {1} {2} {3} {4}',
-                nn1, 0, 0, 1, 0, 'clone'
-            );
+            var expectedDelta = ['size 7 7', 'place nickname1 0 0', 'place nickname1 6 6', 'place nickname2 6 0', 'place nickname2 0 6', 'turn 1'];
+            checkExpectedDelta(r1, r2, expectedDelta);
 
-            var b1 = JSON.parse(r1);
-            expect(b1.result).toBe('ok');
-            expect(b1.type).toBe('ataxxCommand');
-            expect(b1.data).toBe(expectedDelta);
+            // did1이 (0,0)에 있는 말을 (1,0)으로 옮기도록 한다.
+            return conn1SendConn2Recv(conn1, conn2, 'move 0 0 1 0');
+        }).spread(function(r1, r2) {
+            var expectedDelta = ['move nickname1 0 0 1 0 clone', 'turn 2']
+            checkExpectedDelta(r1, r2, expectedDelta);
 
-            var b2 = JSON.parse(r2);
-            expect(b2.result).toBe('ok');
-            expect(b2.type).toBe('ataxxCommand');
-            expect(b2.data).toBe(expectedDelta);
+            // did2가 (6,6)에 있는 말을 (5,6)으로 옮기도록 한다.
+            return conn2SendConn1Recv(conn1, conn2, 'move 0 6 1 6');
+        }).spread(function(r1, r2) {
+            var expectedDelta = ['move nickname2 0 6 1 6 clone', 'turn 3']
+            checkExpectedDelta(r1, r2, expectedDelta);
+
+            // did2가 (6,6)에 있는 말을 (6,4)으로 옮기도록 한다.
+            return conn1SendConn2Recv(conn1, conn2, 'move 6 6 6 4');
+        }).spread(function(r1, r2) {
+            var expectedDelta = ['move nickname1 6 6 6 4 move', 'turn 4']
+            checkExpectedDelta(r1, r2, expectedDelta);
+
             done();
         }).done();
     });
 });
 
 describe("FrontendDbServerDown", function() {
-    it('DB 서버 다운 시 getNickname API 테스트 (실제 DB 서버 다운 시에는 실패하는 것이 정상)', function(done) {
+    it('DB 서버 다운 시 API 테스트 (실제 DB 서버 다운 시에는 실패)', function(done) {
         requestGetAsync('simulateDbServerDown', {}).then(function(data) {
             expect(data.response.statusCode).toBe(200);
             return requestGetAsync('getNickname', {
