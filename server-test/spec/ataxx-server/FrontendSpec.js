@@ -396,6 +396,7 @@ describe("Ataxx Frontend", function() {
         ])
     }
 
+    // did1, did2가 매칭되고, 각자의 웹소켓 열어서 커맨드 주고 받기
     it('매치 세션과의 WebSocket 연결 확인', function(done) {
         var did1 = 'did1',
             nn1 = 'nickname1',
