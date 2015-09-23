@@ -18,6 +18,8 @@
         "src/MatchingScene.js",
         "src/StartScene.js",
 
+        "src/q.js",
+
         "lib/charlie.js",
         "lib/ataxx/Board.js",
         "lib/ataxx/ConvertDelta.js",

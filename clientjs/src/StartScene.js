@@ -1,3 +1,4 @@
+'use strict';
 var nickname = '';
 var did = '';
 var nicknameQueried = false;
@@ -22,12 +23,18 @@ var StartLayer = cc.Layer.extend({
         this.stateString.setString('');
         this.node = node;
         this.queryNickname();
+
+        cc.log('start!');
+        Q.delay(1000).then(function() {
+            cc.log('huuuuu');
+        });
+
         return true;
     },
     queryNickname: function() {
         this.startBtn.setVisible(false);
-
         if (cc.sys.os == cc.sys.OS_ANDROID) {
+            // 아직 구현되지 않은 부분!
             jsb.reflection.callStaticMethod(
                 'org/cocos2dx/js_tests/AppActivity',
                 'showAlertDialog',
@@ -42,33 +49,10 @@ var StartLayer = cc.Layer.extend({
             did = did + '2';
 
             cc.log('did ret val is ' + did);
-            this.node.getChildByTag(56).setString(did);
-            var startBtn = this.node.getChildByTag(46).getChildByTag(30);
+        }
 
-            this.stateString.setString('접속중');
-            var self = this;
-            RequestXhr('getNickname', {
-                did: did
-            }, 'nickname', function(r) {
-                // 응답 받았을 때 (성공 응답일 수도 있고 실패 응답일 수도 있다)
-                //startBtn.setVisible(true);
-                if (r.result == 'ok') {
-                    nickname = r.nickname;
-                    nicknameQueried = true;
-                    self.scheduleOnce(self.changeToNextScene, 1.0);
-                } else {
-                    self.stateString.setString('서버에 오류가 있습니다.');
-                    self.startBtn.setVisible(true);
-                }
-            }, function(error) {
-                // 응답 받지 못했을 때
-                if (error == 'error') {
-                    self.stateString.setString('서버에 접속할 수 없습니다.');
-                } else if (error == 'timeout') {
-                    self.stateString.setString('서버와 접속이 원활하지 않습니다.');
-                }
-                self.startBtn.setVisible(true);
-            });
+        if (did) {
+            this.startQueryNickname(did);
         }
     },
     changeToNextScene: function(dt) {
@@ -77,6 +61,47 @@ var StartLayer = cc.Layer.extend({
         } else {
             PushScene(new NicknameScene());
         }
+    },
+    startQueryNickname: function(did) {
+        this.node.getChildByTag(56).setString(did);
+        var startBtn = this.node.getChildByTag(46).getChildByTag(30);
+
+        this.stateString.setString('접속중');
+        RequestXhrAsync('getNickname', {
+            did: did
+        }, 'nickname').then((function(r) {
+            // 응답 받았을 때 (성공 응답일 수도 있고 실패 응답일 수도 있다)
+            //startBtn.setVisible(true);
+            console.log('hehe');
+            if (r.result == 'ok') {
+                nickname = r.nickname;
+                nicknameQueried = true;
+                this.scheduleOnce(this.changeToNextScene, 1.0);
+            } else {
+                this.stateString.setString('서버에 오류가 있습니다.');
+                this.startBtn.setVisible(true);
+            }
+        }).bind(this)).catch((function(error) {
+            console.log('ERROR! ' +
+                error.message + ' - ' +
+                error.fileName + '(' +
+                error.lineNumber + ':' +
+                error.columnNumber + ')');
+            console.log('=== ERROR STACK BEGIN ===');
+            console.log(error.stack);
+            console.log('=== ERROR STACK END ===');
+            // 응답 받지 못했을 때
+            if (error.message == 'error') {
+                this.stateString.setString('서버에 접속할 수 없습니다.');
+            } else if (error.message == 'timeout') {
+                this.stateString.setString('서버와 접속이 원활하지 않습니다.');
+            } else {
+                this.stateString.setString('Error - ' + error.message);
+            }
+            this.startBtn.setVisible(true);
+        }).bind(this)).finally(function() {
+            cc.log('FINALLY');
+        }).done();
     },
 });
 

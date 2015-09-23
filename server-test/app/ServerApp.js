@@ -119,7 +119,6 @@ app.get('/getMatchSessionCount', function(req, res) {
 
 app.use('/static', express.static(__dirname + '/public'));
 
-//app.listen(3000);
 var httpServer = http.createServer(app);
 httpServer.listen(3000);
 
@@ -163,8 +162,6 @@ wsServer.on('request', function(request) {
         //console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
     });
 });
-
-console.log('httpServer.listen called');
 
 module.exports = app;
 
