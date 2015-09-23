@@ -43,7 +43,8 @@ Server.prototype.requestSessionStateAsync = function(did, sid) {
 }
 
 var getNewGuid = function() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var g = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    return g.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0,
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
@@ -119,13 +120,12 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
     }
     //console.log('matched.did1=' + matched.did1);
     //console.log('matched.did2=' + matched.did2);
-    this.getNicknameAsync(matched.did1).then(function(nn) {
-        matched.did1Nickname = nn;
-
-        return this.getNicknameAsync(matched.did2);
-    }.bind(this)).then(function(nn) {
-        //console.log('b');
-        matched.did2Nickname = nn;
+    Q.all([
+        this.getNicknameAsync(matched.did1),
+        this.getNicknameAsync(matched.did2),
+    ]).spread(function(nn1, nn2) {
+        matched.did1Nickname = nn1;
+        matched.did2Nickname = nn2;
 
         //console.log('did1Nickname='+matched.did1Nickname);
         //console.log('did2Nickname='+matched.did2Nickname);
@@ -149,8 +149,8 @@ Server.prototype.fillNicknamesForMatched = function(did, matched, deferred) {
             board.nextTurn();
             matched.board = board;
 
-            this.deltaQueue[matched.did1 + '+' + matched.sid] = [];
-            this.deltaQueue[matched.did2 + '+' + matched.sid] = [];
+            this.deltaQueue[this.getDqId(matched.did1, matched.sid)] = [];
+            this.deltaQueue[this.getDqId(matched.did2, matched.sid)] = [];
         }
 
         var opponentNickname = did === matched.did1 ?
@@ -306,6 +306,63 @@ Server.prototype.stopSimulateDbServerDown = function() {
     this.dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
     });
+}
+
+Server.prototype.findSession = function(conn) {
+    var did = this.connectionDidSet.get(conn);
+    // 패킷을 보낸 did가 지금 하고 있는 게임 sid
+    var sid = this.lastSessionSet[did];
+    // 방을 찾아서...
+    var matched = this.matchedSet[sid];
+    // 게임 컨텍스트를 찾고...
+    var board = matched.board;
+    // 상대방 DID를 파악
+    var didOther = (did == matched.did1) ? matched.did2 : matched.did1;
+    // 패킷을 보낸 did, 같은 방에 있는 didOther 모두에게 응답 패킷을 보낸다.
+    var connOther = this.didConnectionSet[didOther];
+
+    var nn, nnOther;
+    if (did === matched.did1) {
+        nn = matched.did1Nickname;
+        nnOther = matched.did2Nickname;
+    } else {
+        nn = matched.did2Nickname;
+        nnOther = matched.did1Nickname;
+    }
+
+    var dq = this.deltaQueue[this.getDqId(did, sid)];
+    var dqOther = this.deltaQueue[this.getDqId(didOther, sid)];
+
+    return {
+        sid,
+        board,
+        did,
+        didOther,
+        conn,
+        connOther,
+        nn,
+        nnOther,
+        dq,
+        dqOther,
+    };
+}
+
+Server.prototype.getDqId = (did, sid) => did + '+' + sid;
+
+Server.prototype.removeSessionByConnection = function(connection) {
+    var s = this.findSession(connection);
+
+    delete this.waitingSet[s.did];
+    delete this.waitingSet[s.didOther];
+    delete this.matchedSet[s.sid];
+    delete this.lastSessionSet[s.did];
+    delete this.lastSessionSet[s.didOther];
+    delete this.didConnectionSet[s.did];
+    delete this.didConnectionSet[s.didOther];
+    this.connectionDidSet.delete(s.conn);
+    this.connectionDidSet.delete(s.connOther);
+    delete this.deltaQueue[this.getDqId(s.did, s.sid)];
+    delete this.deltaQueue[this.getDqId(s.didOther, s.sid)];
 }
 
 Server.prototype.onWebSocketMessage = require('./AtaxxLogic');

@@ -42,8 +42,8 @@ var processOpenSession = function(server, connection, b) {
         // 게임 컨텍스트를 찾고...
         var board = matched.board;
         var didOther = (b.did == matched.did1) ? matched.did2 : matched.did1;
-        var dq = server.deltaQueue[b.did + '+' + b.sid];
-        var dqOther = server.deltaQueue[didOther + '+' + b.sid];
+        var dq = server.deltaQueue[server.getDqId(b.did, b.sid)];
+        var dqOther = server.deltaQueue[server.getDqId(didOther, b.sid)];
         var d;
         while (d = board.dl.pop()) {
             var ds = d.toString();
@@ -63,57 +63,36 @@ var processOpenSession = function(server, connection, b) {
 }
 
 var findSession = function(server, connection) {
-    var did = server.connectionDidSet.get(connection);
-    // 패킷을 보낸 did가 지금 하고 있는 게임 sid
-    var sid = server.lastSessionSet[did];
-    // 방을 찾아서...
-    var matched = server.matchedSet[sid];
-    // 게임 컨텍스트를 찾고...
-    var board = matched.board;
-    // 상대방 DID를 파악
-    var didOther = (did == matched.did1) ? matched.did2 : matched.did1;
-    // 패킷을 보낸 did, 같은 방에 있는 didOther 모두에게 응답 패킷을 보낸다.
-    var connOther = server.didConnectionSet[didOther];
-
-    return {
-        sid: sid,
-        board: board,
-        did: did,
-        didOther: didOther,
-        conn: connection,
-        connOther: connOther,
-    };
+    return server.findSession(connection);
 }
 
 var processAtaxxCommand = function(server, connection, b) {
     var s = findSession(server, connection);
 
     if (processUserDelta(s.board, s.did, b.data) == true) {
-        var dq = server.deltaQueue[s.did + '+' + s.sid];
-        var dqOther = server.deltaQueue[s.didOther + '+' + s.sid];
         var d;
         while (d = s.board.dl.pop()) {
             var ds = d.toString();
-            dq.push(ds);
-            dqOther.push(ds);
+            s.dq.push(ds);
+            s.dqOther.push(ds);
         }
 
-        if (dq.length > 0 && s.conn) {
+        if (s.dq.length > 0 && s.conn) {
             s.conn.sendUTF(JSON.stringify({
                 result: 'ok',
                 type: 'delta',
-                data: dq,
+                data: s.dq,
             }));
-            dq.length = 0;
+            s.dq.length = 0;
         }
 
-        if (dqOther.length > 0 && s.connOther) {
+        if (s.dqOther.length > 0 && s.connOther) {
             s.connOther.sendUTF(JSON.stringify({
                 result: 'ok',
                 type: 'delta',
-                data: dqOther,
+                data: s.dqOther,
             }));
-            dqOther.length = 0;
+            s.dqOther.length = 0;
         }
     } else {
         s.conn.sendUTF(JSON.stringify({
@@ -127,40 +106,18 @@ var processAtaxxCommand = function(server, connection, b) {
 var processGiveUp = function(server, connection, b) {
     var s = findSession(server, connection);
 
-    if (processUserDelta(board, did, b.data) == true) {
-        var dq = server.deltaQueue[did + '+' + sid];
-        var dqOther = server.deltaQueue[didOther + '+' + sid];
-        var d;
-        while (d = board.dl.pop()) {
-            var ds = d.toString();
-            dq.push(ds);
-            dqOther.push(ds);
-        }
+    server.removeSessionByConnection(connection);
 
-        if (dq.length > 0 && connection) {
-            connection.sendUTF(JSON.stringify({
-                result: 'ok',
-                type: 'delta',
-                data: dq,
-            }));
-            dq.length = 0;
-        }
+    // s.nn이 항복한 유저의 닉네임, s.nnOther가 승리한 유저의 닉네임
+    var dq = [`winner ${s.nnOther}`];
+    var data = JSON.stringify({
+        result: 'ok',
+        type: 'delta',
+        data: dq,
+    });
 
-        if (dqOther.length > 0 && connOther) {
-            connOther.sendUTF(JSON.stringify({
-                result: 'ok',
-                type: 'delta',
-                data: dqOther,
-            }));
-            dqOther.length = 0;
-        }
-    } else {
-        connection.sendUTF(JSON.stringify({
-            result: 'fail',
-            type: 'delta',
-            reason: 'delta processing failure',
-        }));
-    }
+    s.conn.sendUTF(data);
+    s.connOther.sendUTF(data);
 }
 
 var processUnknown = function(server, connection, b) {

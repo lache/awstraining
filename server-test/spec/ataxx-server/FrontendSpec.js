@@ -273,34 +273,6 @@ describe("Ataxx Frontend", function() {
         }).done();
     });
 
-    xit('웹소켓 기본 기능 테스트 - 클라이언트가 열었다 닫는다.', function(done) {
-        var client = new WebSocketClient();
-        expect(client).toBeDefined();
-        client.on('connectFailed', function(error) {
-            fail('[WS] connectFailed - ' + error);
-        });
-        client.on('connect', function(connection) {
-            connection.on('error', function(error) {
-                fail('[WS] connect error - ' + error);
-            });
-            connection.on('close', function() {
-                done();
-            });
-            connection.on('message', function(message) {
-                if (message.type === 'utf8') {
-                    connection.close();
-                }
-            });
-
-            if (connection.connected) {
-                connection.sendUTF('hehe');
-            } else {
-                fail('Not connected error');
-            }
-        });
-        client.connect('ws://html5rocks.websocket.org/echo');
-    });
-
     // 연결 성립된 웹소켓 연결 객체에 message 핸들러를 1회용으로 달고,
     // data를 송신한다. data 송신에 따른 수신은 1회용으로 단 핸들러가
     // 호출되는 것을 가정하고 있다.
@@ -375,24 +347,24 @@ describe("Ataxx Frontend", function() {
         checkExpectedDelta(r2, expectedDelta);
     }
 
-    function connSendRecvOnceAsync(conn, command) {
+    function connSendRecvOnceAsync(conn, cmd, data) {
         return conn.sendRecvOnceAsync(JSON.stringify({
-            cmd: 'ataxxCommand',
-            data: command,
+            cmd: cmd,
+            data: data,
         }));
     }
 
-    function conn1SendConn2Recv(conn1, conn2, command) {
+    function conn1SendConn2Recv(conn1, conn2, cmd, data) {
         return Q.all([
-            connSendRecvOnceAsync(conn1, command),
+            connSendRecvOnceAsync(conn1, cmd, data),
             conn2.recvOnceAsync(),
         ])
     }
 
-    function conn2SendConn1Recv(conn1, conn2, command) {
+    function conn2SendConn1Recv(conn1, conn2, cmd, data) {
         return Q.all([
             conn1.recvOnceAsync(),
-            connSendRecvOnceAsync(conn2, command),
+            connSendRecvOnceAsync(conn2, cmd, data),
         ])
     }
 
@@ -472,19 +444,19 @@ describe("Ataxx Frontend", function() {
             checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did1이 (0,0)에 있는 말을 (1,0)으로 옮기도록 한다.
-            return conn1SendConn2Recv(conn1, conn2, 'move 0 0 1 0');
+            return conn1SendConn2Recv(conn1, conn2, 'ataxxCommand', 'move 0 0 1 0');
         }).spread(function(r1, r2) {
             var expectedDelta = ['move nickname1 0 0 1 0 clone', 'turn 2']
             checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did2가 (6,6)에 있는 말을 (5,6)으로 옮기도록 한다.
-            return conn2SendConn1Recv(conn1, conn2, 'move 0 6 1 6');
+            return conn2SendConn1Recv(conn1, conn2, 'ataxxCommand', 'move 0 6 1 6');
         }).spread(function(r1, r2) {
             var expectedDelta = ['move nickname2 0 6 1 6 clone', 'turn 3']
             checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did2가 (6,6)에 있는 말을 (6,4)으로 옮기도록 한다.
-            return conn1SendConn2Recv(conn1, conn2, 'move 6 6 6 4');
+            return conn1SendConn2Recv(conn1, conn2, 'ataxxCommand', 'move 6 6 6 4');
         }).spread(function(r1, r2) {
             var expectedDelta = ['move nickname1 6 6 6 4 move', 'turn 4']
             checkExpectedDeltaBoth(r1, r2, expectedDelta);
@@ -514,7 +486,7 @@ describe("Ataxx Frontend", function() {
             checkExpectedDelta(r1, expectedDelta);
 
             return [
-                connSendRecvOnceAsync(conn1, 'move 0 0 1 0'),
+                connSendRecvOnceAsync(conn1, 'ataxxCommand', 'move 0 0 1 0'),
                 // did2 웹소켓을 연다.
                 openWebSocketConnectionAsync(ws_base_url, 'ataxx'),
             ];
@@ -553,7 +525,7 @@ describe("Ataxx Frontend", function() {
             checkExpectedDeltaBoth(r1, r2, expectedDelta);
 
             // did1이 기권한다.
-            return conn1SendConn2Recv(conn1, conn2, 'giveup');
+            return conn1SendConn2Recv(conn1, conn2, 'giveup', '');
         }).spread(function(r1, r2) {
             var expectedDelta = ['winner nickname2-c']
             checkExpectedDeltaBoth(r1, r2, expectedDelta);
