@@ -1,4 +1,6 @@
 'use strict';
+var Q = require('q');
+
 describe('AtaxxServer', function() {
     var Server = require('../../lib/ataxx-server/Server');
     var server;
@@ -60,46 +62,78 @@ describe('AtaxxServer', function() {
 
     // did1, did2 순으로 차례차례 들어가서 둘이 매치되는 것을 확인
     // did, did2가 들어가는 시점에서 waiting 중인 기기는 없는 것을 가정한다.
-    function expectPairing(did1, nickname1, did2, nickname2, done) {
-        expectPairingInternal(did1, nickname1, did2, nickname2, done, false);
+    function expectPairingAsync(did1, nickname1, did2, nickname2, done) {
+        return expectPairingAsyncInternal(
+            did1,
+            nickname1,
+            did2,
+            nickname2,
+            1,
+            done
+        );
     }
 
     // did1, did2 순으로 차례차례 들어가서 둘이 매치되는 것을 확인
     // 다만 매칭 신청 시 각자 요청을 두 번 연속으로 해서 overlapping 상황을
     // 의도적으로 만든다.
     // did, did2가 들어가는 시점에서 waiting 중인 기기는 없는 것을 가정한다.
-    function expectPairingOverlapped(did1, nickname1, did2, nickname2, done) {
-        expectPairingInternal(did1, nickname1, did2, nickname2, done, true);
+    function expectPairingOverlappedAsync(did1, nickname1, did2, nickname2,
+        requestCount, done) {
+
+        return expectPairingAsyncInternal(
+            did1,
+            nickname1,
+            did2,
+            nickname2,
+            requestCount,
+            done
+        );
     }
 
-    function expectPairingInternal(did1, nickname1, did2, nickname2, done, overlapped) {
+    function expectPairingAsyncInternal(did1, nickname1, did2, nickname2,
+        requestCount, done) {
+
+        expect(requestCount).toBeGreaterThan(0);
+        //expect(requestCount).toBe(1);
+
         var sid;
-        server.setNicknameAsync(did1, nickname1).then(function(data) {
+        return server.setNicknameAsync(did1, nickname1).then(function(data) {
             //console.log('#1');
             return server.setNicknameAsync(did2, nickname2);
         }).then(function(data) {
             //console.log('#2');
-            if (overlapped) {
-                server.requestMatchAsync(did1); // 두 번 연속 중 첫째
+            let tasks = [];
+            for (let i = 0; i < requestCount; i++) {
+                tasks.push(server.requestMatchAsync(did1));
             }
-            return server.requestMatchAsync(did1); // 두 번 연속 중 둘째
-        }).then(function(data) {
+            return Q.allSettled(tasks);
+        }).then(function(dataArray) {
             //console.log('#3');
-            expect(data.result).toBe('wait');
-            expect(data.type).toBe('matchInfo');
-            if (overlapped) {
-                server.requestMatchAsync(did2); // 두 번 연속 중 첫째
+            for (let i = 0; i < requestCount; i++) {
+                expect(dataArray[i].state).toBe('fulfilled');
+                let data = dataArray[i].value;
+                expect(data.result).toBe('wait');
+                expect(data.type).toBe('matchInfo');
             }
-            return server.requestMatchAsync(did2); // 두 번 연속 중 둘째
-        }).then(function(data) {
+
+            let tasks = [];
+            for (let i = 0; i < requestCount; i++) {
+                tasks.push(server.requestMatchAsync(did2));
+            }
+            return Q.allSettled(tasks);
+        }).then(function(dataArray) {
             //console.log('#4');
-            var dt = new Date() - new Date(data.matchedDateTime);
-            expect(dt).toBeLessThan(1000);
-            expect(data.result).toBe('ok');
-            expect(data.type).toBe('matchInfo');
-            expect(data.opponentNickname).toBe(nickname1);
-            expect(data.sessionId.length).toBeGreaterThan(0);
-            sid = data.sessionId;
+            for (let i = 0; i < requestCount; i++) {
+                expect(dataArray[i].state).toBe('fulfilled');
+                let data = dataArray[i].value;
+                var dt = new Date() - new Date(data.matchedDateTime);
+                expect(dt).toBeLessThan(1000);
+                expect(data.result).toBe('ok');
+                expect(data.type).toBe('matchInfo');
+                expect(data.opponentNickname).toBe(nickname1);
+                expect(data.sessionId.length).toBeGreaterThan(0);
+                sid = data.sessionId;
+            }
             return server.requestMatchAsync(did1);
         }).then(function(data) {
             //console.log('#5');
@@ -121,16 +155,14 @@ describe('AtaxxServer', function() {
             expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname2);
             expect(data.sessionId).toBe(sid);
+
+        }).catch(function(error) {
+            console.log('Error: ' + error);
+        }).finally(function() {
             if (done) {
                 done();
             }
-        // }).catch(function(error) {
-        //     //console.log('#8');
-        //     expect(error).not.toBeDefined();
-        //     if (done) {
-        //         done();
-        //     }
-        }).done();
+        });
     }
 
     it('#requestMatch - 처음 들어온 두 명(alpha, bravo)는 끼리끼리 매치가 된다.', function(done) {
@@ -138,7 +170,7 @@ describe('AtaxxServer', function() {
         var nickname1 = 'alpha-nickname';
         var did2 = 'bravo';
         var nickname2 = 'bravo-nickname';
-        expectPairing(did1, nickname1, did2, nickname2, done);
+        expectPairingAsync(did1, nickname1, did2, nickname2, done).done();
     });
 
     it('#requestMatch - 다음으로 들어오는 두 명(charlie, delta)도 끼리끼리 매치가 된다.', function(done) {
@@ -146,7 +178,7 @@ describe('AtaxxServer', function() {
         var nickname1 = 'charlie-nickname';
         var did2 = 'delta';
         var nickname2 = 'delta-nickname';
-        expectPairing(did1, nickname1, did2, nickname2, done);
+        expectPairingAsync(did1, nickname1, did2, nickname2, done).done();
     });
 
     it('#requestMatch - 또 다음으로 들어오는 두 명(echo, fox)도 끼리끼리 매치가 된다.', function(done) {
@@ -154,19 +186,22 @@ describe('AtaxxServer', function() {
         var nickname1 = 'echo-nickname';
         var did2 = 'foxtrot';
         var nickname2 = 'foxtrot-nickname';
-        expectPairing(did1, nickname1, did2, nickname2, done);
+        expectPairingAsync(did1, nickname1, did2, nickname2, done).done();
     });
 
     it('#requestMatch - 또또 다음으로 들어오는 수많은 자들도 끼리끼리 매치가 된다.', function(done) {
-        var count = 5;
-        for (var i = 0; i < count; ++i) {
-            var did1 = 'pairing-match-test-did1-' + i;
-            var nickname1 = did1 + '-nickname';
-            var did2 = 'pairing-match-test-did2-' + i;
-            var nickname2 = did2 + '-nickname';
-            expectPairing(did1, nickname1, did2, nickname2, (i == count - 1) ? done : null);
-            //console.log('match ' + i);
+        var tasks = []
+        var count = 3;
+        for (let i = 0; i < count; ++i) {
+            let did1 = 'pairing-match-test-did1-' + i;
+            let nickname1 = did1 + '-nickname';
+            let did2 = 'pairing-match-test-did2-' + i;
+            let nickname2 = did2 + '-nickname';
+            let t = expectPairingAsync.bind(this, did1, nickname1, did2, nickname2, (i == count - 1) ? done : null);
+            tasks.push(t);
         }
+        expect(tasks.length).toBe(count);
+        tasks.reduce(Q.when, Q()).done();
     });
 
     it('#requestMatch - overlapped', function(done) {
@@ -174,7 +209,11 @@ describe('AtaxxServer', function() {
         var nickname1 = did1 + '-nickname';
         var did2 = 'overlapped2';
         var nickname2 = did2 + '-nickname';
-        expectPairingOverlapped(did1, nickname1, did2, nickname2, done);
+        expect(server.getRequestMatchResultSetCount()).toBe(0);
+        expectPairingOverlappedAsync(did1, nickname1, did2, nickname2, 500).then(function() {
+            expect(server.getRequestMatchResultSetCount()).toBe(0);
+            done();
+        }).done();
     });
 
     it('Q promise test', function(done) {

@@ -4,6 +4,7 @@ var Q = require('q');
 var WebSocketClient = require('websocket').client;
 var base_url = "http://localhost:3000";
 var ws_base_url = "ws://localhost:3000"
+var uuid = require('node-uuid');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
 
@@ -139,6 +140,18 @@ describe("Ataxx Frontend", function() {
         expect(b.fullState.userList[1].name).toBe(nickname2);
     }
 
+    it('requestMatch 시 nickname이 지정되어있지 않은 did의 경우 오류', function(done) {
+        requestGetAsync('requestMatch', {
+            did: uuid.v1() // 절대로 없을 것 같은 did
+        }).then(function(data) {
+            expect(data.response.statusCode).toBe(403);
+            var b = JSON.parse(data.body);
+            expect(b.result).toBe('fail');
+            expect(b.reason).toBe('Empty nickname');
+
+        }).finally(done).done();
+    });
+
     // 두 기기를 입장시켜서 새로운 매치 세션을 만든다.
     // 두 기기는 한번도 매치 요청을 하지 않은 상태여야 한다.
     // 매치가 완료되면 세션 ID를 반환한다.
@@ -249,16 +262,14 @@ describe("Ataxx Frontend", function() {
     it('requestMatch API 테스트 (여러 쌍 더)', function(done) {
         var funcs = [];
         var matchCount = 3;
-        for (var i = 0; i < matchCount; i++) {
-            funcs.push(function(i) {
-                return function() {
-                    return createMatchSessionPairAsync(
-                        did + '__' + i,
-                        nickname + '__' + i,
-                        did2 + '__' + i,
-                        nickname2 + '__' + i);
-                };
-            }(i));
+        for (let i = 0; i < matchCount; i++) {
+            funcs.push(createMatchSessionPairAsync.bind(
+                this,
+                did + '__' + i,
+                nickname + '__' + i,
+                did2 + '__' + i,
+                nickname2 + '__' + i
+            ));
         }
 
         var matchSessionCount;

@@ -10,6 +10,7 @@ AWS.config.update({
 
 var Q = require('q');
 var CHARLIE = require('charlie-core');
+var uuid = require('node-uuid');
 
 function Server() {
     this.dyn = new AWS.DynamoDB({
@@ -22,6 +23,7 @@ function Server() {
     this.didConnectionSet = {}; // DID -> WebSocket connection
     this.connectionDidSet = new Map(); // WebSocket connection -> DID
     this.deltaQueue = {}; // DID+SID -> Delta 배열
+    this.requestMatchResultSet = {}; // DID -> Q.defer (requestMatch를 호출한 did의 요청 세트)
 }
 
 Server.prototype.getMatchSessionCount = function() {
@@ -43,16 +45,36 @@ Server.prototype.requestSessionStateAsync = function(did, sid) {
 }
 
 var getNewGuid = function() {
+    return uuid.v4();
+    /*
     var g = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
     return g.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0,
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
+    */
+}
+
+Server.prototype.getRequestMatchResultSetCount = function() {
+    return Object.keys(this.requestMatchResultSet).length;
 }
 
 Server.prototype.requestMatchAsync = function(did) {
-    var deferred = Q.defer();
+    var deferred = this.requestMatchResultSet[did];
+    if (deferred) {
+        return deferred.promise;
+    } else {
+        var newDeferred = Q.defer();
+        this.requestMatchResultSet[did] = newDeferred;
+        return this.requestMatchAsync_Internal(did, newDeferred).finally((function() {
+            delete this.requestMatchResultSet[did];
+        }).bind(this));
+    }
+}
+
+Server.prototype.requestMatchAsync_Internal = function(did, newDeferred) {
+    var deferred = newDeferred;
 
     // 잘못된 DID에 대해서는 응답하지 않는다.
     if (did === null) {
@@ -70,38 +92,44 @@ Server.prototype.requestMatchAsync = function(did) {
         return deferred.promise;
     }
 
-    var matched = null;
-    for (var k in this.waitingSet) {
-        if (k !== did) {
-            var sid = getNewGuid();
+    this.getNicknameAsync(did).then((function(nn) {
+        if (nn) {
+            var matched = null;
+            for (var k in this.waitingSet) {
+                if (k !== did) {
+                    var sid = getNewGuid();
 
-            // 매치 정보 저장
-            matched = {
-                sid: sid,
-                did1: k,
-                did2: did,
-                matchedDateTime: new Date().toISOString(),
-            };
-            this.matchedSet[sid] = matched;
-            // 세션 정보 업데이트
-            this.lastSessionSet[did] = sid;
-            this.lastSessionSet[k] = sid;
-            // 대기열에서 지운다.
-            delete this.waitingSet[did];
-            delete this.waitingSet[k];
-            break;
+                    // 매치 정보 저장
+                    matched = {
+                        sid: sid,
+                        did1: k,
+                        did2: did,
+                        matchedDateTime: new Date().toISOString(),
+                    };
+                    this.matchedSet[sid] = matched;
+                    // 세션 정보 업데이트
+                    this.lastSessionSet[did] = sid;
+                    this.lastSessionSet[k] = sid;
+                    // 대기열에서 지운다.
+                    delete this.waitingSet[did];
+                    delete this.waitingSet[k];
+                    break;
+                }
+            }
+
+            if (matched == null) {
+                this.waitingSet[did] = true;
+                deferred.resolve({
+                    result: 'wait',
+                    type: 'matchInfo',
+                });
+            } else {
+                this.fillNicknamesForMatched(did, matched, deferred);
+            }
+        } else {
+            deferred.reject(new Error('Empty nickname'));
         }
-    }
-
-    if (matched == null) {
-        this.waitingSet[did] = true;
-        deferred.resolve({
-            result: 'wait',
-            type: 'matchInfo',
-        });
-    } else {
-        this.fillNicknamesForMatched(did, matched, deferred);
-    }
+    }).bind(this)).done();
     return deferred.promise;
 }
 
@@ -363,6 +391,8 @@ Server.prototype.removeSessionByConnection = function(connection) {
     this.connectionDidSet.delete(s.connOther);
     delete this.deltaQueue[this.getDqId(s.did, s.sid)];
     delete this.deltaQueue[this.getDqId(s.didOther, s.sid)];
+    delete this.requestMatchResultSet[s.did];
+    delete this.requestMatchResultSet[s.didOther];
 }
 
 Server.prototype.onWebSocketMessage = require('./AtaxxLogic');

@@ -2,9 +2,15 @@
 var http = require('http');
 var cors = require('cors')
 var express = require('express');
+var fs = require('fs');
+var morgan = require('morgan')
 var WebSocketServer = require('websocket').server;
 var app = express();
 app.use(cors());
+
+//var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
+app.use(morgan('combined'));
+//app.use(morgan('combined', {stream: accessLogStream}));
 
 // 'Hello World' array generator
 var generator = require('./generator');
@@ -70,12 +76,21 @@ app.get('/getNicknameAddedDate', function(req, res) {
 });
 
 app.get('/requestMatch', function(req, res) {
-    var did = req.query.did;
+    let did = req.query.did;
+    let status = 403;
+    let data = undefined;
     server.requestMatchAsync(did).then(function(d) {
-        res.status(200).send(d);
-    }, function(error) {
-        res.status(404);
-    });
+        status = 200;
+        data = d;
+    }).catch(function(error) {
+        status = 403;
+        data = {
+            result: 'fail',
+            reason: error.message
+        };
+    }).finally(function() {
+        res.status(status).send(data);
+    }).done();
 });
 
 app.get('/simulateDbServerDown', function(req, res) {
@@ -122,6 +137,9 @@ app.use('/static', express.static(__dirname + '/public'));
 var httpServer = http.createServer(app);
 httpServer.listen(3000);
 
+
+
+
 var wsServer = new WebSocketServer({
     httpServer: httpServer,
     // You should not use autoAcceptConnections for production
@@ -133,16 +151,16 @@ var wsServer = new WebSocketServer({
 });
 
 function originIsAllowed(origin) {
-  // put logic here to detect whether the specified origin is allowed.
-  return true;
+    // put logic here to detect whether the specified origin is allowed.
+    return true;
 }
 
 wsServer.on('request', function(request) {
     if (!originIsAllowed(request.origin)) {
-      // Make sure we only accept requests from an allowed origin
-      request.reject();
-      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
-      return;
+        // Make sure we only accept requests from an allowed origin
+        request.reject();
+        console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+        return;
     }
 
     var connection = request.accept('ataxx', request.origin);
@@ -152,8 +170,7 @@ wsServer.on('request', function(request) {
             //console.log('Received Message: ' + message.utf8Data);
             var b = JSON.parse(message.utf8Data);
             server.onWebSocketMessage(server, connection, b);
-        }
-        else if (message.type === 'binary') {
+        } else if (message.type === 'binary') {
             //console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
             connection.sendBytes(message.binaryData);
         }
