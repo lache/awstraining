@@ -155,7 +155,8 @@ describe("Ataxx Frontend", function() {
     // 두 기기를 입장시켜서 새로운 매치 세션을 만든다.
     // 두 기기는 한번도 매치 요청을 하지 않은 상태여야 한다.
     // 매치가 완료되면 세션 ID를 반환한다.
-    function createMatchSessionPairAsync(did, nickname, did2, nickname2) {
+    function createMatchSessionPairAsync(did, nickname, did2, nickname2,
+        requestCount) {
         // (0) did, did2에 대해 닉네임 지정
         // (1) did 요청 -> (2) wait 반환
         // (3) did2 요청 -> (4) did, did2와 매칭됨. 매칭 결과 반환
@@ -163,6 +164,8 @@ describe("Ataxx Frontend", function() {
         // (7) did/sid로 세션 정보 요청 -> (8) 세션 정보 반환
         var deferred = Q.defer();
         var sessionId = '';
+
+        expect(requestCount).toBeGreaterThan(0);
 
         // (0)
         Q.allSettled([
@@ -176,26 +179,44 @@ describe("Ataxx Frontend", function() {
             }),
         ]).then(function(data) {
             // (1)
-            return requestGetAsync('requestMatch', {
-                did: did
-            });
-        }).then(function(data) {
-            expect(data.response.statusCode).toBe(200);
-            var b = JSON.parse(data.body);
-            expect(b.result).toBe('wait');
+            let tasks = [];
+            for (let i = 0; i < requestCount; i++) {
+                tasks.push(requestGetAsync('requestMatch', {
+                    did: did
+                }));
+            }
+            return Q.allSettled(tasks);
+        }).then(function(dataArray) {
+            for (let i = 0; i < requestCount; i++) {
+                expect(dataArray[i].state).toBe('fulfilled');
+                let data = dataArray[i].value;
+                expect(data.response.statusCode).toBe(200);
+                var b = JSON.parse(data.body);
+                expect(b.result).toBe('wait');
+            }
+
             // (3)
-            return requestGetAsync('requestMatch', {
-                did: did2
-            });
-        }).then(function(data) {
+            let tasks = [];
+            for (let i = 0; i < requestCount; i++) {
+                tasks.push(requestGetAsync('requestMatch', {
+                    did: did2
+                }));
+            }
+            return Q.allSettled(tasks);
+        }).then(function(dataArray) {
             // (4)
-            expect(data.response.statusCode).toBe(200);
-            var b = JSON.parse(data.body);
-            expect(b.result).toBe('ok');
-            expect(b.sessionId.length).toBeGreaterThan(0);
-            sessionId = b.sessionId;
-            expect(b.opponentNickname).toBe(nickname);
-            checkInitialFullState(b, did, nickname, did2, nickname2);
+            for (let i = 0; i < requestCount; i++) {
+                expect(dataArray[i].state).toBe('fulfilled');
+                let data = dataArray[i].value;
+                expect(data.response.statusCode).toBe(200);
+                var b = JSON.parse(data.body);
+                expect(b.result).toBe('ok');
+                expect(b.sessionId.length).toBeGreaterThan(0);
+                sessionId = b.sessionId;
+                expect(b.opponentNickname).toBe(nickname);
+                checkInitialFullState(b, did, nickname, did2, nickname2);
+            }
+
             // (5)
             return requestGetAsync('requestMatch', {
                 did: did
@@ -247,7 +268,29 @@ describe("Ataxx Frontend", function() {
         var matchSessionCount;
         getMatchSessionCountAsync().then(function(data) {
             matchSessionCount = data.matchSessionCount;
-            return createMatchSessionPairAsync(did, nickname, did2, nickname2);
+            return createMatchSessionPairAsync(did, nickname, did2, nickname2, 1);
+        }).then(function(data) {
+            expect(data.sessionId).toBeDefined();
+            expect(data.sessionId.length).toBeGreaterThan(0);
+            return getMatchSessionCountAsync();
+        }).then(function(data) {
+            expect(data.matchSessionCount - matchSessionCount).toBe(1);
+            done();
+        }).done();
+    });
+
+    // 매칭 테스트 (did가 먼저 요청하고 did2가 나중에 요청하는 시나리오 - 반복요청 처리 확인)
+    it('requestMatch API 테스트 (반복요청시)', function(done) {
+        let matchSessionCount;
+        let did = 'repeat-did-1';
+        let nickname = 'repeat-did-1-nn';
+        let did2 = 'repeat-did-2';
+        let nickname2 = 'repeat-did-2-nn';
+        let requestCount = 3;
+        getMatchSessionCountAsync().then(function(data) {
+            matchSessionCount = data.matchSessionCount;
+            return createMatchSessionPairAsync(did, nickname, did2, nickname2,
+                requestCount);
         }).then(function(data) {
             expect(data.sessionId).toBeDefined();
             expect(data.sessionId.length).toBeGreaterThan(0);
@@ -268,7 +311,8 @@ describe("Ataxx Frontend", function() {
                 did + '__' + i,
                 nickname + '__' + i,
                 did2 + '__' + i,
-                nickname2 + '__' + i
+                nickname2 + '__' + i,
+                1
             ));
         }
 
@@ -384,7 +428,7 @@ describe("Ataxx Frontend", function() {
     // openSession 명령까지 내린 뒤,
     // 결과 읽어올 수 있는 시점에서 작업 종료한다.
     function createWebSocketPair(did1, nn1, did2, nn2) {
-        return createMatchSessionPairAsync(did1, nn1, did2, nn2).then(function(data) {
+        return createMatchSessionPairAsync(did1, nn1, did2, nn2, 1).then(function(data) {
             // 매치 세션은 생성됐으니 두 개의 ataxx 프로토콜 웹소켓을 연다.
             return Q.all([
                 data.sessionId,
@@ -416,7 +460,7 @@ describe("Ataxx Frontend", function() {
     // openSession 명령까지 내린 뒤,
     // 결과 읽어올 수 있는 시점에서 작업 종료한다.
     function createWebSocketSingle(did1, nn1, did2, nn2) {
-        return createMatchSessionPairAsync(did1, nn1, did2, nn2).then(function(data) {
+        return createMatchSessionPairAsync(did1, nn1, did2, nn2, 1).then(function(data) {
             // 매치 세션은 생성됐으니 두 개의 ataxx 프로토콜 웹소켓을 연다.
             return Q.all([
                 data.sessionId,

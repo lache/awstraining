@@ -155,9 +155,6 @@ describe('AtaxxServer', function() {
             expect(data.type).toBe('matchInfo');
             expect(data.opponentNickname).toBe(nickname2);
             expect(data.sessionId).toBe(sid);
-
-        }).catch(function(error) {
-            console.log('Error: ' + error);
         }).finally(function() {
             if (done) {
                 done();
