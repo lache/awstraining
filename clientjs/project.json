@@ -16,6 +16,7 @@
         "src/MainScene.js",
         "src/NicknameScene.js",
         "src/MatchingScene.js",
+        "src/Match3Scene.js",
         "src/StartScene.js",
 
         "src/q.js",

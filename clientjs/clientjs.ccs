@@ -43,6 +43,7 @@
         <Project Name="Red.csd" Type="Node" />
         <Project Name="Blue.csd" Type="Node" />
         <Project Name="MatchingScene.csd" Type="Scene" />
+        <Project Name="Match3Scene.csd" Type="Scene" />
       </RootFolder>
     </Group>
   </SolutionFolder>
