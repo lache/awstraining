@@ -12,7 +12,7 @@ var Q = require('q');
 var CHARLIE = require('charlie-core');
 var uuid = require('node-uuid');
 
-function Server() {
+function Server(logger) {
     this.dyn = new AWS.DynamoDB({
         endpoint: new AWS.Endpoint('http://localhost:8000')
     });
@@ -24,6 +24,13 @@ function Server() {
     this.connectionDidSet = new Map(); // WebSocket connection -> DID
     this.deltaQueue = {}; // DID+SID -> Delta 배열
     this.requestMatchResultSet = {}; // DID -> Q.defer (requestMatch를 호출한 did의 요청 세트)
+    this.logger = logger || {
+        info: function() {},
+    };
+}
+
+Server.prototype.getLogger = function() {
+    return this.logger;
 }
 
 Server.prototype.getMatchSessionCount = function() {

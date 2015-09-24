@@ -20,7 +20,10 @@ function Command(command, args) {
     return base_url + '/' + command + '?' + EncodeQueryData(args);
 }
 
-var app = require('../../app/ServerApp');
+var serverApp = require('../../app/ServerApp');
+var app = serverApp.app,
+    logger = serverApp.logger,
+    server = serverApp.server;
 
 function requestGetAsync(cmd, params) {
     var deferred = Q.defer();
@@ -42,9 +45,23 @@ var nickname = 'testdidnickname';
 var did2 = 'testdid2';
 var nickname2 = 'testdidnickname2';
 
+function cit(desc, func) {
+    if (func.length == 1) {
+        it(desc, function(done) {
+            server.getLogger().info(desc);
+            func(done);
+        });
+    } else {
+        it(desc, function() {
+            server.getLogger().info(desc);
+            func();
+        });
+    }
+}
+
 describe("Ataxx Frontend", function() {
 
-    it("returns status code 200", function(done) {
+    cit("returns status code 200", function(done) {
         request.get(base_url, function(error, response, body) {
             if (error) {
                 //fail('오류 발생! 서버가 실행 중인지 확인 해 보시오...');
@@ -56,7 +73,7 @@ describe("Ataxx Frontend", function() {
         });
     });
 
-    it('Hello World 배열을 받는다.', function(done) {
+    cit('Hello World 배열을 받는다.', function(done) {
         request.get(base_url + '?number=3', function(error, response, body) {
             expect(body).toBe(JSON.stringify([
                 'Hello World',
@@ -83,16 +100,16 @@ describe("Ataxx Frontend", function() {
         });
     }
 
-    it('setNickname API 테스트', function(done) {
+    cit('setNickname API 테스트', function(done) {
         setNickname(done, did, nickname);
     });
 
-    it('setNickname API 테스트 II', function(done) {
+    cit('setNickname API 테스트 II', function(done) {
         setNickname(done, did2, nickname2);
     });
 
     // 직전 테스트에서 설정한 테스트 기기의 닉네임이 잘 조회되는가?
-    it('getNickname API 테스트', function(done) {
+    cit('getNickname API 테스트', function(done) {
         request.get(Command('getNickname', {
             did: did
         }), function(error, response, body) {
@@ -105,7 +122,7 @@ describe("Ataxx Frontend", function() {
         });
     });
 
-    it('getNickname API 테스트 (없는 DID의 경우 닉네임 없어야함)', function(done) {
+    cit('getNickname API 테스트 (없는 DID의 경우 닉네임 없어야함)', function(done) {
         var notExistDid = 'asdfasdfadsf'; // 절대 없을 것 같은 닉네임
         request.get(Command('getNickname', {
             did: notExistDid
@@ -119,7 +136,7 @@ describe("Ataxx Frontend", function() {
         });
     });
 
-    it('getNicknameAddedDate API 테스트', function(done) {
+    cit('getNicknameAddedDate API 테스트', function(done) {
         request.get(Command('getNicknameAddedDate', {
             did: did
         }), function(error, response, body) {
@@ -140,7 +157,7 @@ describe("Ataxx Frontend", function() {
         expect(b.fullState.userList[1].name).toBe(nickname2);
     }
 
-    it('requestMatch 시 nickname이 지정되어있지 않은 did의 경우 오류', function(done) {
+    cit('requestMatch 시 nickname이 지정되어있지 않은 did의 경우 오류', function(done) {
         requestGetAsync('requestMatch', {
             did: uuid.v1() // 절대로 없을 것 같은 did
         }).then(function(data) {
@@ -256,7 +273,7 @@ describe("Ataxx Frontend", function() {
         return deferred.promise;
     }
 
-    it('매치 세션 개수 조회', function(done) {
+    cit('매치 세션 개수 조회', function(done) {
         getMatchSessionCountAsync().then(function(b) {
             expect(b.matchSessionCount).toBeDefined();
             done();
@@ -264,7 +281,7 @@ describe("Ataxx Frontend", function() {
     })
 
     // 매칭 테스트 (did가 먼저 요청하고 did2가 나중에 요청하는 시나리오)
-    it('requestMatch API 테스트', function(done) {
+    cit('requestMatch API 테스트', function(done) {
         var matchSessionCount;
         getMatchSessionCountAsync().then(function(data) {
             matchSessionCount = data.matchSessionCount;
@@ -280,7 +297,7 @@ describe("Ataxx Frontend", function() {
     });
 
     // 매칭 테스트 (did가 먼저 요청하고 did2가 나중에 요청하는 시나리오 - 반복요청 처리 확인)
-    it('requestMatch API 테스트 (반복요청시)', function(done) {
+    cit('requestMatch API 테스트 (반복요청시)', function(done) {
         let matchSessionCount;
         let did = 'repeat-did-1';
         let nickname = 'repeat-did-1-nn';
@@ -302,7 +319,7 @@ describe("Ataxx Frontend", function() {
     });
 
     // 매칭 테스트 (여러 쌍 더 매칭되도록 하기)
-    it('requestMatch API 테스트 (여러 쌍 더)', function(done) {
+    cit('requestMatch API 테스트 (여러 쌍 더)', function(done) {
         var funcs = [];
         var matchCount = 3;
         for (let i = 0; i < matchCount; i++) {
@@ -481,7 +498,7 @@ describe("Ataxx Frontend", function() {
     }
 
     // did1, did2가 매칭되고, 각자의 웹소켓 열어서 커맨드 주고 받기
-    it('매치 세션과의 WebSocket 연결 확인', function(done) {
+    cit('매치 세션과의 WebSocket 연결 확인', function(done) {
         var did1 = 'did1',
             nn1 = 'nickname1',
             did2 = 'did2',
@@ -523,7 +540,7 @@ describe("Ataxx Frontend", function() {
     // did1, did2가 매칭되고, 각자의 웹소켓 열어서 커맨드 주고 받기
     // 단 did1가 먼저 웹소켓 세션을 열고, 커맨드까지 먼저 날린 뒤에
     // did2가 웹소켓을 열었을 때도 문제가 없는지 확인한다.
-    it('매치 세션과의 WebSocket 연결 확인 (2)', function(done) {
+    cit('매치 세션과의 WebSocket 연결 확인 (2)', function(done) {
         var did1 = 'did1-b',
             nn1 = 'nickname1-b',
             did2 = 'did2-b',
@@ -562,7 +579,7 @@ describe("Ataxx Frontend", function() {
         }).done();
     });
 
-    it('매치 완료 후 did1이 기권할 때 처리 확인', function(done) {
+    cit('매치 완료 후 did1이 기권할 때 처리 확인', function(done) {
         var did1 = 'did1-c',
             nn1 = 'nickname1-c',
             did2 = 'did2-c',
@@ -603,7 +620,7 @@ describe("Ataxx Frontend", function() {
 });
 
 describe("FrontendDbServerDown", function() {
-    it('DB 서버 다운 시 API 테스트 (실제 DB 서버 다운 시에는 실패)', function(done) {
+    cit('DB 서버 다운 시 API 테스트 (실제 DB 서버 다운 시에는 실패)', function(done) {
         requestGetAsync('simulateDbServerDown', {}).then(function(data) {
             expect(data.response.statusCode).toBe(200);
             return requestGetAsync('getNickname', {

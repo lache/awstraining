@@ -4,12 +4,42 @@ var cors = require('cors')
 var express = require('express');
 var fs = require('fs');
 var morgan = require('morgan')
+var winston = require('winston');
+winston.emitErrs = true;
 var WebSocketServer = require('websocket').server;
 var app = express();
 app.use(cors());
 
+var logger = new winston.Logger({
+    transports: [
+        new winston.transports.File({
+            level: 'info',
+            filename: __dirname + '/logs/all-logs.log',
+            handleExceptions: true,
+            json: false,
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        // new winston.transports.Console({
+        //     level: 'debug',
+        //     handleExceptions: true,
+        //     json: false,
+        //     colorize: true
+        // }),
+    ],
+    exitOnError: false
+});
+
 //var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a'})
-app.use(morgan('combined'));
+var winstonStream = {
+    write: function(message, encoding) {
+        logger.info(message.slice(0, -1));
+    }
+}
+app.use(morgan('combined', {
+    stream: winstonStream
+}));
 //app.use(morgan('combined', {stream: accessLogStream}));
 
 // 'Hello World' array generator
@@ -17,7 +47,7 @@ var generator = require('./generator');
 
 // Ataxx server logic
 var Server = require('../lib/ataxx-server/Server');
-var server = new Server();
+var server = new Server(logger);
 
 app.get('/', function(req, res) {
     var number = req.query.number;
@@ -180,6 +210,10 @@ wsServer.on('request', function(request) {
     });
 });
 
-module.exports = app;
+module.exports = {
+    app,
+    logger,
+    server,
+}
 
 //app.listen(3000);
