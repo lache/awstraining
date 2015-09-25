@@ -31,6 +31,7 @@
         "lib/ataxx/SizeDelta.js",
         "lib/ataxx/TurnDelta.js",
         "lib/ataxx/User.js",
-        "lib/ataxx/WinnerDelta.js"
+        "lib/ataxx/WinnerDelta.js",
+        "lib/match3/Board.js"
     ]
 }

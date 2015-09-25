@@ -12,6 +12,13 @@
       <FilePathData Path="empty_profile.png" />
       <FilePathData Path="hourglass.png" />
       <FilePathData Path="rounded.png" />
+      <FilePathData Path="gem/gem1.png" />
+      <FilePathData Path="gem/gem2.png" />
+      <FilePathData Path="gem/gem3.png" />
+      <FilePathData Path="gem/gem4.png" />
+      <FilePathData Path="gem/gem5.png" />
+      <FilePathData Path="gem/gem6.png" />
+      <FilePathData Path="gem/gem7.png" />
     </ImageFiles>
     <MaxSize Width="1024" Height="1024" />
   </Content>

@@ -44,6 +44,22 @@
         <Project Name="Blue.csd" Type="Node" />
         <Project Name="MatchingScene.csd" Type="Scene" />
         <Project Name="Match3Scene.csd" Type="Scene" />
+        <Folder Name="gem">
+          <Image Name="gem1.png" />
+          <Image Name="gem2.png" />
+          <Image Name="gem3.png" />
+          <Image Name="gem4.png" />
+          <Image Name="gem5.png" />
+          <Image Name="gem6.png" />
+          <Image Name="gem7.png" />
+        </Folder>
+        <Project Name="gem1.csd" Type="Node" />
+        <Project Name="gem2.csd" Type="Node" />
+        <Project Name="gem3.csd" Type="Node" />
+        <Project Name="gem4.csd" Type="Node" />
+        <Project Name="gem5.csd" Type="Node" />
+        <Project Name="gem6.csd" Type="Node" />
+        <Project Name="gem7.csd" Type="Node" />
       </RootFolder>
     </Group>
   </SolutionFolder>
