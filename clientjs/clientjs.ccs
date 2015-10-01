@@ -54,6 +54,7 @@
           <Image Name="gem7.png" />
         </Folder>
         <Project Name="gem1.csd" Type="Node" />
+        <Project Name="Profile3.csd" Type="Node" />
         <Project Name="gem2.csd" Type="Node" />
         <Project Name="gem3.csd" Type="Node" />
         <Project Name="gem4.csd" Type="Node" />
