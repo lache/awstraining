@@ -35,3 +35,4 @@ clientjs/cocosstudio/.Plist_PList.Dir
 *.log
 clientjs/bin
 tmp
+*.xcscmblueprint

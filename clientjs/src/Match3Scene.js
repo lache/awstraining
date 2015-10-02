@@ -55,6 +55,14 @@ var Match3Scene = cc.Scene.extend({
         }, this);
 
         this.startGame();
+
+        var spineBoy = new sp.SkeletonAnimation('res/spine/spineboy.json', 'res/spine/spineboy.atlas');
+        spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
+        //spineBoy.setMix('walk', 'jump', 0.2);
+        //spineBoy.setMix('jump', 'run', 0.2);
+        spineBoy.setAnimation(0, 'run', true);
+        spineBoy.setScale(0.5);
+        this.addChild(spineBoy, 4);
     },
     precreateCells: function(cellInstances, boardConf, canControl) {
         for (let type = 1; type <= 7; type++) {
@@ -66,7 +74,9 @@ var Match3Scene = cc.Scene.extend({
                     scale: boardConf.boardScale,
                 });
                 cell.type = type;
-                cell.retain();
+                //cell.retain();
+                cell.setVisible(false);
+                this.addChild(cell);
                 cellInstances[type].push(cell);
             }
         }
@@ -152,7 +162,8 @@ var Match3Scene = cc.Scene.extend({
             let cellToBeRemoved = cells[i];
             cellToBeRemoved.setColor(cc.color.WHITE);
             cellToBeRemoved.stopAllActions();
-            cellToBeRemoved.removeFromParent();
+            //cellToBeRemoved.removeFromParent();
+            cellToBeRemoved.setVisible(false);
             cellInstances[cellToBeRemoved.type].push(cellToBeRemoved);
         }
 
@@ -221,7 +232,8 @@ var Match3Scene = cc.Scene.extend({
             //scale: 0.7,
         });
 
-        this.addChild(cell);
+        //this.addChild(cell);
+        cell.setVisible(true);
         return cell;
     },
     createNewCell: function(type, canControl) {
