@@ -182,13 +182,13 @@
             <PreSize X="0.0000" Y="0.0000" />
             <FileData Type="Normal" Path="Profile.csd" Plist="" />
           </AbstractNodeData>
-          <AbstractNodeData Name="ProjectNode_6" ActionTag="-477665157" Tag="358" IconVisible="True" LeftMargin="534.0000" RightMargin="106.0000" TopMargin="281.7801" BottomMargin="678.2199" InnerActionSpeed="1.0000" ctype="ProjectNodeObjectData">
+          <AbstractNodeData Name="ProjectNode_6" ActionTag="-477665157" Tag="358" IconVisible="True" LeftMargin="409.0000" RightMargin="231.0000" TopMargin="283.7801" BottomMargin="676.2199" InnerActionSpeed="1.0000" ctype="ProjectNodeObjectData">
             <Size X="0.0000" Y="0.0000" />
             <AnchorPoint />
-            <Position X="534.0000" Y="678.2199" />
+            <Position X="409.0000" Y="676.2199" />
             <Scale ScaleX="0.5000" ScaleY="0.5000" />
             <CColor A="255" R="255" G="255" B="255" />
-            <PrePosition X="0.8344" Y="0.7065" />
+            <PrePosition X="0.6391" Y="0.7044" />
             <PreSize X="0.0000" Y="0.0000" />
             <FileData Type="Normal" Path="Button.csd" Plist="" />
           </AbstractNodeData>

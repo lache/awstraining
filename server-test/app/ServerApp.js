@@ -1,4 +1,5 @@
 'use strict';
+
 var http = require('http');
 var https = require('https');
 var cors = require('cors')
@@ -22,12 +23,12 @@ var logger = new winston.Logger({
             maxFiles: 5,
             colorize: false
         }),
-        // new winston.transports.Console({
-        //     level: 'debug',
-        //     handleExceptions: true,
-        //     json: false,
-        //     colorize: true
-        // }),
+        new winston.transports.Console({
+            level: 'debug',
+            handleExceptions: true,
+            json: false,
+            colorize: true
+        }),
     ],
     exitOnError: false
 });
@@ -164,7 +165,7 @@ app.get('/getMatchSessionCount', function(req, res) {
 });
 
 app.use('/static', express.static(__dirname + '/public'));
-app.use('/assets', express.static('/Users/gb/awstraining/clientjs'));
+app.use('/assets', express.static(process.env.HOME + '/awstraining/clientjs'));
 
 
 var privateKey  = fs.readFileSync(__dirname + '/ssl/server.key', 'utf8');

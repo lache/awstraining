@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Scene" Name="DynamicScene" ID="26e52bd2-b29b-43a5-ad25-26e4bb70d70f" Version="2.3.2.2" />
+  <PropertyGroup Type="Scene" Name="DynamicScene" ID="26e52bd2-b29b-43a5-ad25-26e4bb70d70f" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />

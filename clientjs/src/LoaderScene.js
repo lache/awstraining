@@ -63,7 +63,7 @@ var LoaderScene = cc.Scene.extend({
                         cc.log('ERROR_NO_LOCAL_MANIFEST');
                         break;
                     case jsb.EventAssetsManager.ERROR_DOWNLOAD_MANIFEST:
-                        cc.log('ERROR_DOWNLOAD_MANIFEST');
+                        cc.log('ERROR_DOWNLOAD_MANIFEST: ' + event.getMessage());
                         break;
                     case jsb.EventAssetsManager.ERROR_PARSE_MANIFEST:
                         cc.log('ERROR_PARSE_MANIFEST');
@@ -114,6 +114,7 @@ var LoaderScene = cc.Scene.extend({
 
             cc.eventManager.addListener(listener, 1);
 
+            cc.log('Start AM update');
             this.am.update();
         }
     },

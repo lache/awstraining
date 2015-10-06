@@ -6,7 +6,7 @@ killall ataxx-desktop
 echo CLIENT START
 
 # 클라이언트 실행 (아마도 블러킹)
-/Users/gb/awstraining/clientjs/bin/ataxx-desktop.app/Contents/MacOS/ataxx-desktop
+$HOME/awstraining/clientjs/bin/ataxx-desktop.app/Contents/MacOS/ataxx-desktop
 
 echo CLIENT FINISH
 

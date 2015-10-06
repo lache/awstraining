@@ -11,7 +11,7 @@ tell application "Terminal"
 	-- new Terminal window, but I'm sure there is a
 	-- better way.
 	--
-	do script "cd /Users/gb/awstraining/clientjs && ./run_inner.sh && exit"
+	do script "cd $HOME/awstraining/clientjs && ./run_inner.sh && exit"
 
 	-- Set the position/size of the Terminal window
 	-- we just created. Top left corner at x=40, y=40

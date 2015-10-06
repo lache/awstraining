@@ -16,6 +16,7 @@
     "grunt-template-jasmine-istanbul": "~0.2.5"
   },
   "dependencies": {
+    "aws-sdk": "^2.2.6",
     "charlie-core": "^0.1.0",
     "cors": "^2.7.1",
     "express": "^4.13.3",
@@ -24,7 +25,7 @@
     "node-uuid": "^1.4.3",
     "q": "^1.4.1",
     "request": "^2.61.0",
-    "websocket": "^1.0.21",
-    "winston": "^1.0.1"
+    "websocket": "^1.0.22",
+    "winston": "^1.0.2"
   }
 }
