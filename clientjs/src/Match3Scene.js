@@ -18,9 +18,19 @@ var Match3Scene = cc.Scene.extend({
         cc.log('Match3Scene 입장');
         var size = cc.winSize;
 
-        var json = ccs.load('res/Match3Scene.json');
+        var json = ccs.load(GetHotpatchPath() + 'res/Match3Scene.json');
         var node = json.node;
         this.addChild(node);
+
+        node.getChildByTag(358).getChildByTag(30).addTouchEventListener(function(sender, type) {
+            if (type === ccui.Widget.TOUCH_ENDED) {
+                cc.game.restart();
+            }
+        }, this);
+
+        node.getChildByTag(358).getChildByTag(30).getChildByTag(31).setString('게임리셋');
+
+        //this.addSpineExample();
 
         this.boardConf = this.initBoardConfiguration(node.getChildByTag(23));
         this.board = this.createBoard();
@@ -55,20 +65,21 @@ var Match3Scene = cc.Scene.extend({
         }, this);
 
         this.startGame();
-        /*
+    },
+    addSpineExample: function() {
+        var size = cc.winSize;
         var spineBoy = new sp.SkeletonAnimation('res/spine/spineboy.json', 'res/spine/spineboy.atlas');
-        spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
+        spineBoy.setPosition(cc.p(size.width / 2, size.height - 70));
         //spineBoy.setMix('walk', 'jump', 0.2);
         //spineBoy.setMix('jump', 'run', 0.2);
         spineBoy.setAnimation(0, 'run', true);
-        spineBoy.setScale(0.5);
-        this.addChild(spineBoy, 4);
-         */
+        spineBoy.setScale(0.1);
+        this.addChild(spineBoy);
     },
     precreateCells: function(cellInstances, boardConf, canControl) {
         for (let type = 1; type <= 7; type++) {
             cellInstances[type] = [];
-            let count = (canControl ? (7 * 7) : 15);
+            let count = 7 * 7; //(canControl ? (7 * 7) : 15);
             for (let i = 0; i < count; i++) {
                 let cell = this.createNewCell(type, canControl);
                 cell.attr({

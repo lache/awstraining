@@ -18,6 +18,7 @@
         "src/MatchingScene.js",
         "src/Match3Scene.js",
         "src/StartScene.js",
+        "src/LoaderScene.js",
 
         "src/q.js",
 

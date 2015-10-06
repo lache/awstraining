@@ -1,5 +1,6 @@
 'use strict';
 var http = require('http');
+var https = require('https');
 var cors = require('cors')
 var express = require('express');
 var fs = require('fs');
@@ -163,11 +164,19 @@ app.get('/getMatchSessionCount', function(req, res) {
 });
 
 app.use('/static', express.static(__dirname + '/public'));
+app.use('/assets', express.static('/Users/gb/awstraining/clientjs'));
+
+
+var privateKey  = fs.readFileSync(__dirname + '/ssl/server.key', 'utf8');
+var certificate = fs.readFileSync(__dirname + '/ssl/server.crt', 'utf8');
+var credentials = {key: privateKey, cert: certificate};
+
 
 var httpServer = http.createServer(app);
 httpServer.listen(3000);
 
-
+var httpsServer = https.createServer(credentials, app);
+httpsServer.listen(3443);
 
 
 var wsServer = new WebSocketServer({

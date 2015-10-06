@@ -1,0 +1,15 @@
+{
+  "name": "ampack",
+  "version": "1.0.0",
+  "description": "cocos2d-x AssetsManagerEx resource manifest file generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "glob": "^5.0.15",
+    "q": "^1.4.1",
+  }
+}

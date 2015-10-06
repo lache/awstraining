@@ -61,6 +61,9 @@
         <Project Name="gem5.csd" Type="Node" />
         <Project Name="gem6.csd" Type="Node" />
         <Project Name="gem7.csd" Type="Node" />
+        <Project Name="LoaderScene.csd" Type="Scene" />
+        <Project Name="DynamicScene.csd" Type="Scene" />
+        <Image Name="P1.png" />
       </RootFolder>
     </Group>
   </SolutionFolder>

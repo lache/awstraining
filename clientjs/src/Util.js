@@ -85,3 +85,7 @@ function RequestXhrAsync(cmd, args, responseCmd) {
 
     return deferred.promise;
 }
+
+function GetHotpatchPath() {
+    return ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : "/")) + 'charlie-cache/ataxx/';
+}

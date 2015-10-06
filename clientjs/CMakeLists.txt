@@ -1,6 +1,6 @@
 #/****************************************************************************
 # Copyright (c) 2014 Chukong Technologies Inc.
-# 
+#
 # http://www.cocos2d-x.org
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -52,13 +52,13 @@ if(WIN32)
   ADD_DEFINITIONS (-D_USRDLL -DCOCOS2DXWIN32_EXPORTS -D_WINDOWS -DWIN32)
 
   if(MSVC)
-    ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS 
-					-D_SCL_SECURE_NO_WARNINGS 
-					-wd4251 -wd4244 -wd4334 
+    ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS
+					-D_SCL_SECURE_NO_WARNINGS
+					-wd4251 -wd4244 -wd4334
 					-wd4005 -wd4820 -wd4710
 					-wd4514 -wd4056 -wd4996 -wd4099)
   else(MSVC)#MINGW
-  
+
   endif(MSVC)
 elseif(APPLE)
 
@@ -300,4 +300,3 @@ pre_build(${APP_NAME}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/main.js ${APP_BIN_DIR}/main.js
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/project.json ${APP_BIN_DIR}/project.json
 )
-
