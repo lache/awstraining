@@ -164,7 +164,7 @@ app.get('/getMatchSessionCount', function(req, res) {
 });
 
 app.use('/static', express.static(__dirname + '/public'));
-app.use('/assets', express.static('/Users/gb/awstraining/clientjs/resext'));
+app.use('/assets', express.static('/Users/gb/awstraining/clientjs'));
 
 
 var privateKey  = fs.readFileSync(__dirname + '/ssl/server.key', 'utf8');

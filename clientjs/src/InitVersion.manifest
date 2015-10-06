@@ -1,0 +1,7 @@
+{
+    "remoteVersionUrl": "https://192.168.0.180:3443/assets/version.manifest",
+    "packageUrl": "https://192.168.0.180:3443/assets/",
+    "remoteManifestUrl": "https://192.168.0.180:3443/assets/project.manifest",
+    "version": "0.0.0",
+    "engineVersion": "3.8 ataxx"
+}

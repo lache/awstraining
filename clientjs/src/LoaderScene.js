@@ -10,6 +10,16 @@ var LoaderScene = cc.Scene.extend({
         const node = json.node;
         this.addChild(node);
 
+        this.progressBar = node.getChildByTag(100);
+        this.progressStr = node.getChildByTag(200);
+        this.progressSubBar = node.getChildByTag(300);
+        this.progressSubStr = node.getChildByTag(400);
+
+        this.progressBar.setVisible(false);
+        this.progressStr.setVisible(false);
+        this.progressSubBar.setVisible(false);
+        this.progressSubStr.setVisible(false);
+
         node.getChildByTag(132).addTouchEventListener(function(sender, type) {
             if (type === ccui.Widget.TOUCH_ENDED) {
                 //cc.log('button');
@@ -36,8 +46,8 @@ var LoaderScene = cc.Scene.extend({
     },
     startAmUpdate: function() {
 
-        const manifestPath = 'res/scene1/project.manifest';
-        const storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : "/")) + 'am/scene1/';
+        const manifestPath = 'src/InitVersion.manifest';
+        const storagePath = GetHotpatchPath();
         this.am = new jsb.AssetsManager(manifestPath, storagePath);
         this.am.retain();
 
@@ -60,14 +70,25 @@ var LoaderScene = cc.Scene.extend({
                         break;
                     case jsb.EventAssetsManager.NEW_VERSION_FOUND:
                         cc.log('NEW_VERSION_FOUND');
+                        that.progressBar.setPercent(0);
+                        that.progressStr.setString('0%');
+                        that.progressSubBar.setPercent(0);
+                        that.progressSubStr.setString('0%');
+                        that.progressBar.setVisible(true);
+                        that.progressStr.setVisible(true);
+                        that.progressSubBar.setVisible(true);
+                        that.progressSubStr.setVisible(true);
                         break;
                     case jsb.EventAssetsManager.ALREADY_UP_TO_DATE:
                         cc.log('ALREADY_UP_TO_DATE');
-                        require(storagePath + 'Scene1.js');
-                        cc.log('SCENE1_CODE = ' + SCENE1_CODE);
+                        that.afterResourceLoadComplete();
                         break;
                     case jsb.EventAssetsManager.UPDATE_PROGRESSION:
                         cc.log('UPDATE_PROGRESSION ' + event.getPercent() + '% ' + event.getPercentByFile() + "% " + event.getMessage());
+                        that.progressBar.setPercent(event.getPercent());
+                        that.progressStr.setString(event.getPercent() + '%');
+                        that.progressSubBar.setPercent(event.getPercentByFile());
+                        that.progressSubStr.setString(event.getPercentByFile() + '%');
                         break;
                     case jsb.EventAssetsManager.ASSET_UPDATED:
                         cc.log('ASSET_UPDATED');
@@ -77,8 +98,7 @@ var LoaderScene = cc.Scene.extend({
                         break;
                     case jsb.EventAssetsManager.UPDATE_FINISHED:
                         cc.log('UPDATE_FINISHED');
-                        require(storagePath + 'Scene1.js');
-                        cc.log('SCENE1_CODE = ' + SCENE1_CODE);
+                        that.afterResourceLoadComplete();
                         break;
                     case jsb.EventAssetsManager.UPDATE_FAILED:
                         cc.log('UPDATE_FAILED');
@@ -96,5 +116,13 @@ var LoaderScene = cc.Scene.extend({
 
             this.am.update();
         }
+    },
+    afterResourceLoadComplete: function() {
+        cc.log('afterResourceLoadComplete');
+        const storagePath = GetHotpatchPath();
+
+        require(storagePath + 'resext/scene1/Scene1.js');
+        cc.log('SCENE1_CODE = ' + SCENE1_CODE);
+        PushScene(new DynamicScene());
     },
 });

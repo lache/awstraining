@@ -1,7 +1,0 @@
-{
-"remoteVersionUrl" : "https://192.168.0.180:3443/assets/scene1/version.manifest",
-"packageUrl" : "https://192.168.0.180:3443/assets/scene1/",
-"remoteManifestUrl" : "https://192.168.0.180:3443/assets/scene1/project.manifest",
-    "version" : "1.2.57",
-    "engineVersion" : "3.8 ataxx"
-}

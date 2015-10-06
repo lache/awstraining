@@ -18,11 +18,19 @@ var Match3Scene = cc.Scene.extend({
         cc.log('Match3Scene 입장');
         var size = cc.winSize;
 
-        var json = ccs.load('res/Match3Scene.json');
+        var json = ccs.load(GetHotpatchPath() + 'res/Match3Scene.json');
         var node = json.node;
         this.addChild(node);
 
-        this.addSpineExample();
+        node.getChildByTag(358).getChildByTag(30).addTouchEventListener(function(sender, type) {
+            if (type === ccui.Widget.TOUCH_ENDED) {
+                cc.game.restart();
+            }
+        }, this);
+
+        node.getChildByTag(358).getChildByTag(30).getChildByTag(31).setString('게임리셋');
+
+        //this.addSpineExample();
 
         this.boardConf = this.initBoardConfiguration(node.getChildByTag(23));
         this.board = this.createBoard();
@@ -57,7 +65,6 @@ var Match3Scene = cc.Scene.extend({
         }, this);
 
         this.startGame();
-
     },
     addSpineExample: function() {
         var size = cc.winSize;

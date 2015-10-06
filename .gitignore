@@ -36,3 +36,5 @@ clientjs/cocosstudio/.Plist_PList.Dir
 clientjs/bin
 tmp
 *.xcscmblueprint
+ampack/node_modules
+clientjs/node_modules
