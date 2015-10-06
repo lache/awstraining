@@ -118,6 +118,9 @@ int DownloaderImpl::performDownload(DownloadUnit* unit,
     curl_easy_setopt(_curlHandle, CURLOPT_NOSIGNAL, 1L);
     curl_easy_setopt(_curlHandle, CURLOPT_LOW_SPEED_LIMIT, LOW_SPEED_LIMIT);
     curl_easy_setopt(_curlHandle, CURLOPT_LOW_SPEED_TIME, LOW_SPEED_TIME);
+    
+    curl_easy_setopt(_curlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(_curlHandle, CURLOPT_SSL_VERIFYHOST, 0L);
 
     _writerCallback = writerCallback;
     _progressCallback = progressCallback;
@@ -171,6 +174,9 @@ int DownloaderImpl::performBatchDownload(const DownloadUnits& units,
             curl_easy_setopt(curl, CURLOPT_LOW_SPEED_TIME, LOW_SPEED_TIME);
             curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
             curl_easy_setopt(curl, CURLOPT_MAXREDIRS, MAX_REDIRS);
+            
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
 
             // Resuming download support
             if (supportResume && unit.resumeDownload)
@@ -289,6 +295,10 @@ int DownloaderImpl::getHeader(const std::string& url, HeaderInfo* headerInfo)
     curl_easy_setopt(curlHandle, CURLOPT_NOSIGNAL, 1);
     // in win32 platform, if not set the writeFunction, it will return CURLE_WRITE_ERROR
     curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, _fileWriteFuncForAdapter);
+    
+    curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(curlHandle, CURLOPT_SSL_VERIFYHOST, 0L);
+    
     if ((_lastErrCode=curl_easy_perform(curlHandle)) == CURLE_OK)
     {
         char *effectiveUrl;
