@@ -19,7 +19,6 @@
 		265C71711BA01AB700097B21 /* NativeOcClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 265C71701BA01AB700097B21 /* NativeOcClass.m */; };
 		265C71721BA01AB700097B21 /* NativeOcClass.m in Sources */ = {isa = PBXBuildFile; fileRef = 265C71701BA01AB700097B21 /* NativeOcClass.m */; };
 		265C71741BA01D9500097B21 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 265C71731BA01D9500097B21 /* Launch Screen.xib */; };
-		265C71751BA01D9500097B21 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 265C71731BA01D9500097B21 /* Launch Screen.xib */; };
 		502380DC17EBB88200990C9B /* libcurl.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 502380DB17EBB88200990C9B /* libcurl.dylib */; };
 		5091731A17ECDF7A00D62437 /* Icon-29.png in Resources */ = {isa = PBXBuildFile; fileRef = 5091731417ECDF7A00D62437 /* Icon-29.png */; };
 		5091731B17ECDF7A00D62437 /* Icon-40.png in Resources */ = {isa = PBXBuildFile; fileRef = 5091731517ECDF7A00D62437 /* Icon-40.png */; };
@@ -525,7 +524,6 @@
 				C0799CBA18BAE62000E9C828 /* res in Resources */,
 				BAF426FC19484B3E002B22EF /* script in Resources */,
 				509D4ACF17EBB2BE00697056 /* Icon.icns in Resources */,
-				265C71751BA01D9500097B21 /* Launch Screen.xib in Resources */,
 				C03780EC18BEE0E400FE4F13 /* src in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
