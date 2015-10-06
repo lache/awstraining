@@ -1,0 +1,22 @@
+{
+"remoteVersionUrl" : "https://192.168.0.180:3443/assets/scene1/version.manifest",
+"packageUrl" : "https://192.168.0.180:3443/assets/scene1/",
+"remoteManifestUrl" : "https://192.168.0.180:3443/assets/scene1/project.manifest",
+	"version" : "1.2.57",
+	"engineVersion" : "3.8 ataxx",
+
+	"assets" : {
+		"Images/background1.jpg" : {
+			"md5" : "567851"
+		},
+		"Images/background2.jpg" : {
+			"md5" : "5678951"
+		},
+		"Scene1.js" : {
+			"md5" : "567894567812"
+		}
+	},
+
+    "searchPaths" : [
+    ]
+}
