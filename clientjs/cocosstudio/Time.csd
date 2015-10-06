@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Node" Name="Time" ID="9596b1ff-97de-421c-a74f-10dc72bfbee5" Version="2.3.2.2" />
+  <PropertyGroup Type="Node" Name="Time" ID="9596b1ff-97de-421c-a74f-10dc72bfbee5" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />

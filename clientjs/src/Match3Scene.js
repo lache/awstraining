@@ -55,7 +55,7 @@ var Match3Scene = cc.Scene.extend({
         }, this);
 
         this.startGame();
-
+        /*
         var spineBoy = new sp.SkeletonAnimation('res/spine/spineboy.json', 'res/spine/spineboy.atlas');
         spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
         //spineBoy.setMix('walk', 'jump', 0.2);
@@ -63,6 +63,7 @@ var Match3Scene = cc.Scene.extend({
         spineBoy.setAnimation(0, 'run', true);
         spineBoy.setScale(0.5);
         this.addChild(spineBoy, 4);
+         */
     },
     precreateCells: function(cellInstances, boardConf, canControl) {
         for (let type = 1; type <= 7; type++) {

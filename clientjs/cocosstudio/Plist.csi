@@ -1,5 +1,5 @@
 <PlistInfoProjectFile>
-  <PropertyGroup Type="Plist" Name="Plist" ID="901180b4-4558-4a0b-8429-b545adeeb315" Version="2.3.2.2" />
+  <PropertyGroup Type="Plist" Name="Plist" ID="901180b4-4558-4a0b-8429-b545adeeb315" Version="2.3.2.3" />
   <Content ExportType="Png" SortAlgorithm="MaxRects" PicturePadding="2" AllowRotation="True" AllowAnySize="False" AllowTrim="False" ctype="PlistInfoData">
     <ImageFiles>
       <FilePathData Path="ataxx1.png" />

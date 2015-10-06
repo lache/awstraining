@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Scene" Name="Match3Scene" ID="0c02ee6a-e18b-430f-b66e-f103651e7527" Version="2.3.2.2" />
+  <PropertyGroup Type="Scene" Name="Match3Scene" ID="0c02ee6a-e18b-430f-b66e-f103651e7527" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />

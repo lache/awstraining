@@ -26,7 +26,7 @@ var StartLayer = cc.Layer.extend({
 
         cc.log('start!');
         Q.delay(1000).then(function() {
-            cc.log('huuuuu');
+            cc.log('huuuuu 1초가 지났군요...킄');
         });
 
         return true;
@@ -54,6 +54,8 @@ var StartLayer = cc.Layer.extend({
         if (did) {
             this.startQueryNickname(did);
         }
+
+        require('script/jsb_cocos2d_constants.js');
     },
     changeToNextScene: function(dt) {
         if (nickname.length > 0) {
@@ -101,6 +103,8 @@ var StartLayer = cc.Layer.extend({
             this.startBtn.setVisible(true);
         }).bind(this)).finally(function() {
             cc.log('FINALLY');
+
+            require('script/jsb_cocos2d.js');
         }).done();
     },
 });

@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Node" Name="Turn" ID="5494ab10-f766-4d6c-9920-f6b27d17aac5" Version="2.3.2.2" />
+  <PropertyGroup Type="Node" Name="Turn" ID="5494ab10-f766-4d6c-9920-f6b27d17aac5" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="80" Speed="1.0000" ActivedAnimationName="pop">

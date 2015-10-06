@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Node" Name="Button" ID="6522a8cb-adef-4b33-ac55-043f493015c1" Version="2.3.2.2" />
+  <PropertyGroup Type="Node" Name="Button" ID="6522a8cb-adef-4b33-ac55-043f493015c1" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />

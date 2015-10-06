@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Node" Name="gem2" ID="02f5e1fe-f0bc-4586-ba08-7778d63512e0" Version="2.3.2.2" />
+  <PropertyGroup Type="Node" Name="gem2" ID="02f5e1fe-f0bc-4586-ba08-7778d63512e0" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />

@@ -1,5 +1,5 @@
 <GameProjectFile>
-  <PropertyGroup Type="Node" Name="Profile" ID="8790ba36-cb51-4d27-a882-b45d202bc32e" Version="2.3.2.2" />
+  <PropertyGroup Type="Node" Name="Profile" ID="8790ba36-cb51-4d27-a882-b45d202bc32e" Version="2.3.2.3" />
   <Content ctype="GameProjectContent">
     <Content>
       <Animation Duration="0" Speed="1.0000" />
