@@ -4,7 +4,7 @@
 USING_NS_CC;
 
 // uncomment below line, open debug console
-// #define USE_WIN32_CONSOLE
+#define USE_WIN32_CONSOLE
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                        HINSTANCE hPrevInstance,

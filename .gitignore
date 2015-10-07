@@ -38,3 +38,4 @@ tmp
 *.xcscmblueprint
 ampack/node_modules
 clientjs/node_modules
+clientjs/lib/

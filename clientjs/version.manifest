@@ -1,7 +1,7 @@
 {
-    "remoteVersionUrl": "https://192.168.0.180:3443/assets/version.manifest",
-    "packageUrl": "https://192.168.0.180:3443/assets/",
-    "remoteManifestUrl": "https://192.168.0.180:3443/assets/project.manifest",
-    "version": "1444147242014-9f738e155b9b3b3b5d99cdb227006755",
+    "remoteVersionUrl": "https://charlie-dev:3443/assets/version.manifest",
+    "packageUrl": "https://charlie-dev:3443/assets/",
+    "remoteManifestUrl": "https://charlie-dev:3443/assets/project.manifest",
+    "version": "1444197968949-e00f0281a9eee47bddb9beeefe403d0c",
     "engineVersion": "3.8 ataxx"
 }

@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  form( method="post", action="/devtools/fastpublish")
+    input(id="edit", value="빠른 배포", type="submit")
+  p 작업 디렉토리
+  ul
+    li= pwd
+  p 호스트 정보
+  ul
+    each val, index in ipAddrList
+      li= index + ': ' + val

@@ -8,13 +8,20 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
     let hashCalculated = 0;
     let fileHashDict = {};
 
+    // print process.argv
+    let host = process.argv[2];
+    let baseAddr = 'https://' + host + ':3443/';
+
     let manifest = {
-        remoteVersionUrl: 'https://192.168.0.180:3443/assets/version.manifest',
-        packageUrl: 'https://192.168.0.180:3443/assets/',
-        remoteManifestUrl: 'https://192.168.0.180:3443/assets/project.manifest',
-        version: '1.2.67',
+        remoteVersionUrl: baseAddr + 'assets/version.manifest',
+        packageUrl: baseAddr + 'assets/',
+        remoteManifestUrl: baseAddr + 'assets/project.manifest',
+        version: '0.0.0', // 아래에서 계산됨
         engineVersion: '3.8 ataxx',
     };
+
+    console.log(JSON.stringify(manifest));
+    console.log();
 
     manifest.assets = {};
 
@@ -70,7 +77,7 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
                         return console.log(err);
                     }
 
-                    console.log("The version manifest was saved!");
+                    //console.log("The version manifest was saved!");
                 });
 
                 manifestString += '",\n'
@@ -88,7 +95,7 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
                         return console.log(err);
                     }
 
-                    console.log("The project manifest was saved!");
+                    //console.log("The project manifest was saved!");
                 });
 
                 //console.log(manifest);

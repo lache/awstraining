@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  p 배포 완료
+  p remoteVersionUrl
+  a(href=result.remoteVersionUrl) #{result.remoteVersionUrl}
+  p packageUrl
+  a(href=result.packageUrl) #{result.packageUrl}
+  p remoteManifestUrl
+  a(href=result.remoteManifestUrl) #{result.remoteManifestUrl}
+  hr
+  a(href='/devtools') 돌아가기
