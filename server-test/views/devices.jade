@@ -6,11 +6,9 @@ block content
   table.table
     thead
       tr
-        th 순서
         th DID
         th 닉네임
     each val, index in data.Items
       tr
-        td= index + 1
         td= val.Id.S
-        td= val.Nickname.S
+        td= val.Nickname ? val.Nickname.S : '<없음>'

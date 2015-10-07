@@ -2,9 +2,10 @@
 var request = require("request");
 var Q = require('q');
 var WebSocketClient = require('websocket').client;
-var base_url = "http://localhost:3000";
+var base_url = "http://localhost:3000/world";
 var ws_base_url = "ws://localhost:3000"
 var uuid = require('node-uuid');
+var app = require('../../app');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
 
@@ -20,10 +21,14 @@ function Command(command, args) {
     return base_url + '/' + command + '?' + EncodeQueryData(args);
 }
 
+var server = app.server;
+
+/*
 var serverApp = require('../../app/ServerApp');
 var app = serverApp.app,
     logger = serverApp.logger,
     server = serverApp.server;
+    */
 
 function requestGetAsync(cmd, params) {
     var deferred = Q.defer();
@@ -61,7 +66,7 @@ function cit(desc, func) {
 
 describe("Ataxx Frontend", function() {
 
-    cit("returns status code 200", function(done) {
+    cit("base_url(" + base_url + ") returns status code 200", function(done) {
         request.get(base_url, function(error, response, body) {
             if (error) {
                 //fail('오류 발생! 서버가 실행 중인지 확인 해 보시오...');
@@ -69,17 +74,6 @@ describe("Ataxx Frontend", function() {
             } else {
                 expect(response.statusCode).toBe(200);
             }
-            done();
-        });
-    });
-
-    cit('Hello World 배열을 받는다.', function(done) {
-        request.get(base_url + '?number=3', function(error, response, body) {
-            expect(body).toBe(JSON.stringify([
-                'Hello World',
-                'Hello World',
-                'Hello World'
-            ]));
             done();
         });
     });

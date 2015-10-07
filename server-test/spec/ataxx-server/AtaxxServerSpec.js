@@ -125,7 +125,11 @@ describe('AtaxxServer', function() {
             //console.log('#4');
             for (let i = 0; i < requestCount; i++) {
                 expect(dataArray[i].state).toBe('fulfilled');
+                if (dataArray[i].state !== 'fulfilled') {
+                    console.log('reject reason : ' + dataArray[i].reason);
+                }
                 let data = dataArray[i].value;
+                expect(data).toBeDefined();
                 var dt = new Date() - new Date(data.matchedDateTime);
                 expect(dt).toBeLessThan(1000);
                 expect(data.result).toBe('ok');
@@ -159,7 +163,9 @@ describe('AtaxxServer', function() {
             if (done) {
                 done();
             }
-        });
+        }).catch(function(error) {
+            console.log(error);
+        }); // 이후 일을 이어서 진행할 수도 있기 때문에 done() 시키지 않는다.
     }
 
     it('#requestMatch - 처음 들어온 두 명(alpha, bravo)는 끼리끼리 매치가 된다.', function(done) {

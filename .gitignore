@@ -39,3 +39,4 @@ tmp
 ampack/node_modules
 clientjs/node_modules
 clientjs/lib/
+server-test/binpack/dynamodb_local_2015-07-16_1.0

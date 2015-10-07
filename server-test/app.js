@@ -43,6 +43,7 @@ app.use('/tests', tests);
 // 최신 클라이언트 애셋을 서버에서 직접 가져갈 수 있도록 한다.
 app.use('/assets', express.static(path.join(__dirname, '..', 'clientjs')));
 
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

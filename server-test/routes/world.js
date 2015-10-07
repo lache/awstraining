@@ -4,6 +4,12 @@ var util = require('util');
 var Q = require('q');
 var router = express.Router();
 
+router.get('/', function(req, res, next) {
+    res.status(200).send({
+        result: 'ok',
+    })
+});
+
 router.get('/listTables', function(req, res, next) {
     let server = req.app.server;
     Q.nfcall(server.dyn.listTables.bind(server.dyn)).then(function(data) {
@@ -26,19 +32,15 @@ router.get('/initTables', function(req, res, next) {
     let server = req.app.server;
     let params = {
         TableName: 'AppDevice',
-        KeySchema: [
-            {
-                AttributeName: 'Id',
-                KeyType: 'HASH'
-            }
-        ],
-        AttributeDefinitions: [
-            {
-                AttributeName: 'Id',
-                AttributeType: 'S'
-            }
-        ],
-        ProvisionedThroughput:  {
+        KeySchema: [{
+            AttributeName: 'Id',
+            KeyType: 'HASH'
+        }],
+        AttributeDefinitions: [{
+            AttributeName: 'Id',
+            AttributeType: 'S'
+        }],
+        ProvisionedThroughput: {
             ReadCapacityUnits: 1,
             WriteCapacityUnits: 1
         }
