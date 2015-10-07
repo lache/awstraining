@@ -124,6 +124,7 @@ int DownloaderImpl::performDownload(DownloadUnit* unit,
 
     _writerCallback = writerCallback;
     _progressCallback = progressCallback;
+	CCLOGINFO("DownloaderImpl::performDownload %s", unit->srcUrl.c_str());
     _lastErrCode = curl_easy_perform(_curlHandle);
     return _lastErrCode;
 }
