@@ -12,6 +12,7 @@ var world = require('./routes/world');
 var releases = require('./routes/releases');
 var devices = require('./routes/devices');
 var rooms = require('./routes/rooms');
+var tests = require('./routes/tests');
 
 var Server = require('./lib/ataxx-server/Server');
 
@@ -38,6 +39,7 @@ app.use('/world', world);
 app.use('/devices', devices);
 app.use('/releases', releases);
 app.use('/rooms', rooms);
+app.use('/tests', tests);
 // 최신 클라이언트 애셋을 서버에서 직접 가져갈 수 있도록 한다.
 app.use('/assets', express.static(path.join(__dirname, '..', 'clientjs')));
 
