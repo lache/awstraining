@@ -12,10 +12,9 @@ router.post('/run', function(req, res, next) {
     let output = '';
     let called = false;
     let server = req.app.server;
+
     jn.executeSpecsInFolder({
         specFolders: ['spec'],
-        print: str => output += str,
-        server: server,
         onComplete: () => {
             // 뭔가 두 번 호출되는 문제가 있는 것 같다... called 플래그로 처리
             if (!called) {
