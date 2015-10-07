@@ -3,8 +3,13 @@ const crypto = require('crypto');
 const fs = require('fs');
 const glob = require('glob');
 const Q = require('q');
+const _ = require('underscore');
 
-Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
+// follow는 symlink 디렉토리 따라가도록 하기 위해서,
+// mark는 디렉토리인 경우 맨 뒤에 '/' 문자를 추가로 붙이기 위해 켜는 옵션이다.
+let options = {follow:true, mark:true};
+
+Q.nfcall(glob, '@(src|res|resext|lib)/**/*.*', options).then(function(files) {
     let hashCalculated = 0;
     let fileHashDict = {};
 
@@ -20,12 +25,14 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
         engineVersion: '3.8 ataxx',
     };
 
-    console.log(JSON.stringify(manifest));
-    console.log();
-
     manifest.assets = {};
 
+    // 디렉토리는 해싱 대상에서 빠져야한다.
+    files = _.reject(files, s => s.endsWith('/'));
+
     for (let i = 0; i < files.length; i++) {
+        //console.log(files[i]);
+
         // the file you want to get the hash
         let fd = fs.createReadStream(files[i]);
         let hash = crypto.createHash('md5');
@@ -72,13 +79,7 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
                 manifestString += '    "engineVersion": "' + manifest.engineVersion;
 
                 // 우선 version.manifest를 쓰고, 그 다음 project.manifest를 쓴다.
-                fs.writeFile("version.manifest", manifestString + '"\n}\n', function(err) {
-                    if (err) {
-                        return console.log(err);
-                    }
-
-                    //console.log("The version manifest was saved!");
-                });
+                fs.writeFileSync("version.manifest", manifestString + '"\n}\n');
 
                 manifestString += '",\n'
                 manifestString += '    "assets": {\n';
@@ -90,17 +91,14 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
                 manifestString += '    }\n';
                 manifestString += '}\n';
 
-                fs.writeFile("project.manifest", manifestString, function(err) {
-                    if (err) {
-                        return console.log(err);
-                    }
-
-                    //console.log("The project manifest was saved!");
-                });
+                fs.writeFileSync("project.manifest", manifestString);
 
                 //console.log(manifest);
                 //console.log('Finished');
                 //console.log(manifestString);
+
+                console.log(JSON.stringify(manifest));
+                console.log();
             }
         });
 
@@ -111,5 +109,5 @@ Q.nfcall(glob, '@(src|res|resext)/**/*.*').then(function(files) {
     //console.log(files);
 
 }).catch(function(error) {
-    console.log('Error - ' + error);
-});
+    console.log(JSON.stringify(error));
+}).done();

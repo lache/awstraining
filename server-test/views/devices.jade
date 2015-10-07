@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1 디바이스
+  //p= JSON.stringify(data)
+  table.table
+    thead
+      tr
+        th 순서
+        th DID
+        th 닉네임
+    each val, index in data.Items
+      tr
+        td= index + 1
+        td= val.Id.S
+        td= val.Nickname.S

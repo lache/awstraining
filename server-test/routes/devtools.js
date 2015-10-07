@@ -5,7 +5,7 @@ var exec = require('child_process').exec;
 var shelljs = require('shelljs');
 var os = require('os');
 var firstIp = null;
-/* GET users listing. */
+
 router.get('/', function(req, res, next) {
 
     var ifaces = os.networkInterfaces();
@@ -33,7 +33,7 @@ router.get('/', function(req, res, next) {
       });
     });
 
-  res.render('devtools', { title: 'DEVTOOLS', pwd: shelljs.pwd(), ipAddrList: ipAddrList });
+  res.render('devtools', { title: '개발도구', pwd: shelljs.pwd(), ipAddrList: ipAddrList });
 });
 
 router.post('/fastpublish', function(req, res, next) {

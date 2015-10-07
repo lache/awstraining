@@ -29,6 +29,10 @@ function Server(logger) {
     };
 }
 
+Server.prototype.getMatchedSet = function() {
+    return this.matchedSet;
+}
+
 Server.prototype.getLogger = function() {
     return this.logger;
 }
@@ -219,6 +223,7 @@ Server.prototype.getNicknameAsync = function(did) {
     this.dyn.getItem(params, function(err, data) {
         if (err) {
             deferred.reject(new Error(err));
+            //deferred.reject('xxx');
         } else if (!data.Item) {
             deferred.resolve('');
         } else if (data.Item.Nickname) {

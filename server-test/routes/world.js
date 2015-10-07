@@ -1,9 +1,66 @@
 'use strict';
 var express = require('express');
 var util = require('util');
+var Q = require('q');
 var router = express.Router();
 
+router.get('/listTables', function(req, res, next) {
+    let server = req.app.server;
+    Q.nfcall(server.dyn.listTables.bind(server.dyn)).then(function(data) {
+        res.status(200).send({
+            result: 'ok',
+            type: 'listTables',
+            tableNames: data.TableNames,
+        });
+    }).catch(function(error) {
+        res.status(500).send({
+            result: 'error',
+            type: 'listTables',
+            reason: 500,
+            error: error.message,
+        });
+    }).done();
+});
+
+router.get('/initTables', function(req, res, next) {
+    let server = req.app.server;
+    let params = {
+        TableName: 'AppDevice',
+        KeySchema: [
+            {
+                AttributeName: 'Id',
+                KeyType: 'HASH'
+            }
+        ],
+        AttributeDefinitions: [
+            {
+                AttributeName: 'Id',
+                AttributeType: 'S'
+            }
+        ],
+        ProvisionedThroughput:  {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1
+        }
+    };
+
+    Q.nfcall(server.dyn.createTable.bind(server.dyn, params)).then(data => {
+        res.status(200).send({
+            result: 'ok',
+            type: 'initTables',
+        });
+    }).catch(error => {
+        res.status(500).send({
+            result: 'error',
+            type: 'initTables',
+            reason: 500,
+            error: error.message,
+        });
+    }).done();
+});
+
 router.get('/setNickname', function(req, res, next) {
+    let server = req.app.server;
     var did = req.query.did;
     var nickname = req.query.nickname;
     server.setNicknameAsync(did, nickname).then(function(data) {
@@ -11,17 +68,18 @@ router.get('/setNickname', function(req, res, next) {
             result: 'ok',
             type: 'nicknameSet'
         });
-        /*
-        setTimeout(function() {
-            res.status(200).send({result:'ok'});
-        }, 2000);
-        */
-    }, function(error) {
-        res.status(404);
-    });
+    }).catch(function(error) {
+        res.status(500).send({
+            result: 'error',
+            type: 'setNickname',
+            reason: 500,
+            error: error.message,
+        });
+    }).done();
 });
 
 router.get('/getNickname', function(req, res, next) {
+    let server = req.app.server;
     var did = req.query.did;
     server.getNicknameAsync(did).then(function(nn) {
         res.status(200).send({
@@ -30,16 +88,18 @@ router.get('/getNickname', function(req, res, next) {
             did: did,
             nickname: nn,
         });
-    }, function(error) {
+    }).catch(function(error) {
         res.status(500).send({
             result: 'error',
             type: 'nickname',
             reason: 500,
+            error: error.message,
         });
-    });
+    }).done();
 });
 
 router.get('/getNicknameAddedDate', function(req, res, next) {
+    let server = req.app.server;
     var did = req.query.did;
     server.getNicknameAddedDateAsync(did).then(function(d) {
         res.status(200).send({
@@ -54,6 +114,7 @@ router.get('/getNicknameAddedDate', function(req, res, next) {
 });
 
 router.get('/requestMatch', function(req, res, next) {
+    let server = req.app.server;
     let did = req.query.did;
     let status = 403;
     let data = undefined;
@@ -72,16 +133,19 @@ router.get('/requestMatch', function(req, res, next) {
 });
 
 router.get('/simulateDbServerDown', function(req, res, next) {
+    let server = req.app.server;
     server.simulateDbServerDown();
     res.status(200).send();
 });
 
 router.get('/stopSimulateDbServerDown', function(req, res, next) {
+    let server = req.app.server;
     server.stopSimulateDbServerDown();
     res.status(200).send();
 });
 
 router.get('/requestSessionState', function(req, res, next) {
+    let server = req.app.server;
     var did = req.query.did;
     var sid = req.query.sid;
     server.requestSessionStateAsync(did, sid).then(function(d) {
@@ -106,6 +170,7 @@ router.get('/health', function(req, res, next) {
 });
 
 router.get('/getMatchSessionCount', function(req, res, next) {
+    let server = req.app.server;
     res.send({
         matchSessionCount: server.getMatchSessionCount()
     });

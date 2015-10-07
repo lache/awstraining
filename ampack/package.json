@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "glob": "^5.0.15",
-    "q": "^1.4.1"
+    "q": "^1.4.1",
+    "underscore": "^1.8.3"
   }
 }

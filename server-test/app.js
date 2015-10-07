@@ -9,8 +9,15 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var devtools = require('./routes/devtools');
 var world = require('./routes/world');
+var releases = require('./routes/releases');
+var devices = require('./routes/devices');
+var rooms = require('./routes/rooms');
+
+var Server = require('./lib/ataxx-server/Server');
 
 var app = express();
+
+app.server = new Server();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,6 +35,10 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/devtools', devtools);
 app.use('/world', world);
+app.use('/devices', devices);
+app.use('/releases', releases);
+app.use('/rooms', rooms);
+// 최신 클라이언트 애셋을 서버에서 직접 가져갈 수 있도록 한다.
 app.use('/assets', express.static(path.join(__dirname, '..', 'clientjs')));
 
 // catch 404 and forward to error handler
