@@ -212,8 +212,9 @@ describe('AtaxxServer', function() {
         var nickname1 = did1 + '-nickname';
         var did2 = 'overlapped2';
         var nickname2 = did2 + '-nickname';
+        var overlapCount = 5;
         expect(server.getRequestMatchResultSetCount()).toBe(0);
-        expectPairingOverlappedAsync(did1, nickname1, did2, nickname2, 500).then(function() {
+        expectPairingOverlappedAsync(did1, nickname1, did2, nickname2, overlapCount).then(function() {
             expect(server.getRequestMatchResultSetCount()).toBe(0);
             done();
         }).done();

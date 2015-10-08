@@ -2,4 +2,6 @@ extends layout
 
 block content
   h1 테스트 결과
+  form( method="post", action="/tests/run")
+      input(id="edit", value="재실행", type="submit")
   pre= output

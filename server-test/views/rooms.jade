@@ -2,4 +2,28 @@ extends layout
 
 block content
   h1 대전실
-  p= JSON.stringify(matchedSet)
+  table.table
+    thead
+      tr
+        th SID
+        th DID 1
+        th DID 1 닉네임
+        th 게임 종류
+      tr
+        th
+        th DID 2
+        th DID 2 닉네임
+        th 매치 시각
+    each val, index in matchedSet
+      tr
+        td
+          span(title=index)= index.substring(0,6)
+        td= val.did1
+        td= val.did1Nickname
+        td= val.board.type
+      tr
+        td
+        td= val.did2
+        td= val.did2Nickname
+        td= moment(val.matchedDateTime)
+//  p= JSON.stringify(matchedSet)

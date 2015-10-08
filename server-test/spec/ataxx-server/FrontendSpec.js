@@ -165,6 +165,7 @@ describe("Ataxx Frontend", function() {
 
     // 두 기기를 입장시켜서 새로운 매치 세션을 만든다.
     // 두 기기는 한번도 매치 요청을 하지 않은 상태여야 한다.
+    // 또한 현재 매치가 완료되지 않은 대기 상태의 기기가 있어서도 안된다.
     // 매치가 완료되면 세션 ID를 반환한다.
     function createMatchSessionPairAsync(did, nickname, did2, nickname2,
         requestCount) {

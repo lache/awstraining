@@ -4,24 +4,19 @@ doctype html
 html
   head
     title= title
-    // jquery
-    //script(src='/javascripts/jquery-1.11.3.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
-    // Latest compiled and minified CSS
-    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css')
-    // Optional theme
-    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css')
-    // Latest compiled and minified JavaScript
-    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js')
-
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap-theme.min.css')
+    script(src='/bootstrap/js/bootstrap.min.js')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     +nav('C', 'dropdown_menu')
-      +nav_item( "/devtools", "active" ) 개발도구
-      +nav_item( "/releases" ) 릴리즈
+      +nav_item_dropdown( "#" )( label="개발" )
+        +nav_item( "/devtools" ) 도구
+        +nav_item( "/releases" ) 릴리즈
+        +nav_item( "/tests" ) 테스트
       +nav_item( "/devices" ) 디바이스
       +nav_item( "/rooms" ) 대전실
-      +nav_item( "/tests" ) 테스트
       +nav_item_dropdown( "#" )( label="고급기능" )
         +nav_item( "/world/listTables" ) DB 테이블 조회
         +nav_item( "/world/initTables" ) DB 테이블 초기 생성

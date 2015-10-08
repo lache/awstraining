@@ -1,32 +1,55 @@
 'use strict';
 let express = require('express');
 let Q = require('q');
+let Jasmine = require('jasmine');
+let util = require('util');
+let jasmine = new Jasmine();
 let router = express.Router();
-let jn = require('jasmine-node');
 
 router.get('/', function(req, res, next) {
     res.render('tests');
 });
 
 router.post('/run', function(req, res, next) {
-    let output = '';
-    let called = false;
     let server = req.app.server;
 
-    jn.executeSpecsInFolder({
-        specFolders: ['spec'],
-        onComplete: () => {
-            // 뭔가 두 번 호출되는 문제가 있는 것 같다... called 플래그로 처리
-            if (!called) {
-                called = true;
-                console.log('ON COMPLETE!!!')
-                res.render('tests-result', {
-                    output
-                });
-            }
-
+    let output = '';
+    let completeCount = 0;
+    jasmine.loadConfigFile('spec/support/jasmine.json');
+    /*
+    jasmine.onComplete(function(passed) {
+        console.log('COMPLETE');
+        // 테스트 성공 시 onComplete가 한번 불리고
+        // 실패 시 두 번 불리는 괴상한 현상 때문에 아래와 같이 처리
+        if (passed) {
+            completeCount = 2;
+        } else {
+            completeCount++;
+        }
+        if (completeCount == 2) {
+            res.render('tests-result', {
+                output,
+            });
         }
     });
+    */
+    jasmine.configureDefaultReporter({
+        print: function() {
+            output += util.format.apply(this, arguments);
+        },
+        onComplete: function(passed) {
+            console.log('~~~COMPLETE');
+            completeCount++;
+            if (completeCount == 1) {
+                res.render('tests-result', {
+                    output,
+                });
+            }
+        },
+        showColors: false,
+    });
+
+    jasmine.execute();
 });
 
 module.exports = router;
