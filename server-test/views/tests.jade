@@ -2,6 +2,6 @@ extends layout
 
 block content
     h1 테스트
-    p 서버 기능 테스트(자가 테스트)를 진행합니다. 테스트를 실행 시 서버 컨텍스트가 리셋됩니다.
+    p 서버 기능 테스트(자가 테스트)를 진행합니다. 테스트 시작 전 서버 컨텍스트가 리셋됩니다. (DB는 유지)
     form( method="post", action="/tests/run")
         input(id="edit", value="지금 실행", type="submit")

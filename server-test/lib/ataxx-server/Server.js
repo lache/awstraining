@@ -389,6 +389,8 @@ Server.prototype.findSession = function(conn) {
 
 Server.prototype.getDqId = (did, sid) => did + '+' + sid;
 
+// connection이 바인드된 세션을 리셋한다.
+// 세션에 엮인 다른 연결 세션도 함꼐 리셋된다.
 Server.prototype.removeSessionByConnection = function(connection) {
     var s = this.findSession(connection);
 
@@ -406,6 +408,7 @@ Server.prototype.removeSessionByConnection = function(connection) {
     delete this.requestMatchResultSet[s.did];
     delete this.requestMatchResultSet[s.didOther];
 }
+
 
 Server.prototype.onWebSocketMessage = require('./AtaxxLogic');
 
